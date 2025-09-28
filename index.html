@@ -7,12 +7,25 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="sidebar">
+    <button class="menu-toggle">☰</button>
+    <nav class="menu">
+      <a href="#" onclick="loadPage('mods')">⚙ Mods</a>
+      <a href="#" onclick="loadPage('rules')">📜 Rules</a>
+      <a href="#" onclick="loadPage('killfeed')">💀 Killfeed</a>
+      <a href="#" onclick="loadPage('leaderboard')">🏆 Leaderboard</a>
+    </nav>
+  </div>
+
   <div class="widget-container">
     <img src="Aggro-logo.png" alt="Aggro PvP Logo" class="logo" />
     <div class="button-group">
       <a href="steam://connect/193.193.80.64:3436" class="btn steam">🎮 Connect to Server</a>
       <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="btn discord">💬 Join Discord</a>
     </div>
+    <div id="popup-content" class="popup"></div>
   </div>
+
+  <script src="menu.js"></script>
 </body>
 </html>
