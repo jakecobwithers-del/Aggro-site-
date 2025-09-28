@@ -16,72 +16,84 @@
       -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
     }
 
-    /* smoke container */
-    .smoke-bg{ position:fixed; inset:0; pointer-events:none; z-index:2; overflow:hidden; }
+    /* subtle static fog/grain behind smoke */
+    body::before{
+      content:"";position:fixed;inset:0;z-index:0;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(255,255,255,0.02) 0px, transparent 30%),
+        radial-gradient(circle at 90% 80%, rgba(255,255,255,0.02) 0px, transparent 30%),
+        repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 2px);
+      opacity:0.14;pointer-events:none;mix-blend-mode:screen;filter:blur(1px);
+    }
 
-    /* opaque smoke layers: high opacity, normal blend, visible tint fallback */
+    /* SMOKE: cover viewport but stay between background and UI */
+    .smoke-bg{
+      position:fixed; inset:0; z-index:50; pointer-events:none; /* sits above background but below UI */
+      overflow:visible;
+    }
+
     .smoke-layer{
       position:absolute;
-      width:160%;
-      height:90vh;
+      left:50%;
+      transform:translateX(-50%);
+      width:220%;
+      height:140vh;
       background-repeat:no-repeat;
       background-size:cover;
-      background-position:center;
-      transform-origin:center;
-      mix-blend-mode:normal;              /* normal so it does not disappear into background */
-      opacity:0.95;                       /* almost fully opaque */
-      filter: blur(8px) saturate(1.05);   /* moderate blur so it still reads as smoke */
-      animation:smokeMove 16s linear infinite;
-      background-image: url('Smoke.png');
-      background-color: rgba(60,50,50,0.92); /* strong tint fallback if image missing */
-      background-blend-mode:normal;
+      background-position:center bottom;
+      mix-blend-mode:normal; /* normal so it reads well over dark bg */
+      opacity:0.82;          /* strong visible smoke */
+      filter: blur(12px) saturate(1.02);
+      animation: smokeMove 18s linear infinite;
       pointer-events:none;
+      background-image: url('Smoke.png'); /* requires Smoke.png in same folder */
+      background-color: rgba(60,50,50,0.85); /* fallback so you always see smoke area if image fails */
+      background-blend-mode:normal;
     }
 
-    /* layer placement */
-    .s1{ left:-18%; top:64%; transform:scale(1.06); animation-duration:14s; }
-    .s2{ left:30%; top:72%; transform:scale(1.28); animation-duration:24s; animation-direction:reverse; }
-    .s3{ left:60%; top:58%; transform:scale(1.12); animation-duration:34s; }
+    /* layer starting vertical offsets so smoke rises into view */
+    .s1{ top:60vh; transform:translateX(-50%) scale(1.06); animation-duration:14s; z-index:52; }
+    .s2{ top:80vh; transform:translateX(-50%) scale(1.28); animation-duration:24s; animation-direction:reverse; z-index:51; opacity:0.86; filter:blur(20px); }
+    .s3{ top:100vh; transform:translateX(-50%) scale(1.45); animation-duration:32s; z-index:50; opacity:0.80; filter:blur(28px); }
 
     @keyframes smokeMove{
-      0%{ transform:translate3d(0,0,0) rotate(-2deg) scale(1); opacity:0.9; }
-      35%{ transform:translate3d(-12vw,-10vh,0) rotate(1deg) scale(1.02); opacity:0.98; }
-      75%{ transform:translate3d(8vw,-28vh,0) rotate(5deg) scale(1.08); opacity:0.9; }
-      100%{ transform:translate3d(30vw,-44vh,0) rotate(8deg) scale(1.1); opacity:0.0; }
+      0%   { transform: translateX(-50%) translateY(0)    scale(1); opacity:0.85; }
+      20%  { opacity:0.95; }
+      55%  { transform: translateX(-50%) translateY(-40vh) scale(1.04); opacity:0.92; }
+      85%  { transform: translateX(-50%) translateY(-92vh) scale(1.08); opacity:0.6; }
+      100% { transform: translateX(-50%) translateY(-130vh) scale(1.12); opacity:0; }
     }
 
-    /* UI */
-    .menu-toggle{ position:fixed; top:18px; left:16px; z-index:1001; background:transparent; color:var(--crimson);
-      border:2px solid rgba(255,68,68,0.12); padding:8px 10px; border-radius:6px; font-size:18px; cursor:pointer; }
-    .sidebar{ position:fixed; top:62px; left:16px; z-index:1000; display:flex; flex-direction:column; gap:10px;
-      transform:translateX(-8px) scale(.98); opacity:0; transition:transform .22s ease,opacity .22s ease; pointer-events:none; }
-    .sidebar.open{ transform:translateX(0) scale(1); opacity:1; pointer-events:auto; }
-    .sidebar a{ display:inline-block; text-decoration:none; color:var(--crimson); background:rgba(0,0,0,0.55);
-      border:1px solid rgba(255,68,68,0.18); padding:8px 12px; border-radius:6px; font-weight:700; box-shadow:0 2px 8px rgba(0,0,0,0.6); }
-    .sidebar a:hover{ background:var(--crimson); color:#fff; }
-
-    .center{ z-index:1005; text-align:center; padding:20px; width:100%; max-width:980px; box-sizing:border-box; position:relative; }
+    /* UI (make sure it's above smoke) */
+    .center{ z-index:200; text-align:center; padding:20px; width:100%; max-width:980px; box-sizing:border-box; position:relative; }
     .logo{ display:block; width:70%; max-width:320px; height:auto; margin:0 auto 22px; filter:drop-shadow(0 8px 22px rgba(255,0,0,0.12)); }
-    .button-group{ display:flex; flex-direction:column; gap:12px; align-items:center; justify-content:center; z-index:1006; }
-    .btn{ display:inline-block; padding:12px 22px; border-radius:8px; text-decoration:none; color:var(--crimson); background:rgba(0,0,0,0.6);
-      border:2px solid rgba(255,68,68,0.14); font-weight:700; min-width:200px; text-align:center; }
+    .button-group{ display:flex; flex-direction:column; gap:12px; align-items:center; justify-content:center; z-index:201; }
+    .btn{ display:inline-block; padding:12px 22px; border-radius:8px; text-decoration:none; color:var(--crimson); background:rgba(0,0,0,0.7); border:2px solid rgba(255,68,68,0.14); font-weight:700; min-width:200px; text-align:center; }
     .btn:hover{ background:var(--crimson); color:#111; }
 
+    /* menu/sidebar */
+    .menu-toggle{ position:fixed; top:18px; left:16px; z-index:210; background:transparent; color:var(--crimson); border:2px solid rgba(255,68,68,0.12); padding:8px 10px; border-radius:6px; font-size:18px; cursor:pointer; }
+    .sidebar{ position:fixed; top:62px; left:16px; z-index:210; display:flex; flex-direction:column; gap:10px; transform:translateX(-8px) scale(.98); opacity:0; transition:transform .22s ease,opacity .22s ease; pointer-events:none; }
+    .sidebar.open{ transform:translateX(0) scale(1); opacity:1; pointer-events:auto; }
+    .sidebar a{ display:inline-block; text-decoration:none; color:var(--crimson); background:rgba(0,0,0,0.6); padding:8px 12px; border-radius:6px; font-weight:700; border:1px solid rgba(255,68,68,0.18); box-shadow:0 2px 8px rgba(0,0,0,0.6); }
+    .sidebar a:hover{ background:var(--crimson); color:#fff; }
+
     @media(max-width:520px){
-      .s2, .s3{ display:none; }
-      .s1{ left:6%; top:72%; width:200%; opacity:0.95; filter:blur(10px); }
+      .s2,.s3{ display:none; }
+      .s1{ top:72vh; width:200%; height:120vh; opacity:0.85; filter:blur(10px); }
     }
 
     @media (prefers-reduced-motion: reduce){
-      .smoke-layer{ animation:none !important; }
+      .smoke-layer{ animation:none !important; opacity:0.6 !important; transform:none !important; }
     }
 
-    /* debug toggles */
+    /* debug helpers */
     .force-hide-smoke{ display:none !important; }
     .force-show-ui{ z-index:99999 !important; position:relative !important; }
   </style>
 </head>
 <body>
+  <!-- smoke layers (Smoke.png must be in same folder as this file) -->
   <div class="smoke-bg" aria-hidden="true">
     <div class="smoke-layer s1"></div>
     <div class="smoke-layer s2"></div>
@@ -127,17 +139,17 @@
         if(e.key==='s'||e.key==='S'){ smokeBg.classList.toggle('force-hide-smoke'); mainUI.classList.toggle('force-show-ui'); }
       });
 
-      // If image didn't load, force a strong tint so smoke area remains visible
+      // fallback: if Smoke.png didn't load, make area visible with tint
       document.querySelectorAll('.smoke-layer').forEach((el,i)=>{
         const bg = getComputedStyle(el).backgroundImage || '';
         if(!bg.includes('url(')){
           console.warn('Smoke not loaded on layer', i+1);
-          el.style.backgroundColor = 'rgba(80,60,60,0.95)';
-          el.style.opacity = '0.95';
+          el.style.backgroundColor = 'rgba(60,50,50,0.92)';
+          el.style.opacity = '0.85';
         }
       });
 
-      mainUI.style.zIndex = '1005';
+      mainUI.style.zIndex = '200';
     })();
   </script>
 </body>
