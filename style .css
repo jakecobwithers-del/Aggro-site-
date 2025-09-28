@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
 body {
   margin: 0;
   padding: 0;
@@ -21,6 +23,7 @@ body::before {
   z-index: 0;
 }
 
+/* Sidebar toggle button */
 .menu-toggle {
   position: fixed;
   top: 20px;
@@ -33,6 +36,7 @@ body::before {
   cursor: pointer;
 }
 
+/* Sidebar menu */
 .sidebar {
   position: fixed;
   top: 60px;
@@ -64,6 +68,7 @@ body::before {
   box-shadow: 0 0 10px crimson;
 }
 
+/* Main widget */
 .widget-container {
   text-align: center;
   z-index: 1;
@@ -103,6 +108,7 @@ body::before {
   box-shadow: 0 0 10px crimson;
 }
 
+/* Popup content */
 .popup {
   position: fixed;
   top: 140px;
