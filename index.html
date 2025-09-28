@@ -1,245 +1,278 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Aggro PvP — Smoke Overlay</title>
-  <style>
-    /* Minimal, focused styling */
-    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-    :root{ --crimson:#ff4444; --bg:#050203; --ui:#e8e8e8; }
-    html,body{height:100%;margin:0;background:var(--bg);font-family:'Share Tech Mono',monospace;color:var(--ui);-webkit-font-smoothing:antialiased}
-    body{display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;overflow:hidden}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Aggro PvP — Landing</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+  :root{
+    --crimson:#ff3b3b;
+    --bg-1:#060203;
+    --bg-2:#120306;
+    --ui:#e9e9e9;
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 100%);font-family:'Share Tech Mono',monospace;color:var(--ui);-webkit-font-smoothing:antialiased}
+  body{display:flex;align-items:center;justify-content:center;padding:28px;box-sizing:border-box;overflow:hidden}
 
-    /* Frame and content */
-    .frame{position:relative;width:100%;max-width:980px;min-height:640px;border-radius:12px;overflow:hidden;
-           background:linear-gradient(180deg,#080202 0%, #120000 100%);box-shadow:0 20px 60px rgba(0,0,0,0.7)}
-    .inner{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;padding:56px 28px}
-    .logo{width:68%;max-width:320px;margin-bottom:22px;display:block}
-    .btn-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-    .btn{background:rgba(0,0,0,0.55);color:var(--crimson);padding:10px 16px;border-radius:8px;text-decoration:none;border:1px solid rgba(255,68,68,0.12);font-weight:700}
-    .btn:hover{background:var(--crimson);color:#111}
+  .stage{
+    position:relative;
+    width:100%;
+    max-width:1080px;
+    min-height:640px;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 30px 90px rgba(0,0,0,0.7);
+    background:
+      radial-gradient(600px 300px at 30% 20%, rgba(255,40,40,0.06), transparent 20%),
+      linear-gradient(180deg, rgba(10,2,2,0.6), rgba(10,2,8,0.2));
+  }
 
-    /* Canvas overlay sits above visuals but doesn't block interactions */
-    #smokeCanvas{
-      position:absolute;
-      inset:0;
-      z-index:9999;
-      pointer-events:none;
-      display:block;
-      width:100%;
-      height:100%;
-    }
+  /* Canvas overlay: topmost visual, pointer-events:none so UI remains clickable */
+  #smokeCanvas{
+    position:absolute;inset:0;z-index:40;pointer-events:none;width:100%;height:100%;display:block;
+    mix-blend-mode:screen;
+  }
 
-    @media (max-width:760px){
-      .frame{min-height:520px}
-      .logo{width:80%}
-    }
-  </style>
+  .center{
+    position:relative;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:64px 40px;min-height:640px;box-sizing:border-box;text-align:center;
+    background:linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.08));
+  }
+
+  .logo-safety{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:55;
+    width:86%;max-width:500px;height:220px;border-radius:18px;pointer-events:none;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.12) 45%, rgba(0,0,0,0) 70%);
+    filter: blur(6px);
+  }
+
+  .logo-wrap{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    max-width:520px;
+    margin:0 auto 22px;
+    padding:18px;
+    border-radius:10px;
+    background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.45));
+    box-shadow:0 6px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    backdrop-filter: blur(2px);
+  }
+  .logo{
+    display:block;
+    width:86%;
+    max-width:420px;
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,0.65));
+  }
+
+  .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 18px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);
+    color:var(--crimson);text-decoration:none;font-weight:800;letter-spacing:0.6px;
+    transition:transform .16s, box-shadow .16s, background .16s;
+  }
+  .btn:hover{ transform:translateY(-3px); box-shadow:0 8px 30px rgba(0,0,0,0.5); background:rgba(255,59,59,0.06);}
+  .btn.secondary{ color:#fff; border-color: rgba(255,255,255,0.06); }
+
+  .vignette{
+    pointer-events:none;
+    position:absolute;inset:0;z-index:80;
+    background:radial-gradient(1200px 600px at 50% 40%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0.6) 100%);
+    mix-blend-mode:multiply;
+  }
+
+  @media (max-width:760px){
+    .center{padding:40px 20px;min-height:520px}
+    .logo-wrap{padding:12px}
+    .logo{width:92%}
+  }
+</style>
 </head>
 <body>
-  <div class="frame" id="frame">
+  <div class="stage" id="stage">
     <canvas id="smokeCanvas" aria-hidden="true"></canvas>
 
-    <div class="inner" id="content">
-      <!-- Make sure Aggro-logo.PNG exists in the repo root -->
-      <img src="Aggro-logo.PNG" alt="Aggro PvP Logo" class="logo" />
-      <div class="btn-row">
+    <div class="center" id="content">
+      <div class="logo-safety" aria-hidden="true"></div>
+      <div class="logo-wrap">
+        <!-- Ensure Aggro-logo.PNG exists in repo root (case-sensitive) -->
+        <img src="Aggro-logo.PNG" alt="Aggro PvP" class="logo" />
+      </div>
+
+      <div class="actions">
         <a class="btn" href="steam://connect/193.193.80.64:3436">🎮 Connect to Server</a>
-        <a class="btn" href="https://discord.gg/gSwkVzJyMT" target="_blank" rel="noopener">💬 Join Discord</a>
+        <a class="btn secondary" href="https://discord.gg/gSwkVzJyMT" target="_blank" rel="noopener">💬 Join Discord</a>
       </div>
     </div>
+
+    <div class="vignette" aria-hidden="true"></div>
   </div>
 
-  <script>
-    /*
-      Persistent smoke overlay (single-file)
-      Requirements:
-        - Place Smoke.png and Aggro-logo.PNG in the same folder as this index.html (case-sensitive).
-        - Works on GitHub Pages when files are published from the branch/folder you are using.
-      Behavior:
-        - Draws multiple slow smoke layers, cached offscreen for performance.
-        - Canvas has pointer-events:none so UI remains clickable.
-        - Smoke is persistent and slow (won't scroll away).
-    */
+<script>
+/*
+  Cinematic, persistent smoke overlay (single-file)
+  - Put Smoke.png and Aggro-logo.PNG in the same folder as this index.html.
+  - Filenames on GitHub Pages are case-sensitive.
+  - If Smoke.png fails, a procedural fallback will draw soft smoke tiles.
+*/
 
-    (function(){
-      const SMOKE_SRC = 'Smoke.png'; // must match filename exactly on GitHub Pages
-      const canvas = document.getElementById('smokeCanvas');
-      if(!canvas){ console.error('No canvas found'); return; }
-      const ctx = canvas.getContext('2d', { alpha: true });
+(function(){
+  const SMOKE_SRC = 'Smoke.png';
+  const canvas = document.getElementById('smokeCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d', { alpha: true });
 
-      // Tuned layers: very slow vertical speed and visible alpha
-      const layers = [
-        { offset:0, speed:0.004, scale:1.05, alpha:0.95, horizSpeed:1.1, turb:8 },
-        { offset:0, speed:0.0025, scale:1.35, alpha:0.88, horizSpeed:-0.9, turb:14 },
-        { offset:0, speed:0.0015, scale:1.7, alpha:0.82, horizSpeed:0.8, turb:22 }
-      ];
+  const layers = [
+    { offset:0, speed:0.0035, scale:1.04, alpha:0.92, horizSpeed:0.9, turb:8 },
+    { offset:0, speed:0.0022, scale:1.36, alpha:0.86, horizSpeed:-0.7, turb:14 },
+    { offset:0, speed:0.0014, scale:1.75, alpha:0.78, horizSpeed:0.6, turb:22 }
+  ];
 
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.src = SMOKE_SRC;
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.src = SMOKE_SRC;
 
-      let cache = [];
-      let last = 0, tAccum = 0, playing = true;
+  let cache = [];
+  let last = 0, tAccum = 0, playing = true;
 
-      // DPR selection (clamped for mobile)
-      function getDPR(){
-        const w = window.innerWidth;
-        const mobile = w < 800;
-        return mobile ? Math.min(1.5, window.devicePixelRatio || 1) : Math.min(2, window.devicePixelRatio || 1);
+  function pickDPR(){
+    const w = window.innerWidth;
+    const mobile = w < 800;
+    return mobile ? Math.min(1.4, window.devicePixelRatio || 1) : Math.min(2, window.devicePixelRatio || 1);
+  }
+
+  function resize(){
+    const dpr = pickDPR();
+    const cssW = Math.max(320, canvas.clientWidth || canvas.parentNode.clientWidth || window.innerWidth);
+    const cssH = Math.max(200, canvas.clientHeight || canvas.parentNode.clientHeight || window.innerHeight);
+    canvas.width = Math.floor(cssW * dpr);
+    canvas.height = Math.floor(cssH * dpr);
+    canvas.style.width = cssW + 'px';
+    canvas.style.height = cssH + 'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function noise(seed){ return (Math.sin(seed * 127.1) * 43758.5453123) % 1; }
+
+  function createCaches(){
+    cache = [];
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    layers.forEach((L,i)=>{
+      const w = Math.max(64, Math.ceil((img.naturalWidth || 360) * L.scale));
+      const h = Math.max(64, Math.ceil((img.naturalHeight || 200) * L.scale));
+      const c = document.createElement('canvas');
+      c.width = w * dpr;
+      c.height = h * dpr;
+      const cc = c.getContext('2d');
+      cc.setTransform(dpr,0,0,dpr,0,0);
+      if(img.naturalWidth){
+        cc.clearRect(0,0,w,h);
+        cc.drawImage(img,0,0,w,h);
+        cc.globalCompositeOperation = 'lighter';
+        cc.fillStyle = i===0 ? 'rgba(120,20,20,0.02)' : i===1 ? 'rgba(30,50,120,0.02)' : 'rgba(0,0,0,0.02)';
+        cc.fillRect(0,0,w,h);
+        cc.globalCompositeOperation = 'source-over';
+      } else {
+        const g = cc.createLinearGradient(0,0,w,h);
+        g.addColorStop(0,'rgba(255,255,255,0.06)');
+        g.addColorStop(1,'rgba(0,0,0,0)');
+        cc.fillStyle = g; cc.fillRect(0,0,w,h);
       }
+      cache[i] = c;
+      L.offset = (i * (h/2)) % h;
+    });
+  }
 
-      // Resize canvas and set transform
-      function resize(){
-        const dpr = getDPR();
-        const w = Math.max(320, canvas.clientWidth || window.innerWidth);
-        const h = Math.max(200, canvas.clientHeight || window.innerHeight);
-        canvas.width = Math.floor(w * dpr);
-        canvas.height = Math.floor(h * dpr);
-        canvas.style.width = w + 'px';
-        canvas.style.height = h + 'px';
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  img.onload = () => { createCaches(); console.info('Smoke loaded'); };
+  img.onerror = () => { createCaches(); console.warn('Smoke failed to load — using fallback'); };
+
+  function drawLayer(L, dt, tAccum, cacheCanvas){
+    if(!cacheCanvas){
+      const tmp = document.createElement('canvas'); tmp.width=240; tmp.height=160;
+      const tc = tmp.getContext('2d'); tc.fillStyle='rgba(255,255,255,0.06)'; tc.fillRect(0,0,tmp.width,tmp.height);
+      cacheCanvas = tmp;
+    }
+
+    const localDPR = Math.max(1, window.devicePixelRatio || 1);
+    const baseW = cacheCanvas.width / localDPR;
+    const baseH = cacheCanvas.height / localDPR;
+    const layerW = baseW;
+    const layerH = baseH;
+
+    const vpx = L.speed * (canvas.height / localDPR);
+    L.offset = (L.offset - vpx * (dt/1000));
+    if(L.offset < -layerH*8) L.offset = L.offset % layerH;
+
+    const baseX = Math.sin((tAccum/1000) * (L.horizSpeed/3)) * (L.horizSpeed * 6);
+    const turb = (noise(tAccum * 0.001 + L.scale) - 0.5) * L.turb;
+    const drawX = (canvas.width / localDPR / 2) - (layerW / 2) + baseX + turb;
+
+    ctx.globalAlpha = L.alpha;
+    ctx.globalCompositeOperation = 'screen';
+    const startY = -layerH + (L.offset % layerH);
+    for(let y = startY; y < (canvas.height / localDPR) + layerH; y += layerH){
+      ctx.drawImage(cacheCanvas, drawX, y, layerW, layerH);
+    }
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  function bloom(){
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.05;
+    const w = canvas.width / Math.max(1, window.devicePixelRatio || 1);
+    const h = canvas.height / Math.max(1, window.devicePixelRatio || 1);
+    const g = ctx.createLinearGradient(0,0,0,h);
+    g.addColorStop(0, 'rgba(220,40,60,0.06)');
+    g.addColorStop(0.5, 'rgba(0,0,0,0)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,w,h);
+    ctx.restore();
+  }
+
+  function clear(){
+    const w = canvas.width / Math.max(1, window.devicePixelRatio || 1);
+    const h = canvas.height / Math.max(1, window.devicePixelRatio || 1);
+    ctx.clearRect(0,0,w,h);
+  }
+
+  function animate(now){
+    if(!last) last = now;
+    const dt = Math.min(40, now - last);
+    last = now;
+    tAccum += dt;
+
+    resize();
+    clear();
+
+    if(playing){
+      for(let i=layers.length-1;i>=0;i--){
+        drawLayer(layers[i], dt, tAccum, cache[i]);
       }
-      window.addEventListener('resize', resize);
-      resize();
+      bloom();
+    }
 
-      // Simple deterministic noise
-      function noise(seed){ return (Math.sin(seed * 127.1) * 43758.5453123) % 1; }
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
 
-      // Create offscreen caches per layer (scaled)
-      function createCaches(){
-        cache = [];
-        const dpr = Math.max(1, window.devicePixelRatio || 1);
-        layers.forEach((L,i) => {
-          const baseW = Math.max(64, Math.ceil((img.naturalWidth || 300) * L.scale));
-          const baseH = Math.max(48, Math.ceil((img.naturalHeight || 220) * L.scale));
-          const c = document.createElement('canvas');
-          c.width = baseW * dpr;
-          c.height = baseH * dpr;
-          const cc = c.getContext('2d');
-          cc.setTransform(dpr,0,0,dpr,0,0);
-          if(img.naturalWidth) cc.drawImage(img, 0, 0, baseW, baseH);
-          else {
-            // simple procedural fallback visual in cache
-            const g = cc.createLinearGradient(0,0,baseW,baseH);
-            g.addColorStop(0,'rgba(255,255,255,0.06)');
-            g.addColorStop(1,'rgba(0,0,0,0)');
-            cc.fillStyle = g;
-            cc.fillRect(0,0,baseW,baseH);
-          }
-          cache[i] = c;
-          L.offset = (i * (baseH / 2)) % baseH;
-        });
-      }
+  canvas.style.display = 'block';
+  canvas.style.pointerEvents = 'none';
 
-      img.onload = () => {
-        createCaches();
-        console.info('Smoke image loaded:', SMOKE_SRC);
-      };
-      img.onerror = () => {
-        createCaches();
-        console.warn('Smoke image failed to load, using procedural tiles:', SMOKE_SRC);
-      };
-
-      // Draw fallback tile if needed (not usually used if image loads)
-      function drawFallbackTile(cc, x, y, w, h, alpha){
-        const g = cc.createRadialGradient(x + w*0.5, y + h*0.25, Math.min(w,h)*0.06, x + w*0.5, y + h*0.6, Math.max(w,h)*0.6);
-        g.addColorStop(0, `rgba(255,255,255,${0.12*alpha})`);
-        g.addColorStop(0.25, `rgba(240,240,240,${0.08*alpha})`);
-        g.addColorStop(0.6, `rgba(120,100,100,${0.06*alpha})`);
-        g.addColorStop(1, `rgba(40,30,30,0)`);
-        cc.fillStyle = g;
-        cc.fillRect(x - w*0.05, y - h*0.05, w*1.1, h*1.1);
-      }
-
-      // Draw one tiled layer using its cache
-      function drawLayer(L, dt, tAccum, cacheCanvas){
-        if(!cacheCanvas){
-          // create small procedural canvas if cache missing
-          const tmp = document.createElement('canvas'); tmp.width = 300; tmp.height = 180;
-          const tc = tmp.getContext('2d'); drawFallbackTile(tc, 0,0,tmp.width,tmp.height,L.alpha);
-          cacheCanvas = tmp;
-        }
-
-        const localDPR = Math.max(1, window.devicePixelRatio || 1);
-        const baseW = cacheCanvas.width / localDPR;
-        const baseH = cacheCanvas.height / localDPR;
-        const layerW = baseW;
-        const layerH = baseH;
-
-        // vertical movement (very slow)
-        const vpx = L.speed * (canvas.height / localDPR);
-        L.offset = (L.offset - vpx * (dt/1000));
-        if(L.offset < -layerH*8) L.offset = L.offset % layerH;
-
-        // horizontal drift + turbulence
-        const baseX = Math.sin((tAccum / 1000) * (L.horizSpeed / 3)) * (L.horizSpeed * 6);
-        const turb = (noise(tAccum * 0.001 + L.scale) - 0.5) * L.turb;
-        const drawX = (canvas.width / localDPR / 2) - (layerW / 2) + baseX + turb;
-
-        ctx.globalAlpha = L.alpha;
-        ctx.globalCompositeOperation = 'screen';
-        const startY = -layerH + (L.offset % layerH);
-        for(let y = startY; y < (canvas.height / localDPR) + layerH; y += layerH){
-          ctx.drawImage(cacheCanvas, drawX, y, layerW, layerH);
-        }
-        ctx.globalAlpha = 1;
-        ctx.globalCompositeOperation = 'source-over';
-      }
-
-      // subtle bloom/tint
-      function bloom(){
-        ctx.save();
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.globalAlpha = 0.055;
-        ctx.fillStyle = 'rgba(220,40,60,1)';
-        ctx.fillRect(0,0, canvas.width / Math.max(1, window.devicePixelRatio || 1), canvas.height / Math.max(1, window.devicePixelRatio || 1));
-        ctx.restore();
-      }
-
-      function clear(){
-        const w = canvas.width / Math.max(1, window.devicePixelRatio || 1);
-        const h = canvas.height / Math.max(1, window.devicePixelRatio || 1);
-        ctx.clearRect(0,0,w,h);
-      }
-
-      // Animation loop
-      function animate(now){
-        if(!last) last = now;
-        const dt = Math.min(40, now - last);
-        last = now;
-        tAccum += dt;
-
-        resize();
-        clear();
-
-        if(playing){
-          for(let i = layers.length - 1; i >= 0; i--){
-            drawLayer(layers[i], dt, tAccum, cache[i]);
-          }
-          bloom();
-        }
-
-        requestAnimationFrame(animate);
-      }
-      requestAnimationFrame(animate);
-
-      // Always show canvas
-      canvas.style.display = 'block';
-
-      // Optional debug helpers in console
-      window.__AggroSmoke = {
-        show(){ playing = true; canvas.style.display='block'; },
-        hide(){ playing = false; canvas.style.display='none'; },
-        diagnostics(){
-          fetch(SMOKE_SRC).then(r=>console.log('fetch',SMOKE_SRC,'status',r.status)).catch(e=>console.warn('fetch err',e.message));
-          console.log('img natural', img.naturalWidth, 'x', img.naturalHeight, 'cacheSlots', cache.length);
-          console.log('canvas', canvas.width, 'x', canvas.height, 'display', getComputedStyle(canvas).display);
-          console.log('layers', layers);
-        }
-      };
-    })();
-  </script>
+  window.__AggroSmoke = {
+    d(){ fetch(SMOKE_SRC).then(r=>console.log('FETCH',r.status)).catch(e=>console.warn(e)); console.log('img',img.naturalWidth+'x'+img.naturalHeight); console.log('canvas',canvas.width+'x'+canvas.height); console.log('layers',layers); },
+    hide(){ playing=false; canvas.style.display='none'; },
+    show(){ playing=true; canvas.style.display='block'; }
+  };
+})();
+</script>
 </body>
 </html>
