@@ -3,182 +3,201 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — Animated Smoke Background</title>
+<title>Aggro PvP — Cinematic Smoke Over Logo</title>
 <style>
-  /* Font + base */
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
   :root{
     --crimson:#ff3b3b;
-    --bg-1:#040203;
-    --bg-2:#120306;
+    --bg-dark:#050203;
     --ui:#eaeaea;
   }
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));font-family:'Share Tech Mono',monospace;color:var(--ui);-webkit-font-smoothing:antialiased}
-  body{display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;overflow:hidden}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-dark),#180205);font-family:'Share Tech Mono',monospace;color:var(--ui);-webkit-font-smoothing:antialiased}
+  body{display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;overflow:hidden}
 
   /* Stage */
-  .stage{position:relative;width:100%;max-width:1080px;min-height:640px;border-radius:12px;overflow:hidden;
-         box-shadow:0 30px 90px rgba(0,0,0,0.72);
+  .stage{position:relative;width:100%;max-width:1100px;min-height:640px;border-radius:20px;overflow:hidden;
          background:
            radial-gradient(800px 360px at 30% 18%, rgba(255,40,40,0.04), transparent 18%),
-           linear-gradient(180deg, rgba(8,2,2,0.62), rgba(14,4,8,0.18));
+           linear-gradient(180deg, rgba(6,2,2,0.6), rgba(10,3,8,0.18));
+         box-shadow:0 40px 120px rgba(0,0,0,0.75);
   }
 
-  /* Animated smoke layers: full-bleed, pointer-events:none so UI clickable */
+  /* Logo container (logo sits under smoke) */
+  .content {
+    position:relative; z-index:10; display:flex; align-items:center; justify-content:center; flex-direction:column;
+    min-height:640px; padding:56px 36px; text-align:center;
+  }
+
+  /* Logo styling: under the smoke but kept readable by halo */
+  .logo{
+    width:78%; max-width:520px; display:block; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.7));
+    position:relative; z-index:2; margin-bottom:16px;
+  }
+
+  /* Subtle light halo behind logo keeps it readable under smoke */
+  .logo-halo{
+    position:absolute; left:50%; top:38%; transform:translate(-50%,-50%); z-index:1;
+    width:86%; max-width:700px; height:240px; border-radius:40%;
+    pointer-events:none; mix-blend-mode:screen; filter: blur(28px);
+    background: radial-gradient(ellipse at center, rgba(255,120,120,0.12), rgba(180,50,50,0.06) 35%, rgba(0,0,0,0) 70%);
+  }
+
+  /* Smoke layers stacked above logo (z-index higher) */
   .smoke {
-    position:absolute; inset:0; z-index:30; pointer-events:none; overflow:hidden;
-    /* fallback color if image missing */
-    background: transparent;
+    position:absolute; inset:0; z-index:20; pointer-events:none; overflow:hidden;
   }
-
-  /* three layered pseudo-elements using the Smoke.png tiled */
-  .smoke::before,
-  .smoke::after,
-  .smoke > i {
-    content: "";
-    position:absolute;
-    top:-20%; left:-20%;
-    width:140%; height:140%;
+  .smoke-layer{
+    position:absolute; inset:-20% -25% -35% -25%; /* extend out so edges are soft */
     background-image: url('Smoke.png');
     background-repeat: repeat;
-    background-size: contain;
-    opacity: 0.9;
-    mix-blend-mode: screen;
-    filter: blur(6px) saturate(1.05);
-    transform-origin: center;
-    will-change: transform, opacity, filter;
-  }
-
-  /* central layer (element) — slightly slower */
-  .smoke > i {
-    z-index:32;
-    opacity:0.88;
     background-position: center top;
-    background-size: 60%;
-    animation: floatSlow 28s linear infinite;
-    transform: translate3d(0,0,0) scale(1.05);
+    will-change: transform, opacity, filter;
+    mix-blend-mode: screen;
   }
+  /* Layer sizing and softness */
+  .smoke-base  { background-size:220% 220%; opacity:0.95; filter: blur(10px) saturate(1.02); }
+  .smoke-mid   { background-size:150% 150%; opacity:0.88; filter: blur(14px) saturate(1.04); }
+  .smoke-top   { background-size:90% 90%;   opacity:0.72; filter: blur(24px) saturate(1.08) contrast(1.02); }
 
-  /* topmost pseudo-element: thin wisps, faster */
-  .smoke::before {
-    z-index:34;
-    opacity:0.65;
-    background-position: left center;
-    background-size: 40%;
-    animation: floatFast 18s linear infinite, sway 9s ease-in-out infinite;
-    filter: blur(8px) saturate(1.1) contrast(1.05);
-  }
+  /* Gentle motion keyframes */
+  @keyframes riseSlow   { 0%{transform:translate3d(0,0,0) scale(1.02)} 50%{transform:translate3d(-2%,-6%,0) scale(1.04)} 100%{transform:translate3d(0,0,0) scale(1.02)} }
+  @keyframes riseMed    { 0%{transform:translate3d(0,0,0) scale(1)} 50%{transform:translate3d(2%,-8%,0) scale(1.02)} 100%{transform:translate3d(0,0,0) scale(1)} }
+  @keyframes riseFast   { 0%{transform:translate3d(0,0,0) scale(0.98)} 50%{transform:translate3d(-3%,-11%,0) scale(1)} 100%{transform:translate3d(0,0,0) scale(0.98)} }
 
-  /* bottom pseudo-element: deep base, largest scale */
-  .smoke::after {
-    z-index:31;
-    opacity:0.80;
-    background-position: right bottom;
-    background-size: 90%;
-    animation: floatVerySlow 40s linear infinite, slowTwist 22s linear infinite;
-    filter: blur(4px) saturate(0.95);
-  }
+  .smoke-base { animation: riseSlow 36s linear infinite; }
+  .smoke-mid  { animation: riseMed 26s linear infinite;  }
+  .smoke-top  { animation: riseFast 16s linear infinite;  }
 
-  /* keyframes for vertical float and subtle horizontal sway/scale */
-  @keyframes floatSlow {
-    0%   { transform: translate3d(0, 0%, 0) scale(1.03) rotate(0.05deg); }
-    50%  { transform: translate3d(-2%, -6%, 0) scale(1.06) rotate(-0.12deg); }
-    100% { transform: translate3d(0, 0%, 0) scale(1.03) rotate(0.05deg); }
-  }
-  @keyframes floatFast {
-    0%   { transform: translate3d(0, 0%, 0) scale(1.00) rotate(0deg); }
-    50%  { transform: translate3d(3%, -10%, 0) scale(1.02) rotate(0.12deg); }
-    100% { transform: translate3d(0, 0%, 0) scale(1.00) rotate(0deg); }
-  }
-  @keyframes floatVerySlow {
-    0%   { transform: translate3d(0, 0%, 0) scale(1.08) rotate(-0.08deg); }
-    50%  { transform: translate3d(-1.8%, -4.5%, 0) scale(1.10) rotate(0.18deg); }
-    100% { transform: translate3d(0, 0%, 0) scale(1.08) rotate(-0.08deg); }
-  }
-  @keyframes sway {
-    0% { transform: translateX(0) }
-    50% { transform: translateX(3%) }
-    100% { transform: translateX(0) }
-  }
-  @keyframes slowTwist {
-    0% { transform: rotate(-0.25deg) }
-    50% { transform: rotate(0.25deg) }
-    100% { transform: rotate(-0.25deg) }
-  }
+  /* Controls & menu (kept simple) */
+  .menuBtn{position:absolute;left:14px;top:14px;z-index:30;padding:8px 10px;border-radius:8px;background:rgba(0,0,0,0.5);color:var(--crimson);border:1px solid rgba(255,255,255,0.04);cursor:pointer}
+  .menu{position:absolute;left:14px;top:52px;z-index:30;display:none;background:rgba(6,6,6,0.94);padding:8px;border-radius:8px}
+  .menu.open{display:block}
+  .menu a{display:block;color:#fff;padding:8px 10px;text-decoration:none;border-radius:6px;font-weight:700;margin:4px 0}
 
-  /* content above smoke */
-  .center{position:relative;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:64px 40px;min-height:640px;text-align:center}
-  .logo-safety{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);z-index:52;width:86%;max-width:520px;height:220px;border-radius:20px;pointer-events:none;background:radial-gradient(ellipse at center, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.12) 42%, rgba(0,0,0,0) 70%);filter:blur(6px)}
-  .logo-wrap{position:relative;display:flex;align-items:center;justify-content:center;width:100%;max-width:520px;margin:0 auto 22px;padding:16px;border-radius:12px;background:linear-gradient(180deg, rgba(0,0,0,0.32), rgba(0,0,0,0.44));box-shadow:0 6px 30px rgba(0,0,0,0.6)}
-  .logo{display:block;width:86%;max-width:420px;filter:drop-shadow(0 10px 26px rgba(0,0,0,0.7))}
+  /* Soft vignette to frame composition */
+  .vignette{position:absolute;inset:0;z-index:40;pointer-events:none;background:radial-gradient(1200px 600px at 50% 36%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.22) 50%, rgba(0,0,0,0.6) 100%);mix-blend-mode:multiply}
 
-  .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--crimson);text-decoration:none;font-weight:800}
-  .btn.secondary{color:#fff}
-  .btn:hover{transform:translateY(-3px);box-shadow:0 10px 40px rgba(0,0,0,0.5);background:rgba(255,59,59,0.06)}
-
-  .vignette{pointer-events:none;position:absolute;inset:0;z-index:60;background:radial-gradient(1200px 600px at 50% 36%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.26) 52%, rgba(0,0,0,0.62) 100%);mix-blend-mode:multiply}
-  @media(max-width:760px){ .center{padding:34px 18px;min-height:520px} .logo{width:92%} }
+  @media(max-width:760px){
+    .logo{width:86%}
+    .logo-halo{height:200px}
+  }
 </style>
 </head>
 <body>
   <div class="stage">
-    <!-- Animated smoke layers using CSS. Ensure Smoke.png is at same path. -->
+    <div class="content">
+      <div class="logo-halo" aria-hidden="true"></div>
+      <img src="Aggro-logo.PNG" alt="Aggro PvP" class="logo" />
+      <div class="actions" style="margin-top:12px;z-index:11">
+        <a class="btn" href="steam://connect/193.193.80.64:3436" style="text-decoration:none;color:var(--crimson);font-weight:800">🎮 Connect to Server</a>
+        <a class="btn" href="https://discord.gg/gSwkVzJyMT" style="text-decoration:none;color:#fff;font-weight:800;margin-left:12px">💬 Join Discord</a>
+      </div>
+    </div>
+
+    <!-- smoke sits visually above the logo -->
     <div class="smoke" aria-hidden="true">
-      <i aria-hidden="true"></i>
+      <div class="smoke-layer smoke-base"></div>
+      <div class="smoke-layer smoke-mid"></div>
+      <div class="smoke-layer smoke-top"></div>
     </div>
 
-    <div class="center">
-      <div class="logo-safety" aria-hidden="true"></div>
-      <div class="logo-wrap">
-        <img src="Aggro-logo.PNG" alt="Aggro PvP" class="logo" />
-      </div>
-
-      <div class="actions">
-        <a class="btn" href="steam://connect/193.193.80.64:3436">🎮 Connect to Server</a>
-        <a class="btn secondary" href="https://discord.gg/gSwkVzJyMT" target="_blank" rel="noopener">💬 Join Discord</a>
-      </div>
-    </div>
+    <button class="menuBtn" id="menuBtn">☰</button>
+    <nav class="menu" id="menu" aria-hidden="true">
+      <a href="mods.html">Mods</a>
+      <a href="rules.html">Rules</a>
+      <a href="killfeed.html">Killfeed</a>
+      <a href="leaderboard.html">Leaderboard</a>
+    </nav>
 
     <div class="vignette" aria-hidden="true"></div>
   </div>
 
 <script>
-/* Small JS to ensure the CSS approach degrades gracefully on older browsers:
-   - Detects if Smoke.png loads; if not, inserts a procedural canvas smoke behind the UI.
+/* JS:
+ - ensures smoke background images are explicitly set (helps static hosts)
+ - adds tiny animation nudge for mobile browsers that may drop CSS motion
+ - toggles menu
+ - falls back to a canvas animated smoke if Smoke.png fails to load
 */
 (function(){
-  const smokeEl = document.querySelector('.smoke');
-  const testImg = new Image();
-  testImg.src = 'Smoke.png';
-  testImg.onload = ()=> { /* image available: CSS will use it */ console.info('Smoke.png loaded'); };
-  testImg.onerror = ()=> {
-    console.warn('Smoke.png not found; applying JS fallback canvas smoke');
-    // fallback: replace .smoke content with an animated canvas that tiles procedural smoke
-    const canvas = document.createElement('canvas');
-    canvas.style.position = 'absolute';
-    canvas.style.inset = '0';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.style.pointerEvents = 'none';
-    smokeEl.innerHTML = '';
-    smokeEl.appendChild(canvas);
+  const smokeBase = document.querySelector('.smoke-base');
+  const smokeMid  = document.querySelector('.smoke-mid');
+  const smokeTop  = document.querySelector('.smoke-top');
+  const menuBtn = document.getElementById('menuBtn');
+  const menu = document.getElementById('menu');
+  const SMOKE = 'Smoke.png';
 
+  // apply explicit background urls (avoid some browsers ignoring CSS url on older hosts)
+  [smokeBase, smokeMid, smokeTop].forEach(el => {
+    el.style.backgroundImage = `url("${SMOKE}")`;
+  });
+
+  // menu toggle
+  menuBtn.addEventListener('click', ()=> {
+    const open = menu.classList.toggle('open');
+    menu.setAttribute('aria-hidden', (!open).toString());
+  });
+  document.addEventListener('click', (e)=> {
+    if(!e.target.closest('.menuBtn') && !e.target.closest('.menu')) {
+      menu.classList.remove('open');
+      menu.setAttribute('aria-hidden','true');
+    }
+  });
+
+  // test smoke image; if it fails, use canvas fallback
+  const test = new Image();
+  test.src = SMOKE;
+  test.onload = ()=> { /* good */ console.info('Smoke asset loaded'); };
+  test.onerror = ()=> {
+    console.warn('Smoke.png failed to load — using canvas fallback');
+    useCanvasFallback();
+  };
+
+  // small JS nudge to keep motion on mobile (complements CSS)
+  let t=0, last = performance.now();
+  function nudge(now){
+    const dt = Math.min(40, now - last);
+    last = now; t += dt*0.001;
+    const s1 = `translate3d(${Math.sin(t*0.12)*1.8}%, ${-Math.abs(Math.sin(t*0.07))*6}%, 0) scale(1.01)`;
+    const s2 = `translate3d(${Math.sin(t*0.16)*2.6}%, ${-Math.abs(Math.sin(t*0.09))*9}%, 0) scale(1.005)`;
+    const s3 = `translate3d(${Math.sin(t*0.24)*3.8}%, ${-Math.abs(Math.sin(t*0.14))*12}%, 0) scale(1)`;
+    smokeBase.style.transform = s1;
+    smokeMid.style.transform  = s2;
+    smokeTop.style.transform  = s3;
+    smokeBase.style.opacity = (0.92 + 0.04*Math.sin(t*0.06)).toFixed(3);
+    smokeMid.style.opacity  = (0.86 + 0.05*Math.sin(t*0.08)).toFixed(3);
+    smokeTop.style.opacity  = (0.72 + 0.06*Math.sin(t*0.11)).toFixed(3);
+    requestAnimationFrame(nudge);
+  }
+  requestAnimationFrame(nudge);
+
+  // Canvas fallback when Smoke.png missing
+  function useCanvasFallback(){
+    [smokeBase, smokeMid, smokeTop].forEach(el=>{
+      el.style.backgroundImage = 'none';
+      el.innerHTML = '';
+      const c = document.createElement('canvas');
+      c.style.position='absolute'; c.style.inset='0'; c.style.width='100%'; c.style.height='100%'; c.style.pointerEvents='none';
+      el.appendChild(c);
+      animateCanvas(c);
+    });
+  }
+
+  function animateCanvas(canvas){
     const ctx = canvas.getContext('2d');
     function resize(){ canvas.width = canvas.clientWidth * (devicePixelRatio||1); canvas.height = canvas.clientHeight * (devicePixelRatio||1); ctx.setTransform(devicePixelRatio||1,0,0,devicePixelRatio||1,0,0); }
-    window.addEventListener('resize', resize); resize();
-
-    // simple animated noise blobs as fallback
-    let last=0, t=0;
+    resize(); window.addEventListener('resize', resize);
+    let last=0, tt=0;
     function draw(now){
       if(!last) last = now;
-      const dt = Math.min(40, now-last); last = now; t += dt/1000;
+      const dt = Math.min(40, now-last); last = now; tt += dt*0.001;
       ctx.clearRect(0,0,canvas.width/(devicePixelRatio||1), canvas.height/(devicePixelRatio||1));
       const w = canvas.width/(devicePixelRatio||1), h = canvas.height/(devicePixelRatio||1);
-      for(let i=0;i<6;i++){
-        const x = w*(0.2 + 0.6*Math.sin(t*0.2 + i)), y = h*(0.1 + 0.8*(i/6));
-        const r = Math.min(w,h)*(0.25 + 0.12*Math.cos(t*0.13 + i));
-        const g = ctx.createRadialGradient(x,y,r*0.1,x,y,r);
+      for(let i=0;i<5;i++){
+        const x = w*(0.25 + 0.6*Math.sin(tt*0.12 + i*0.7));
+        const y = h*(0.12 + 0.7*(i/5) + Math.cos(tt*0.11 + i*0.5)*0.02);
+        const r = Math.min(w,h)*(0.22 + i*0.06 + Math.abs(Math.sin(tt*0.18+i))*0.02);
+        const g = ctx.createRadialGradient(x,y,r*0.12,x,y,r);
         g.addColorStop(0, 'rgba(255,255,255,0.08)');
         g.addColorStop(0.6, 'rgba(255,200,200,0.02)');
         g.addColorStop(1, 'rgba(0,0,0,0)');
@@ -190,6 +209,11 @@
       requestAnimationFrame(draw);
     }
     requestAnimationFrame(draw);
+  }
+
+  // quick diagnostic in console
+  window.__AggroSmoke = {
+    info(){ console.log('Smoke background:', smokeBase.style.backgroundImage, smokeMid.style.backgroundImage, smokeTop.style.backgroundImage); console.log('Menu open?', menu.classList.contains('open')); }
   };
 })();
 </script>
