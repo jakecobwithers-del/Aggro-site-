@@ -117,15 +117,3 @@ body::before {
   color: #fff;
   box-shadow: 0 0 10px crimson;
 }
-
-/* Headings and paragraphs */
-h1, h2 {
-  margin-bottom: 10px;
-  color: #ff4444;
-  text-shadow: 0 0 5px crimson;
-}
-
-p, ul {
-  font-size: 1em;
-  line-height: 1.5;
-}
