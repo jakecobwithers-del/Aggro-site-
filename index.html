@@ -1,9 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Aggro PvP — Smoke Overlay (Fixed)</title>
+  <title>Aggro PvP — Persistent Smoke</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
@@ -15,18 +15,15 @@
       background:radial-gradient(circle at 30% 20%, rgba(0,0,0,1) 0%, var(--bg-deep) 80%);
     }
 
-    /* UI */
-    .center{position:relative;z-index:10;text-align:center;padding:40px;pointer-events:auto}
+    .center{position:relative;z-index:10;text-align:center;padding:40px}
     .logo{width:70%;max-width:320px;display:block;margin:0 auto 18px}
     .btn{display:inline-block;padding:10px 18px;border-radius:8px;background:#111;color:var(--crimson);text-decoration:none;border:2px solid rgba(255,68,68,0.12);margin:8px}
 
-    /* Canvas overlay sits above everything but doesn't block clicks */
     #smokeCanvas{
       position:fixed;inset:0;z-index:9999;pointer-events:none;display:block;
       width:100%;height:100%;
     }
 
-    /* Menu / sidebar */
     .menu-toggle{ position:fixed; top:18px; left:16px; z-index:110; background:transparent; color:var(--crimson); border:2px solid rgba(255,68,68,0.12); padding:8px 10px; border-radius:6px; font-size:18px; cursor:pointer; }
     .sidebar{ position:fixed; top:62px; left:16px; z-index:110; display:flex; flex-direction:column; gap:10px; transform:translateX(-8px) scale(.98); opacity:0; transition:transform .22s ease,opacity .22s ease; pointer-events:none; }
     .sidebar.open{ transform:translateX(0) scale(1); opacity:1; pointer-events:auto; }
@@ -40,10 +37,8 @@
 </head>
 <body>
 
-  <!-- Canvas overlay (topmost visual layer, pointer-events:none so UI stays clickable) -->
   <canvas id="smokeCanvas" aria-hidden="true"></canvas>
 
-  <!-- UI -->
   <button class="menu-toggle" id="menuBtn" aria-expanded="false" aria-controls="sidebar">&#9776;</button>
   <nav id="sidebar" class="sidebar" aria-hidden="true">
     <a href="mods.html">&#9881; Mods</a>
@@ -61,155 +56,93 @@
   </main>
 
   <script>
-  /*
-    Robust canvas smoke overlay
-    - Requires: transparent Smoke.png in the same folder (case-sensitive).
-    - If Smoke.png fails to load, draws a procedural smoke fallback so you always see something.
-    - Canvas is pointer-events:none so UI remains clickable.
-    - Controls: press "S" to toggle smoke. Console API available on window.__AggroSmoke
-  */
-
-  (function(){
+  (() => {
     const canvas = document.getElementById('smokeCanvas');
-    if(!canvas){ console.error('Missing canvas#smokeCanvas'); return; }
     const ctx = canvas.getContext('2d', { alpha: true });
+    const img = new Image();
+    img.src = 'Smoke.png';
+    img.crossOrigin = 'anonymous';
 
-    // Config: change these to tune look
-    const SMOKE_SRC = 'Smoke.png'; // must match file name exactly (case-sensitive)
-    const USE_COMPOSITE = 'screen'; // 'screen' or 'source-over' or 'lighter'
-    const BLOOM_ALPHA = 0.055;
-    const TINT_COLOR = 'rgba(220,40,60,1)';
-
-    // Layers config
     const layers = [
-      { offset: 0, speed: 0.18, scale: 1.05, alpha: 0.92, horizSpeed: 6, turb: 14 },
-      { offset: 0, speed: 0.10, scale: 1.30, alpha: 0.82, horizSpeed: -3, turb: 24 },
-      { offset: 0, speed: 0.06, scale: 1.60, alpha: 0.72, horizSpeed: 2, turb: 34 }
+      { offset: 0, speed: 0.005, scale: 1.05, alpha: 0.95, horizSpeed: 2, turb: 10 },
+      { offset: 0, speed: 0.003, scale: 1.3,  alpha: 0.9,  horizSpeed: -1, turb: 16 },
+      { offset: 0, speed: 0.002, scale: 1.6,  alpha: 0.85, horizSpeed: 1, turb: 22 }
     ];
 
-    let width = 0, height = 0;
-    let last = 0, tAccum = 0;
-    let playing = true;
+    let width = 0, height = 0, last = 0, tAccum = 0, playing = true;
+    const DPR = Math.max(1, window.devicePixelRatio || 1);
+    const cache = [];
 
-    // DPR logic: clamp for small screens
-    function getTargetDPR(){
-      const w = window.innerWidth;
-      const isMobile = w < 800;
-      return isMobile ? Math.min(1.5, window.devicePixelRatio || 1) : Math.min(2, window.devicePixelRatio || 1);
-    }
-
-    function resize(){
-      width = window.innerWidth; height = window.innerHeight;
-      const dpr = getTargetDPR();
-      canvas.width = Math.floor(width * dpr);
-      canvas.height = Math.floor(height * dpr);
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.floor(width * DPR);
+      canvas.height = Math.floor(height * DPR);
       canvas.style.width = width + 'px';
       canvas.style.height = height + 'px';
-      ctx.setTransform(dpr,0,0,dpr,0,0);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     }
     window.addEventListener('resize', resize);
     resize();
 
-    // cheap deterministic noise
-    function noise(seed){ return (Math.sin(seed * 12.9898) * 43758.5453) % 1; }
-
-    // load smoke image
-    const img = new Image();
-    img.src = SMOKE_SRC;
-    img.crossOrigin = 'anonymous';
-
-    // cache for scaled tiles per layer (filled on load)
-    const cache = [];
+    function noise(seed) {
+      return (Math.sin(seed * 12.9898) * 43758.5453) % 1;
+    }
 
     img.onload = () => {
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
-      layers.forEach((L,i) => {
+      layers.forEach((L, i) => {
         const cw = Math.ceil(img.width * L.scale);
         const ch = Math.ceil(img.height * L.scale);
         const c = document.createElement('canvas');
-        c.width = cw * dpr;
-        c.height = ch * dpr;
+        c.width = cw * DPR;
+        c.height = ch * DPR;
         const cc = c.getContext('2d');
-        cc.setTransform(dpr,0,0,dpr,0,0);
-        cc.drawImage(img,0,0,cw,ch);
+        cc.setTransform(DPR, 0, 0, DPR, 0, 0);
+        cc.drawImage(img, 0, 0, cw, ch);
         cache[i] = c;
-        L.offset = (i * (ch / 2)) % ch;
+        L.offset = (i * ch / 2) % ch;
       });
-      console.info('Smoke image loaded and cached:', SMOKE_SRC);
-    };
-    img.onerror = () => {
-      console.warn('Smoke image failed to load:', SMOKE_SRC, '— procedural fallback will be used.');
-      // still seed offsets so fallback looks varied
-      layers.forEach((L,i)=> L.offset = (i * 120) % 300);
     };
 
-    // clear
-    function clear() { ctx.clearRect(0,0,width,height); }
-
-    // draw a tiled smoke layer using cache if available
-    function drawLayer(layer, dt, tAccum, cacheCanvas){
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
-      const baseW = cacheCanvas ? (cacheCanvas.width / dpr) : (img.width || 300);
-      const baseH = cacheCanvas ? (cacheCanvas.height / dpr) : (img.height || 200);
-      const layerW = baseW * layer.scale;
-      const layerH = baseH * layer.scale;
-
-      const vpx = layer.speed * height;
-      layer.offset = (layer.offset - vpx * (dt / 1000)) % layerH;
-
-      const baseXShift = Math.sin((tAccum/1000) * (layer.horizSpeed/3)) * (layer.horizSpeed*6);
-      const turbShift = (noise(tAccum*0.001 + layer.scale) - 0.5) * layer.turb;
-      const drawX = (width/2) - layerW/2 + baseXShift + turbShift;
+    function drawLayer(layer, dt, tAccum, cacheCanvas) {
+      const layerW = cacheCanvas.width / DPR;
+      const layerH = cacheCanvas.height / DPR;
+      layer.offset = (layer.offset - layer.speed * height * (dt / 1000)) % layerH;
+      const baseX = Math.sin((tAccum / 1000) * (layer.horizSpeed / 3)) * (layer.horizSpeed * 6);
+      const turbX = (noise(tAccum * 0.001 + layer.scale) - 0.5) * layer.turb;
+      const drawX = (width / 2) - layerW / 2 + baseX + turbX;
 
       ctx.globalAlpha = layer.alpha;
-      ctx.globalCompositeOperation = USE_COMPOSITE;
-
-      for(let y = -layerH + layer.offset; y < height + layerH; y += layerH){
-        if(cacheCanvas) ctx.drawImage(cacheCanvas, drawX, y, layerW, layerH);
-        else {
-          // if image not available, draw a soft radial gradient tile as fallback
-          drawFallbackTile(drawX, y, layerW, layerH, layer.alpha);
-        }
+      ctx.globalCompositeOperation = 'screen';
+      for (let y = -layerH + layer.offset; y < height + layerH; y += layerH) {
+        ctx.drawImage(cacheCanvas, drawX, y, layerW, layerH);
       }
-
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
     }
 
-    // fallback single-tile painter (cheap smoke blob)
-    function drawFallbackTile(x,y,w,h,alpha){
-      const g = ctx.createRadialGradient(x + w*0.5, y + h*0.2, Math.min(w,h)*0.08, x + w*0.5, y + h*0.6, Math.max(w,h)*0.6);
-      g.addColorStop(0, `rgba(255,255,255,${0.12*alpha})`);
-      g.addColorStop(0.25, `rgba(240,240,240,${0.08*alpha})`);
-      g.addColorStop(0.6, `rgba(120,100,100,${0.06*alpha})`);
-      g.addColorStop(1, `rgba(40,30,30,0)`);
-      ctx.save();
-      ctx.globalCompositeOperation = USE_COMPOSITE;
-      ctx.fillStyle = g;
-      ctx.fillRect(x - w*0.1, y - h*0.1, w*1.2, h*1.2);
-      ctx.restore();
-    }
-
-    // subtle bloom/tint pass
-    function bloomPass(){
+    function bloomPass() {
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
-      ctx.globalAlpha = BLOOM_ALPHA;
-      ctx.fillStyle = TINT_COLOR;
-      ctx.fillRect(0,0,width,height);
+      ctx.globalAlpha = 0.055;
+      ctx.fillStyle = 'rgba(220,40,60,1)';
+      ctx.fillRect(0, 0, width, height);
       ctx.restore();
     }
 
-    // main animation loop
-    function animate(now){
-      if(!last) last = now;
+    function clear() {
+      ctx.clearRect(0, 0, width, height);
+    }
+
+    function animate(now) {
+      if (!last) last = now;
       const dt = now - last || 16;
       last = now;
       tAccum += dt;
 
       clear();
-      if(playing){
-        for(let i = layers.length - 1; i >= 0; i--){
+      if (playing) {
+        for (let i = layers.length - 1; i >= 0; i--) {
           drawLayer(layers[i], dt, tAccum, cache[i]);
         }
         bloomPass();
@@ -218,55 +151,13 @@
     }
     requestAnimationFrame(animate);
 
-    // Toggle overlay with S key
-    function togglePlaying(){
-      playing = !playing;
-      canvas.style.display = playing ? 'block' : 'none';
-      console.info('Smoke overlay', playing ? 'shown' : 'hidden');
-    }
-    window.addEventListener('keydown', (e) => { if(e.key === 's' || e.key === 'S') togglePlaying(); });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 's' || e.key === 'S') {
+        playing = !playing;
+        canvas.style.display = playing ? 'block' : 'none';
+      }
+    });
 
-    // Menu wiring
     const btn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
-    if(btn && sidebar){
-      btn.addEventListener('click', ()=> {
-        const open = sidebar.classList.toggle('open');
-        sidebar.setAttribute('aria-hidden', !open);
-        btn.setAttribute('aria-expanded', open);
-      });
-      document.addEventListener('click', (e)=> {
-        const inside = e.target.closest('#sidebar') || e.target.closest('#menuBtn');
-        if(!inside && sidebar.classList.contains('open')) sidebar.classList.remove('open');
-      });
-    }
-
-    // Diagnostics function to print quick status
-    function diagnostics(){
-      fetch(SMOKE_SRC).then(r=>{
-        console.log('DIAG fetch', SMOKE_SRC, 'status', r.status, 'content-type', r.headers.get('content-type'));
-      }).catch(e=>{
-        console.warn('DIAG fetch error', e.message);
-      });
-      console.log('DIAG canvas', canvas.width, 'x', canvas.height, 'style display', getComputedStyle(canvas).display);
-      console.log('DIAG image complete', !!img.complete, 'naturalWidth', img.naturalWidth || 0);
-      console.log('DIAG layers', layers.map((L,i)=>({i,alpha:L.alpha,speed:L.speed,scale:L.scale})));
-    }
-
-    // Expose a small runtime API for quick console tweaks
-    window.__AggroSmoke = {
-      toggle(){ togglePlaying(); },
-      show(){ playing = true; canvas.style.display = 'block'; },
-      hide(){ playing = false; canvas.style.display = 'none'; },
-      setLayerAlpha(i,v){ if(layers[i]) layers[i].alpha = v; },
-      setLayerSpeed(i,v){ if(layers[i]) layers[i].speed = v; },
-      diagnostics
-    };
-
-    // Auto-run diagnostics after a short delay to give fetch a moment
-    setTimeout(diagnostics, 300);
-  })();
-  </script>
-
-</body>
-</html>
+    btn.add
