@@ -11,7 +11,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Share Tech Mono', monospace;
-      background: radial-gradient(circle at center, #0b0b0b 0%, #1a0000 100%);
+      background: radial-gradient(circle at center, #000000 0%, #1a0000 100%);
       height: 100vh;
       overflow: hidden;
       position: relative;
@@ -67,13 +67,114 @@
       color: #fff;
       box-shadow: 0 0 10px crimson;
     }
+
+    .menu-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      font-size: 1.5em;
+      background: none;
+      border: none;
+      color: crimson;
+      z-index: 2;
+      cursor: pointer;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 60px;
+      left: 20px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 2;
+    }
+
+    .sidebar.open {
+      display: flex;
+    }
+
+    .sidebar a {
+      color: #ff4444;
+      text-decoration: none;
+      font-weight: bold;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 8px 12px;
+      border: 2px solid crimson;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar a:hover {
+      background-color: crimson;
+      color: #fff;
+      box-shadow: 0 0 10px crimson;
+    }
+
+    .popup {
+      position: fixed;
+      top: 140px;
+      right: 20px;
+      width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      background-color: rgba(20, 0, 0, 0.9);
+      border: 2px solid crimson;
+      padding: 20px;
+      display: none;
+      z-index: 1;
+    }
   </style>
 </head>
 <body>
+  <!-- Sidebar toggle -->
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+  <!-- Sidebar menu -->
+  <nav id="sidebar" class="sidebar">
+    <a href="#" onclick="loadPage('mods')">⚙ Mods</a>
+    <a href="#" onclick="loadPage('rules')">📜 Rules</a>
+    <a href="#" onclick="loadPage('killfeed')">💀 Killfeed</a>
+    <a href="#" onclick="loadPage('leaderboard')">🏆 Leaderboard</a>
+  </nav>
+
+  <!-- Main widget -->
   <img src="Aggro-logo.PNG" alt="Aggro PvP Logo" class="logo" />
   <div class="button-group">
     <a href="steam://connect/193.193.80.64:3436" class="btn">🎮 Connect to Server</a>
     <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="btn">💬 Join Discord</a>
   </div>
+  <div id="popup-content" class="popup"></div>
+
+  <!-- Inline JS -->
+  <script>
+    function toggleMenu() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('open');
+    }
+
+    function loadPage(page) {
+      const popup = document.getElementById('popup-content');
+      let content = '';
+
+      switch (page) {
+        case 'mods':
+          content = `<h2>Mods</h2><p>Custom starter kits, bounty system, faction loadouts.</p>`;
+          break;
+        case 'rules':
+          content = `<h2>Rules</h2><ul><li>No cheating</li><li>No spawn camping</li><li>Respect factions</li></ul>`;
+          break;
+        case 'killfeed':
+          content = `<h2>Killfeed</h2><p>Jake was shredded by a blood-soaked AKM.</p>`;
+          break;
+        case 'leaderboard':
+          content = `<h2>Leaderboard</h2><p>Top killers, faction scores, bounty claims.</p>`;
+          break;
+      }
+
+      popup.innerHTML = content;
+      popup.style.display = 'block';
+    }
+  </script>
 </body>
 </html>
