@@ -3,157 +3,153 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP</title>
+<title>Aggro PvP — Smoke Overlay (Canvas)</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-  :root{ --crimson:#ff4444; --bg-deep:#0f0000; }
-
-  html,body{height:100%;margin:0;padding:0;font-family:'Share Tech Mono',monospace;background:#000;color:#e0e0e0;}
-  body{
-    display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative;overflow:hidden;
-    background:radial-gradient(circle at 30% 20%, rgba(0,0,0,1) 0%, var(--bg-deep) 80%);
-  }
-
-  /* subtle static fog/grain behind everything (left as subtle background) */
-  body::before{
-    content:"";position:fixed;inset:0;z-index:0;
-    background:
-      radial-gradient(circle at 10% 10%, rgba(255,255,255,0.02) 0px, transparent 30%),
-      radial-gradient(circle at 90% 80%, rgba(255,255,255,0.02) 0px, transparent 30%),
-      repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 2px);
-    opacity:0.12;pointer-events:none;mix-blend-mode:screen;filter:blur(1px);
-  }
-
-  /* SMOKE OVERLAY: top layer, no background color fallbacks */
-  .smoke-overlay{
+  html,body{height:100%;margin:0;padding:0;background:#000;font-family:system-ui,monospace;color:#fff}
+  /* core UI */
+  .center{position:relative;z-index:10;text-align:center;padding:40px}
+  .logo{width:70%;max-width:320px;display:block;margin:0 auto 18px}
+  .btn{display:inline-block;padding:10px 18px;border-radius:8px;background:#111;color:#ff4444;text-decoration:none;border:2px solid rgba(255,68,68,0.12);margin:8px}
+  /* top canvas overlay (pointer-events:none keeps UI clickable) */
+  #smokeCanvas{
     position:fixed;
     inset:0;
-    z-index:9999;        /* topmost visual layer */
-    pointer-events:none; /* UI underneath remains clickable */
-    overflow:visible;
-  }
-
-  .smoke-layer{
-    position:absolute;
-    left:50%;
-    transform:translateX(-50%);
-    width:240%;
-    height:160vh;
-    background-image: url('Smoke.png'); /* must be transparent PNG */
-    background-repeat:no-repeat;
-    background-size:cover;
-    background-position:center bottom;
-    mix-blend-mode:screen;    /* try screen for glow; use normal to keep texture unchanged */
-    opacity:0.78;             /* adjust for subtle / heavy smoke */
-    filter: blur(12px) saturate(1.05);
-    animation: smokeRise 18s linear infinite;
+    z-index:9999;
     pointer-events:none;
+    display:block;
   }
-
-  .s1{ top:60vh; transform:translateX(-50%) scale(1.05); animation-duration:14s; }
-  .s2{ top:80vh; transform:translateX(-50%) scale(1.28); animation-duration:24s; animation-direction:reverse; opacity:0.85; filter:blur(20px); }
-  .s3{ top:98vh; transform:translateX(-50%) scale(1.45); animation-duration:32s; opacity:0.82; filter:blur(28px); }
-
-  @keyframes smokeRise{
-    0%   { transform: translateX(-50%) translateY(0)    scale(1); opacity:0.85; }
-    25%  { opacity:0.95; }
-    55%  { transform: translateX(-50%) translateY(-40vh) scale(1.04); opacity:0.92; }
-    85%  { transform: translateX(-50%) translateY(-92vh) scale(1.08); opacity:0.6; }
-    100% { transform: translateX(-50%) translateY(-130vh) scale(1.12); opacity:0; }
-  }
-
-  /* main UI stays interactive and above background (but visually under smoke overlay) */
-  .center{
-    z-index:100; /* lower than smoke overlay */
-    text-align:center;
-    padding:20px;
-    width:100%;
-    max-width:980px;
-    box-sizing:border-box;
-    position:relative;
-    pointer-events:auto;
-  }
-
-  .logo{ display:block;width:70%;max-width:320px;margin:0 auto 22px;filter:drop-shadow(0 8px 22px rgba(255,0,0,0.12)); }
-  .button-group{ display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center; }
-  .btn{ display:inline-block;padding:12px 22px;border-radius:8px;text-decoration:none;color:var(--crimson);background:rgba(0,0,0,0.75);border:2px solid rgba(255,68,68,0.14);font-weight:700;min-width:200px;text-align:center;pointer-events:auto; }
-  .btn:hover{ background:var(--crimson); color:#111; }
-
-  /* menu/sidebar above UI but below overlay visuals (pointer-events controlled separately) */
-  .menu-toggle{ position:fixed; top:18px; left:16px; z-index:110; background:transparent; color:var(--crimson); border:2px solid rgba(255,68,68,0.12); padding:8px 10px; border-radius:6px; font-size:18px; cursor:pointer; }
-  .sidebar{ position:fixed; top:62px; left:16px; z-index:110; display:flex; flex-direction:column; gap:10px; transform:translateX(-8px) scale(.98); opacity:0; transition:transform .22s ease,opacity .22s ease; pointer-events:none; }
-  .sidebar.open{ transform:translateX(0) scale(1); opacity:1; pointer-events:auto; }
-  .sidebar a{ display:inline-block; text-decoration:none; color:var(--crimson); background:rgba(0,0,0,0.6); padding:8px 12px; border-radius:6px; font-weight:700; border:1px solid rgba(255,68,68,0.18); box-shadow:0 2px 8px rgba(0,0,0,0.6); }
-  .sidebar a:hover{ background:var(--crimson); color:#fff; }
-
-  @media(max-width:520px){
-    .s2,.s3{ display:none; }
-    .s1{ top:72vh; width:220%; height:140vh; opacity:0.82; filter:blur(10px); }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .smoke-layer{ animation:none !important; opacity:0.6 !important; transform:none !important; }
-  }
-
-  /* helper to hide overlay during testing */
-  .hide-overlay{ display:none !important; }
+  /* small debugging toggle */
+  .debug-toggle{position:fixed;left:16px;bottom:16px;z-index:10001;background:#111;color:#fff;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06)}
 </style>
 </head>
 <body>
-  <!-- Smoke overlay (topmost visual layer) -->
-  <div class="smoke-overlay" id="smokeOverlay" aria-hidden="true">
-    <div class="smoke-layer s1"></div>
-    <div class="smoke-layer s2"></div>
-    <div class="smoke-layer s3"></div>
-  </div>
 
-  <button class="menu-toggle" id="menuBtn" aria-expanded="false" aria-controls="sidebar">&#9776;</button>
-  <nav id="sidebar" class="sidebar" aria-hidden="true">
-    <a href="mods.html">&#9881; Mods</a>
-    <a href="rules.html">&#128220; Rules</a>
-    <a href="killfeed.html">&#128128; Killfeed</a>
-    <a href="leaderboard.html">&#127942; Leaderboard</a>
-  </nav>
-
+  <!-- UI -->
   <main class="center" id="mainUI">
     <img src="Aggro-logo.PNG" alt="Aggro PvP Logo" class="logo" />
-    <div class="button-group">
-      <a class="btn" href="steam://connect/193.193.80.64:3436">&#127918; Connect to Server</a>
-      <a class="btn" href="https://discord.gg/gSwkVzJyMT" target="_blank" rel="noopener">&#128172; Join Discord</a>
+    <div>
+      <a class="btn" href="#">🎮 Connect to Server</a>
+      <a class="btn" href="#">💬 Join Discord</a>
     </div>
   </main>
 
-  <script>
-    (function(){
-      const btn = document.getElementById('menuBtn');
-      const sidebar = document.getElementById('sidebar');
-      const smokeOverlay = document.getElementById('smokeOverlay');
+  <!-- Canvas overlay: topmost visual layer, still doesn't block clicks -->
+  <canvas id="smokeCanvas" aria-hidden="true"></canvas>
 
-      btn.addEventListener('click', ()=> {
-        const open = sidebar.classList.toggle('open');
-        sidebar.setAttribute('aria-hidden', !open);
-        btn.setAttribute('aria-expanded', open);
-      });
+  <!-- Optional small button for toggling overlay while testing (still clickable because it's above canvas) -->
+  <button id="toggleOverlay" class="debug-toggle">Toggle Smoke (S)</button>
 
-      document.addEventListener('click', (e)=>{
-        const inside = e.target.closest('#sidebar') || e.target.closest('#menuBtn');
-        if(!inside && sidebar.classList.contains('open')) sidebar.classList.remove('open');
-      });
+<script>
+/*
+  Canvas smoke overlay
+  - Draws multiple layers of a transparent Smoke.png
+  - Each layer scrolls up at its own speed and scale to create parallax
+  - Keeps UI clickable via pointer-events:none on the canvas element
+  - Controls: press "S" or click Toggle to hide/show
+*/
 
-      document.addEventListener('keydown', (e)=>{
-        if(e.key === 'Escape') sidebar.classList.remove('open');
-        if(e.key === 's' || e.key === 'S') smokeOverlay.classList.toggle('hide-overlay'); // toggle overlay for debugging
-      });
+(() => {
+  const canvas = document.getElementById('smokeCanvas');
+  const ctx = canvas.getContext('2d', { alpha: true });
+  const img = new Image();
+  img.src = 'Smoke.png'; // must be a transparent PNG in same folder (case-sensitive)
+  img.crossOrigin = 'anonymous';
 
-      // fallback: if Smoke.png didn't load, log and leave overlay empty (no fallback color)
-      document.querySelectorAll('.smoke-layer').forEach((el,i)=>{
-        const bg = getComputedStyle(el).backgroundImage || '';
-        if(!bg.includes('url(')){
-          console.warn('Smoke PNG not found for layer', i+1);
-        }
-      });
-    })();
-  </script>
+  // Layers configuration: adjust speed, scale, opacity per layer
+  const layers = [
+    { offset: 0, speed: 0.18, scale: 1.05, alpha: 0.95 },
+    { offset: 0, speed: 0.10, scale: 1.3,  alpha: 0.82 },
+    { offset: 0, speed: 0.06, scale: 1.6,  alpha: 0.72 }
+  ];
+
+  let width = 0, height = 0, last = 0, playing = true;
+  const DPR = Math.max(1, window.devicePixelRatio || 1);
+
+  function resize() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = Math.floor(width * DPR);
+    canvas.height = Math.floor(height * DPR);
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0); // scale drawing for DPR
+  }
+
+  // Convert a "virtual" layer coordinate into the repeated pattern drawing
+  function drawLayer(layer, t) {
+    if (!img.width) return;
+    const layerW = img.width * layer.scale;
+    const layerH = img.height * layer.scale;
+
+    // vertical offset loops: use offset that increases over time
+    const speed = layer.speed * height; // pixels per second relative to viewport
+    layer.offset = (layer.offset - speed * (t / 1000)) % layerH;
+
+    ctx.globalAlpha = layer.alpha;
+    ctx.globalCompositeOperation = 'screen'; // nice glow; change to 'source-over' or 'normal' if you prefer
+    // center horizontally, tile vertically so smoke never gaps
+    const centerX = width / 2;
+    const drawX = centerX - layerW / 2;
+
+    // draw enough tiles to cover viewport vertically (start one tile above top to ensure continuous flow)
+    for (let y = -layerH + layer.offset; y < height + layerH; y += layerH) {
+      ctx.drawImage(img, drawX, y, layerW, layerH);
+    }
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  function clear() {
+    ctx.clearRect(0, 0, width, height);
+  }
+
+  function animate(now) {
+    if (!last) last = now;
+    const dt = now - last;
+    last = now;
+
+    clear();
+    if (playing && img.complete && img.naturalWidth) {
+      // draw layers back-to-front (furthest drawn first)
+      for (let i = layers.length - 1; i >= 0; i--) {
+        drawLayer(layers[i], dt);
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+
+  // Setup
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Start after image loads; allow fallback if image fails
+  img.onload = () => {
+    // Seed offsets so layers start at different vertical positions
+    layers.forEach((L, i) => L.offset = (i * (img.height * L.scale) / 2) % (img.height * L.scale));
+  };
+  img.onerror = () => console.warn('Smoke image failed to load. Ensure Smoke.png exists and path is correct.');
+
+  requestAnimationFrame(animate);
+
+  // Toggle via S key and button
+  const toggleBtn = document.getElementById('toggleOverlay');
+  function toggle() {
+    playing = !playing;
+    canvas.style.display = playing ? 'block' : 'none';
+    // keep toggle button visible for testing
+    toggleBtn.textContent = playing ? 'Toggle Smoke (S)' : 'Smoke Hidden (S)';
+  }
+  toggleBtn.addEventListener('click', toggle);
+  window.addEventListener('keydown', (e) => { if (e.key === 's' || e.key === 'S') toggle(); });
+
+  // Expose a small API if needed
+  window.__AggroSmoke = {
+    setOpacity(layerIndex, value) { if (layers[layerIndex]) layers[layerIndex].alpha = value; },
+    setSpeed(layerIndex, value) { if (layers[layerIndex]) layers[layerIndex].speed = value; },
+    show() { playing = true; canvas.style.display = 'block'; },
+    hide() { playing = false; canvas.style.display = 'none'; }
+  };
+})();
+</script>
 </body>
 </html>
