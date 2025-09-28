@@ -7,7 +7,7 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-    :root{ --crimson:#ff4444; --bg-deep:#120000; }
+    :root{ --crimson:#ff4444; --bg-deep:#0f0000; }
 
     html,body{height:100%;margin:0;padding:0;font-family:'Share Tech Mono',monospace;background:#000;color:#e0e0e0;}
     body{
@@ -16,71 +16,72 @@
       -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
     }
 
-    /* subtle static fog/grain */
-    body::before{
-      content:"";position:fixed;inset:0;z-index:0;
-      background:
-        radial-gradient(circle at 10% 10%, rgba(255,255,255,0.02) 0px, transparent 30%),
-        radial-gradient(circle at 90% 80%, rgba(255,255,255,0.02) 0px, transparent 30%),
-        repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 2px);
-      opacity:0.18;pointer-events:none;mix-blend-mode:screen;filter:blur(1px);
+    /* smoke container */
+    .smoke-bg{ position:fixed; inset:0; pointer-events:none; z-index:2; overflow:hidden; }
+
+    /* opaque smoke layers: high opacity, normal blend, visible tint fallback */
+    .smoke-layer{
+      position:absolute;
+      width:160%;
+      height:90vh;
+      background-repeat:no-repeat;
+      background-size:cover;
+      background-position:center;
+      transform-origin:center;
+      mix-blend-mode:normal;              /* normal so it does not disappear into background */
+      opacity:0.95;                       /* almost fully opaque */
+      filter: blur(8px) saturate(1.05);   /* moderate blur so it still reads as smoke */
+      animation:smokeMove 16s linear infinite;
+      background-image: url('Smoke.png');
+      background-color: rgba(60,50,50,0.92); /* strong tint fallback if image missing */
+      background-blend-mode:normal;
+      pointer-events:none;
     }
 
-    /* SMOKE: background-image layers using Smoke.png (must be in same folder) */
-    .smoke-bg{ position:fixed; inset:0; pointer-events:none; z-index:2; overflow:hidden; }
-    .smoke-layer{
-      position:absolute; will-change:transform,opacity; pointer-events:none;
-      width:160%; height:80vh; background-repeat:no-repeat; background-size:cover; background-position:center;
-      transform-origin:center; mix-blend-mode:normal; opacity:0.55; filter: blur(16px) saturate(0.95);
-      animation:smokeMove 16s linear infinite; background-image:url('Smoke.png'); background-color:rgba(200,180,170,0.10);
-    }
-    .s1{ left:-20%; top:66%; transform:scale(1.08); opacity:0.60; animation-duration:14s; filter:blur(14px); }
-    .s2{ left:28%; top:74%; transform:scale(1.32); opacity:0.44; animation-duration:26s; animation-direction:reverse; filter:blur(26px); }
-    .s3{ left:58%; top:60%; transform:scale(1.12); opacity:0.30; animation-duration:34s; filter:blur(40px); }
+    /* layer placement */
+    .s1{ left:-18%; top:64%; transform:scale(1.06); animation-duration:14s; }
+    .s2{ left:30%; top:72%; transform:scale(1.28); animation-duration:24s; animation-direction:reverse; }
+    .s3{ left:60%; top:58%; transform:scale(1.12); animation-duration:34s; }
 
     @keyframes smokeMove{
-      0%{ transform:translate3d(0,0,0) rotate(-3deg) scale(1); opacity:0; }
-      12%{ opacity:0.72; }
-      40%{ transform:translate3d(-18vw,-12vh,0) rotate(2deg) scale(1.02); opacity:0.84; }
-      76%{ transform:translate3d(6vw,-30vh,0) rotate(6deg) scale(1.1); opacity:0.38; }
-      100%{ transform:translate3d(30vw,-48vh,0) rotate(10deg) scale(1.12); opacity:0; }
+      0%{ transform:translate3d(0,0,0) rotate(-2deg) scale(1); opacity:0.9; }
+      35%{ transform:translate3d(-12vw,-10vh,0) rotate(1deg) scale(1.02); opacity:0.98; }
+      75%{ transform:translate3d(8vw,-28vh,0) rotate(5deg) scale(1.08); opacity:0.9; }
+      100%{ transform:translate3d(30vw,-44vh,0) rotate(8deg) scale(1.1); opacity:0.0; }
     }
 
     /* UI */
-    .menu-toggle{
-      position:fixed;top:18px;left:16px;z-index:1001;background:transparent;color:var(--crimson);
-      border:2px solid rgba(255,68,68,0.12);padding:8px 10px;border-radius:6px;font-size:18px;cursor:pointer;
-      backdrop-filter: blur(4px);
-    }
-
-    .sidebar{
-      position:fixed;top:62px;left:16px;z-index:1000;display:flex;flex-direction:column;gap:10px;
-      transform:translateX(-8px) scale(.98);opacity:0;transition:transform .22s ease,opacity .22s ease;pointer-events:none;
-    }
+    .menu-toggle{ position:fixed; top:18px; left:16px; z-index:1001; background:transparent; color:var(--crimson);
+      border:2px solid rgba(255,68,68,0.12); padding:8px 10px; border-radius:6px; font-size:18px; cursor:pointer; }
+    .sidebar{ position:fixed; top:62px; left:16px; z-index:1000; display:flex; flex-direction:column; gap:10px;
+      transform:translateX(-8px) scale(.98); opacity:0; transition:transform .22s ease,opacity .22s ease; pointer-events:none; }
     .sidebar.open{ transform:translateX(0) scale(1); opacity:1; pointer-events:auto; }
-    .sidebar a{ display:inline-block;text-decoration:none;color:var(--crimson);background:rgba(0,0,0,0.55);
-      border:1px solid rgba(255,68,68,0.18);padding:8px 12px;border-radius:6px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.6); }
+    .sidebar a{ display:inline-block; text-decoration:none; color:var(--crimson); background:rgba(0,0,0,0.55);
+      border:1px solid rgba(255,68,68,0.18); padding:8px 12px; border-radius:6px; font-weight:700; box-shadow:0 2px 8px rgba(0,0,0,0.6); }
     .sidebar a:hover{ background:var(--crimson); color:#fff; }
 
-    .center{ z-index:1005;text-align:center;padding:20px;width:100%;max-width:980px;box-sizing:border-box;position:relative; }
-    .logo{ display:block;width:70%;max-width:320px;height:auto;margin:0 auto 22px;filter:drop-shadow(0 8px 22px rgba(255,0,0,0.12)); }
-    .button-group{ display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;z-index:1006; }
-    .btn{ display:inline-block;padding:12px 22px;border-radius:8px;text-decoration:none;color:var(--crimson);
-      background:rgba(0,0,0,0.6);border:2px solid rgba(255,68,68,0.14);font-weight:700;min-width:200px;text-align:center; }
+    .center{ z-index:1005; text-align:center; padding:20px; width:100%; max-width:980px; box-sizing:border-box; position:relative; }
+    .logo{ display:block; width:70%; max-width:320px; height:auto; margin:0 auto 22px; filter:drop-shadow(0 8px 22px rgba(255,0,0,0.12)); }
+    .button-group{ display:flex; flex-direction:column; gap:12px; align-items:center; justify-content:center; z-index:1006; }
+    .btn{ display:inline-block; padding:12px 22px; border-radius:8px; text-decoration:none; color:var(--crimson); background:rgba(0,0,0,0.6);
+      border:2px solid rgba(255,68,68,0.14); font-weight:700; min-width:200px; text-align:center; }
     .btn:hover{ background:var(--crimson); color:#111; }
 
-    @media(min-width:720px){ .button-group{flex-direction:row;} .logo{width:45%} }
-    @media(max-width:520px){ .s2,.s3{display:none} .s1{left:8%;top:72%;width:180%;opacity:0.48;filter:blur(12px)} }
+    @media(max-width:520px){
+      .s2, .s3{ display:none; }
+      .s1{ left:6%; top:72%; width:200%; opacity:0.95; filter:blur(10px); }
+    }
 
-    @media (prefers-reduced-motion: reduce){ .smoke-layer{ animation:none !important; opacity:0.28 !important; transform:none !important; } }
+    @media (prefers-reduced-motion: reduce){
+      .smoke-layer{ animation:none !important; }
+    }
 
-    /* debug helpers */
+    /* debug toggles */
     .force-hide-smoke{ display:none !important; }
     .force-show-ui{ z-index:99999 !important; position:relative !important; }
   </style>
 </head>
 <body>
-  <!-- smoke layers (must have Smoke.png in same folder as this file) -->
   <div class="smoke-bg" aria-hidden="true">
     <div class="smoke-layer s1"></div>
     <div class="smoke-layer s2"></div>
@@ -123,25 +124,22 @@
 
       document.addEventListener('keydown',(e)=>{
         if(e.key==='Escape') setOpen(false);
-        if(e.key==='s'||e.key==='S'){
-          smokeBg.classList.toggle('force-hide-smoke');
-          mainUI.classList.toggle('force-show-ui');
-        }
+        if(e.key==='s'||e.key==='S'){ smokeBg.classList.toggle('force-hide-smoke'); mainUI.classList.toggle('force-show-ui'); }
       });
 
-      // fallback: if Smoke.png not loaded show tint so area is visible
+      // If image didn't load, force a strong tint so smoke area remains visible
       document.querySelectorAll('.smoke-layer').forEach((el,i)=>{
         const bg = getComputedStyle(el).backgroundImage || '';
         if(!bg.includes('url(')){
           console.warn('Smoke not loaded on layer', i+1);
-          el.style.backgroundColor = 'rgba(200,180,170,0.12)';
-          el.style.opacity = '0.36';
+          el.style.backgroundColor = 'rgba(80,60,60,0.95)';
+          el.style.opacity = '0.95';
         }
       });
 
-      // ensure UI above smoke
       mainUI.style.zIndex = '1005';
     })();
   </script>
 </body>
 </html>
+``` [A](https://github.com/bradydowling/rwx-blog/tree/ee14f7a00a7bbaf330093b2050d4bf29de9949f0/src%2Fpages%2Farticles%2F2020-12-22---Creating-a-Google-Calendar-Clone-with-D3%2Findex.md?copilot_analytics_metadata=eyJldmVudEluZm9fbWVzc2FnZUlkIjoiZ2VCQXNVMTZ0WlN2UU5QR1g2cVFYIiwiZXZlbnRJbmZvX2NvbnZlcnNhdGlvbklkIjoiNlE0a1RRRG1FTlA3aEt6dlZuaGMyIiwiZXZlbnRJbmZvX2NsaWNrU291cmNlIjoiY2l0YXRpb25MaW5rIiwiZXZlbnRJbmZvX2NsaWNrRGVzdGluYXRpb24iOiJodHRwczpcL1wvZ2l0aHViLmNvbVwvYnJhZHlkb3dsaW5nXC9yd3gtYmxvZ1wvdHJlZVwvZWUxNGY3YTAwYTdiYmFmMzMwMDkzYjIwNTBkNGJmMjlkZTk5NDlmMFwvc3JjJTJGcGFnZXMlMkZhcnRpY2xlcyUyRjIwMjAtMTItMjItLS1DcmVhdGluZy1hLUdvb2dsZS1DYWxlbmRhci1DbG9uZS13aXRoLUQzJTJGaW5kZXgubWQifQ%3D%3D&citationMarker=9F742443-6C92-4C44-BF58-8F5A7C53B6F1)
