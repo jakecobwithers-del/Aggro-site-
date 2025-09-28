@@ -7,8 +7,10 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Sidebar toggle -->
   <button class="menu-toggle" onclick="toggleMenu()">☰</button>
 
+  <!-- Sidebar menu -->
   <nav id="sidebar" class="sidebar">
     <a href="mods.html">⚙ Mods</a>
     <a href="rules.html">📜 Rules</a>
@@ -16,6 +18,7 @@
     <a href="leaderboard.html">🏆 Leaderboard</a>
   </nav>
 
+  <!-- Main content -->
   <div class="widget-container">
     <img src="Aggro-logo.PNG" alt="Aggro PvP Logo" class="logo" />
     <div class="button-group">
@@ -24,6 +27,7 @@
     </div>
   </div>
 
+  <!-- Sidebar toggle script -->
   <script>
     function toggleMenu() {
       document.getElementById('sidebar').classList.toggle('open');
