@@ -1,96 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Aggro PvP</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Aggro PvP</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-    :root{ --crimson:#ff4444; --bg-deep:#0f0000; }
+  :root{ --crimson:#ff4444; --bg-deep:#0f0000; }
 
-    html,body{height:100%;margin:0;padding:0;font-family:'Share Tech Mono',monospace;background:#000;color:#e0e0e0;}
-    body{
-      display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative;overflow:hidden;
-      background: radial-gradient(circle at 30% 20%, rgba(0,0,0,1) 0%, var(--bg-deep) 80%);
-    }
+  html,body{height:100%;margin:0;padding:0;font-family:'Share Tech Mono',monospace;background:#000;color:#e0e0e0;}
+  body{
+    display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative;overflow:hidden;
+    background:radial-gradient(circle at 30% 20%, rgba(0,0,0,1) 0%, var(--bg-deep) 80%);
+  }
 
-    /* smoke overlay sits above UI but does not capture clicks */
-    .smoke-overlay{
-      position:fixed;
-      inset:0;
-      z-index:9999;          /* above everything visually */
-      pointer-events:none;   /* UI underneath remains clickable */
-      overflow:visible;
-    }
+  /* subtle static fog/grain behind everything (left as subtle background) */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;
+    background:
+      radial-gradient(circle at 10% 10%, rgba(255,255,255,0.02) 0px, transparent 30%),
+      radial-gradient(circle at 90% 80%, rgba(255,255,255,0.02) 0px, transparent 30%),
+      repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 2px);
+    opacity:0.12;pointer-events:none;mix-blend-mode:screen;filter:blur(1px);
+  }
 
-    .smoke-layer{
-      position:absolute;
-      left:50%;
-      transform:translateX(-50%);
-      width:240%;
-      height:160vh;
-      background-image: url('Smoke.png');
-      background-size:cover;
-      background-position:center bottom;
-      mix-blend-mode:screen;    /* try screen for a glowy overlay; change to normal if you prefer */
-      opacity:0.78;             /* tweak for subtle/heavy */
-      filter: blur(12px) saturate(1.05);
-      animation: smokeRise 18s linear infinite;
-      pointer-events:none;
-    }
+  /* SMOKE OVERLAY: top layer, no background color fallbacks */
+  .smoke-overlay{
+    position:fixed;
+    inset:0;
+    z-index:9999;        /* topmost visual layer */
+    pointer-events:none; /* UI underneath remains clickable */
+    overflow:visible;
+  }
 
-    .s1{ top:60vh; transform:translateX(-50%) scale(1.05); animation-duration:14s; }
-    .s2{ top:80vh; transform:translateX(-50%) scale(1.28); animation-duration:24s; animation-direction:reverse; opacity:0.85; filter:blur(20px); }
-    .s3{ top:98vh; transform:translateX(-50%) scale(1.45); animation-duration:32s; opacity:0.82; filter:blur(28px); }
+  .smoke-layer{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    width:240%;
+    height:160vh;
+    background-image: url('Smoke.png'); /* must be transparent PNG */
+    background-repeat:no-repeat;
+    background-size:cover;
+    background-position:center bottom;
+    mix-blend-mode:screen;    /* try screen for glow; use normal to keep texture unchanged */
+    opacity:0.78;             /* adjust for subtle / heavy smoke */
+    filter: blur(12px) saturate(1.05);
+    animation: smokeRise 18s linear infinite;
+    pointer-events:none;
+  }
 
-    @keyframes smokeRise{
-      0%   { transform: translateX(-50%) translateY(0)    scale(1); opacity:0.85; }
-      25%  { opacity:0.95; }
-      55%  { transform: translateX(-50%) translateY(-40vh) scale(1.04); opacity:0.92; }
-      85%  { transform: translateX(-50%) translateY(-92vh) scale(1.08); opacity:0.6; }
-      100% { transform: translateX(-50%) translateY(-130vh) scale(1.12); opacity:0; }
-    }
+  .s1{ top:60vh; transform:translateX(-50%) scale(1.05); animation-duration:14s; }
+  .s2{ top:80vh; transform:translateX(-50%) scale(1.28); animation-duration:24s; animation-direction:reverse; opacity:0.85; filter:blur(20px); }
+  .s3{ top:98vh; transform:translateX(-50%) scale(1.45); animation-duration:32s; opacity:0.82; filter:blur(28px); }
 
-    /* main UI */
-    .center{
-      z-index:100; /* lower than smoke overlay visually but still above background */
-      text-align:center;
-      padding:20px;
-      width:100%;
-      max-width:980px;
-      box-sizing:border-box;
-      position:relative;
-      pointer-events:auto; /* ensure UI receives clicks */
-    }
+  @keyframes smokeRise{
+    0%   { transform: translateX(-50%) translateY(0)    scale(1); opacity:0.85; }
+    25%  { opacity:0.95; }
+    55%  { transform: translateX(-50%) translateY(-40vh) scale(1.04); opacity:0.92; }
+    85%  { transform: translateX(-50%) translateY(-92vh) scale(1.08); opacity:0.6; }
+    100% { transform: translateX(-50%) translateY(-130vh) scale(1.12); opacity:0; }
+  }
 
-    .logo{ display:block;width:70%;max-width:320px;margin:0 auto 22px;filter:drop-shadow(0 8px 22px rgba(255,0,0,0.12)); }
-    .button-group{ display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center; }
-    .btn{ display:inline-block;padding:12px 22px;border-radius:8px;text-decoration:none;color:var(--crimson);background:rgba(0,0,0,0.75);border:2px solid rgba(255,68,68,0.14);font-weight:700;min-width:200px;text-align:center;pointer-events:auto; }
-    .btn:hover{ background:var(--crimson); color:#111; }
+  /* main UI stays interactive and above background (but visually under smoke overlay) */
+  .center{
+    z-index:100; /* lower than smoke overlay */
+    text-align:center;
+    padding:20px;
+    width:100%;
+    max-width:980px;
+    box-sizing:border-box;
+    position:relative;
+    pointer-events:auto;
+  }
 
-    /* menu/sidebar keep above UI */
-    .menu-toggle{ position:fixed; top:18px; left:16px; z-index:110; background:transparent; color:var(--crimson); border:2px solid rgba(255,68,68,0.12); padding:8px 10px; border-radius:6px; font-size:18px; cursor:pointer; }
-    .sidebar{ position:fixed; top:62px; left:16px; z-index:110; display:flex; flex-direction:column; gap:10px; transform:translateX(-8px) scale(.98); opacity:0; transition:transform .22s ease,opacity .22s ease; pointer-events:none; }
-    .sidebar.open{ transform:translateX(0) scale(1); opacity:1; pointer-events:auto; }
-    .sidebar a{ display:inline-block; text-decoration:none; color:var(--crimson); background:rgba(0,0,0,0.6); padding:8px 12px; border-radius:6px; font-weight:700; border:1px solid rgba(255,68,68,0.18); box-shadow:0 2px 8px rgba(0,0,0,0.6); }
-    .sidebar a:hover{ background:var(--crimson); color:#fff; }
+  .logo{ display:block;width:70%;max-width:320px;margin:0 auto 22px;filter:drop-shadow(0 8px 22px rgba(255,0,0,0.12)); }
+  .button-group{ display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center; }
+  .btn{ display:inline-block;padding:12px 22px;border-radius:8px;text-decoration:none;color:var(--crimson);background:rgba(0,0,0,0.75);border:2px solid rgba(255,68,68,0.14);font-weight:700;min-width:200px;text-align:center;pointer-events:auto; }
+  .btn:hover{ background:var(--crimson); color:#111; }
 
-    @media(max-width:520px){
-      .s2,.s3{ display:none; }
-      .s1{ top:72vh; width:220%; height:140vh; opacity:0.82; filter:blur(10px); }
-    }
+  /* menu/sidebar above UI but below overlay visuals (pointer-events controlled separately) */
+  .menu-toggle{ position:fixed; top:18px; left:16px; z-index:110; background:transparent; color:var(--crimson); border:2px solid rgba(255,68,68,0.12); padding:8px 10px; border-radius:6px; font-size:18px; cursor:pointer; }
+  .sidebar{ position:fixed; top:62px; left:16px; z-index:110; display:flex; flex-direction:column; gap:10px; transform:translateX(-8px) scale(.98); opacity:0; transition:transform .22s ease,opacity .22s ease; pointer-events:none; }
+  .sidebar.open{ transform:translateX(0) scale(1); opacity:1; pointer-events:auto; }
+  .sidebar a{ display:inline-block; text-decoration:none; color:var(--crimson); background:rgba(0,0,0,0.6); padding:8px 12px; border-radius:6px; font-weight:700; border:1px solid rgba(255,68,68,0.18); box-shadow:0 2px 8px rgba(0,0,0,0.6); }
+  .sidebar a:hover{ background:var(--crimson); color:#fff; }
 
-    @media (prefers-reduced-motion: reduce){
-      .smoke-layer{ animation:none !important; opacity:0.6 !important; transform:none !important; }
-    }
+  @media(max-width:520px){
+    .s2,.s3{ display:none; }
+    .s1{ top:72vh; width:220%; height:140vh; opacity:0.82; filter:blur(10px); }
+  }
 
-    /* debug helper to hide overlay if needed */
-    .hide-overlay{ display:none !important; }
-  </style>
+  @media (prefers-reduced-motion: reduce){
+    .smoke-layer{ animation:none !important; opacity:0.6 !important; transform:none !important; }
+  }
+
+  /* helper to hide overlay during testing */
+  .hide-overlay{ display:none !important; }
+</style>
 </head>
 <body>
-  <!-- Smoke overlay (on top visually but pointer-events disabled) -->
+  <!-- Smoke overlay (topmost visual layer) -->
   <div class="smoke-overlay" id="smokeOverlay" aria-hidden="true">
     <div class="smoke-layer s1"></div>
     <div class="smoke-layer s2"></div>
@@ -135,12 +146,11 @@
         if(e.key === 's' || e.key === 'S') smokeOverlay.classList.toggle('hide-overlay'); // toggle overlay for debugging
       });
 
-      // fallback: if Smoke.png missing, force a visible tint so overlay is obvious
+      // fallback: if Smoke.png didn't load, log and leave overlay empty (no fallback color)
       document.querySelectorAll('.smoke-layer').forEach((el,i)=>{
         const bg = getComputedStyle(el).backgroundImage || '';
         if(!bg.includes('url(')){
-          el.style.backgroundColor = 'rgba(60,50,50,0.92)';
-          el.style.opacity = '0.85';
+          console.warn('Smoke PNG not found for layer', i+1);
         }
       });
     })();
