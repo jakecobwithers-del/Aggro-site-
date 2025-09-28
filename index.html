@@ -7,8 +7,10 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Sidebar toggle -->
   <button class="menu-toggle" onclick="toggleMenu()">☰</button>
 
+  <!-- Sidebar menu -->
   <nav id="sidebar" class="sidebar">
     <a href="#" onclick="loadPage('mods')">⚙ Mods</a>
     <a href="#" onclick="loadPage('rules')">📜 Rules</a>
@@ -16,8 +18,9 @@
     <a href="#" onclick="loadPage('leaderboard')">🏆 Leaderboard</a>
   </nav>
 
+  <!-- Main widget -->
   <div class="widget-container">
-    <img src="Aggro-logo.png" alt="Aggro PvP Logo" class="logo" />
+    <img src="Aggro-logo.PNG" alt="Aggro PvP Logo" class="logo" />
     <div class="button-group">
       <a href="steam://connect/193.193.80.64:3436" class="btn steam">🎮 Connect to Server</a>
       <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="btn discord">💬 Join Discord</a>
@@ -25,6 +28,7 @@
     <div id="popup-content" class="popup"></div>
   </div>
 
+  <!-- Inline JS -->
   <script>
     function toggleMenu() {
       const sidebar = document.getElementById('sidebar');
