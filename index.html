@@ -7,15 +7,14 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="sidebar">
-    <button class="menu-toggle">☰</button>
-    <nav class="menu">
-      <a href="#" onclick="loadPage('mods')">⚙ Mods</a>
-      <a href="#" onclick="loadPage('rules')">📜 Rules</a>
-      <a href="#" onclick="loadPage('killfeed')">💀 Killfeed</a>
-      <a href="#" onclick="loadPage('leaderboard')">🏆 Leaderboard</a>
-    </nav>
-  </div>
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+  <nav id="sidebar" class="sidebar">
+    <a href="#" onclick="loadPage('mods')">⚙ Mods</a>
+    <a href="#" onclick="loadPage('rules')">📜 Rules</a>
+    <a href="#" onclick="loadPage('killfeed')">💀 Killfeed</a>
+    <a href="#" onclick="loadPage('leaderboard')">🏆 Leaderboard</a>
+  </nav>
 
   <div class="widget-container">
     <img src="Aggro-logo.png" alt="Aggro PvP Logo" class="logo" />
@@ -26,6 +25,34 @@
     <div id="popup-content" class="popup"></div>
   </div>
 
-  <script src="menu.js"></script>
+  <script>
+    function toggleMenu() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('open');
+    }
+
+    function loadPage(page) {
+      const popup = document.getElementById('popup-content');
+      let content = '';
+
+      switch (page) {
+        case 'mods':
+          content = `<h2>Mods</h2><p>Custom starter kits, bounty system, faction loadouts.</p>`;
+          break;
+        case 'rules':
+          content = `<h2>Rules</h2><ul><li>No cheating</li><li>No spawn camping</li><li>Respect factions</li></ul>`;
+          break;
+        case 'killfeed':
+          content = `<h2>Killfeed</h2><p>Jake was shredded by a blood-soaked AKM.</p>`;
+          break;
+        case 'leaderboard':
+          content = `<h2>Leaderboard</h2><p>Top killers, faction scores, bounty claims.</p>`;
+          break;
+      }
+
+      popup.innerHTML = content;
+      popup.style.display = 'block';
+    }
+  </script>
 </body>
 </html>
