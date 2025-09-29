@@ -15,17 +15,15 @@
       height: 100%;
       width: 100%;
       background: #000;
-      font-family: sans-serif;
+      font-family: 'DayZFont', sans-serif;
       overflow: hidden;
     }
 
-    /* Smoke overlay */
+    /* Smoke background */
     #smoke-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
       z-index: 900;
       pointer-events: none;
     }
@@ -39,7 +37,7 @@
       filter: blur(6px) saturate(1.05);
     }
 
-    /* Red tint layer */
+    /* Red tint overlay */
     #smoke-overlay::after {
       content: "";
       position: absolute;
@@ -56,13 +54,11 @@
       opacity: 1;
     }
 
-    /* Blood splatter overlay */
+    /* Blood + Text overlay */
     #surgeOverlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
       z-index: 950;
       pointer-events: none;
       opacity: 0;
@@ -90,7 +86,6 @@
       left: 50%;
       transform: translateX(-50%);
       color: #ff0000;
-      font-family: 'DayZFont', sans-serif;
       font-size: 9vw;
       letter-spacing: 6px;
       text-align: center;
@@ -148,7 +143,6 @@
       text-decoration: none;
       border: none;
       color: #fff;
-      font-family: 'DayZFont', sans-serif;
       transition: box-shadow 0.2s ease;
     }
 
@@ -165,18 +159,20 @@
 </head>
 <body>
 
+  <!-- Logo -->
   <div id="logo">
     <img src="Aggro-logo.PNG" alt="Aggro PvP Logo">
   </div>
 
+  <!-- Buttons -->
   <div class="widget-bar">
     <a href="steam://connect/103.193.80.64:3436" class="redBtn">Connect to Server</a>
     <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="blueBtn">Join the Community</a>
   </div>
 
-  <!-- Smoke overlay -->
+  <!-- Smoke background -->
   <div id="smoke-overlay">
-    <video autoplay muted loop playsinline preload="auto" id="smokeVideo">
+    <video autoplay muted playsinline preload="auto" id="smokeVideo">
       <source src="Smoke.mp4?v=1" type="video/mp4">
     </video>
   </div>
