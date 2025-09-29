@@ -105,12 +105,15 @@
     }
 
     .social-buttons a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       padding: 12px 20px;
       font-weight: bold;
       border-radius: 8px;
       text-decoration: none;
-      border: 1px solid #fff;
       font-family: sans-serif;
+      border: none;
     }
 
     .discord-btn {
@@ -119,8 +122,13 @@
     }
 
     .steam-btn {
-      background: #171a21;
+      background: #ff3b3b;
       color: #fff;
+    }
+
+    .social-buttons img {
+      height: 24px;
+      width: 24px;
     }
   </style>
 </head>
@@ -147,8 +155,16 @@
 
   <!-- Social Join Buttons -->
   <div class="social-buttons">
-    <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="discord-btn">💬 Join Aggro PvP Discord</a>
-    <a href="steam://connect/193.193.80.64:3436" class="steam-btn">🎮 Connect via Steam</a>
+    <!-- Discord Button -->
+    <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="discord-btn">
+      <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ac.svg" alt="Discord">
+      Join Aggro PvP Discord
+    </a>
+
+    <!-- Steam Connect Button -->
+    <a href="steam://connect/193.193.80.64:3436" class="steam-btn">
+      Connect Now
+    </a>
   </div>
 
   <script>
