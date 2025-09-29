@@ -7,7 +7,7 @@
     /* Load custom font */
     @font-face {
       font-family: 'DayZFont';
-      src: url('28DaysLater.ttf') format('truetype');
+      src: url('28 Days Later.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
     }
@@ -22,14 +22,14 @@
       overflow: hidden;
     }
 
-    /* Smoke overlay — beneath everything */
+    /* Smoke overlay — stays on top */
     #smoke-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: 1000;
+      z-index: 999999;
       pointer-events: none;
     }
 
@@ -51,7 +51,7 @@
     /* Logo */
     #logo {
       position: relative;
-      z-index: 2000;
+      z-index: 1000;
       width: 100vw;
       text-align: center;
       top: 30vh;
@@ -68,7 +68,7 @@
       bottom: 40px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 2000;
+      z-index: 1000;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -110,7 +110,7 @@
       position: fixed;
       top: 20px;
       right: 20px;
-      z-index: 2000;
+      z-index: 1000;
       background: none;
       border: none;
       cursor: pointer;
@@ -128,12 +128,12 @@
         drop-shadow(0 0 24px rgba(255,0,0,0.4));
     }
 
-    /* Popup menu — now above smoke and uses font */
+    /* Popup menu — above smoke and uses font */
     .anarchyMenu {
       position: fixed;
       top: 110px;
       right: 20px;
-      z-index: 100001;
+      z-index: 1000000;
       background: rgba(0, 0, 0, 0.98);
       padding: 14px;
       border-radius: 12px;
@@ -192,7 +192,7 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- Smoke overlay (beneath everything except menu) -->
+  <!-- Smoke overlay (on top of everything) -->
   <div id="smoke-overlay" aria-hidden="true">
     <video autoplay loop muted playsinline preload="auto" id="smokeVideo">
       <source src="Smoke.mp4?v=1" type="video/mp4">
