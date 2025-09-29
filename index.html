@@ -3,67 +3,58 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — Fixed: single smoke, visible JOIN THE FIGHT</title>
+<title>Aggro PvP — Smoke On Top (No Red Tint)</title>
 <style>
   :root{
-    --red:#ff2b2b;
     --surge-ms:2600;
     --punch-ms:140;
     --splat-opacity:0.62;
     --splat-contrast:1.18;
+    --red: #ff2b2b;
   }
 
-  /* Basic resets and font stack */
-  html,body{height:100%;margin:0;background:#000;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;overflow:hidden;-webkit-font-smoothing:antialiased}
+  /* Base */
+  html,body{height:100%;margin:0;background:#000;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;overflow:hidden;-webkit-font-smoothing:antialiased}
   img{max-width:100%;display:block}
 
-  /* Z-order plan:
-     2000 = menu (interactive)
-     1700 = headline (always above smoke)
-     1500 = glitch overlays (optional)
-     1400 = single smoke video
-     1300 = redWash overlay (above smoke to force tint)
-     1200 = splats / blood
-     1000 = logo / CTAs
+  /* Z-index plan
+     2000 = Menu (topmost interactive)
+     1500 = Headline, Logo, CTAs (under the smoke)
+     1400 = Smoke (on top of most UI)
+     2100 = Popup/menu should still be above smoke (we keep menu at 2100)
   */
 
-  /* Menu (topmost interactive) */
-  .anarchyBtn{position:fixed;top:18px;right:18px;z-index:2000;background:transparent;border:0;padding:6px;cursor:pointer}
+  /* Menu (always above smoke) */
+  .anarchyBtn{position:fixed;top:18px;right:18px;z-index:2100;background:transparent;border:0;padding:6px;cursor:pointer}
   .anarchyBtn img{width:56px;height:56px;display:block;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.8))}
-  .anarchyMenu{position:fixed;top:86px;right:18px;z-index:2000;display:none;flex-direction:column;gap:8px;padding:10px;background:rgba(10,10,10,0.98);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.6)}
+  .anarchyMenu{position:fixed;top:86px;right:18px;z-index:2100;display:none;flex-direction:column;gap:8px;padding:10px;background:rgba(10,10,10,0.98);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.6);min-width:180px}
   .anarchyMenu.open{display:flex}
   .anarchyMenu a{color:#fff;text-decoration:none;padding:8px 10px;border-radius:6px;font-weight:700;font-size:14px}
   .anarchyMenu a:hover{background:rgba(255,255,255,0.03)}
 
-  /* Headline (guaranteed above smoke) */
-  .headline{position:fixed;inset:0;z-index:1700;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:6vh 4vw}
+  /* Headline / Logo / CTAs (under smoke visually) */
+  .headline{position:fixed;inset:0;z-index:1500;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:6vh 4vw}
   #headlineText{
     margin:0;color:#fff;font-weight:900;letter-spacing:6px;text-align:center;
     -webkit-text-stroke:2px rgba(0,0,0,0.95);
-    text-shadow:0 2px 6px rgba(0,0,0,0.9),0 0 18px rgba(255,40,40,0.08);
-    font-size:clamp(28px,9.2vw,86px);opacity:0;white-space:nowrap;padding:6px 10px;
-    will-change:opacity,transform;
+    text-shadow:0 2px 6px rgba(0,0,0,0.9),0 0 14px rgba(255,40,40,0.06);
+    font-size:clamp(28px,9.2vw,86px);opacity:0;white-space:nowrap;padding:6px 10px;will-change:opacity,transform;
   }
   @keyframes headlinePop{0%{opacity:0;transform:translateY(18px) scale(.985)}8%{opacity:1;transform:translateY(0) scale(1.06)}70%{opacity:1}100%{opacity:0;transform:translateY(-8px) scale(.985)}}
   .show-headline #headlineText{animation: headlinePop var(--surge-ms) cubic-bezier(.2,.9,.3,1) forwards;opacity:1}
 
-  /* Single authoritative smoke layer */
+  #logo{position:fixed;top:9vh;left:50%;transform:translateX(-50%);z-index:1500}
+  #logo img{width:min(360px,40vw);filter:drop-shadow(0 18px 40px rgba(0,0,0,0.75));display:block}
+  .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:36px;z-index:1500;display:flex;flex-direction:column;gap:12px;align-items:center}
+  .cta{padding:12px 24px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800}
+  .primary{background:var(--red)}.secondary{background:#5865F2}
+
+  /* Smoke: single authoritative layer on top of UI (but menu/popup above it) */
   #smoke-overlay{position:fixed;inset:0;z-index:1400;pointer-events:none}
-  /* IMPORTANT: remove mix-blend-mode that can wash out tint; keep natural video rendering */
-  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:0.98;filter:blur(3px) saturate(1.05) contrast(1);transition:filter 180ms linear,transform 160ms linear;will-change:filter,transform}
-  #smokeVideo.glitchShift{transform:translateX(-6px) rotate(-0.2deg)}
-
-  /* Red wash overlay ABOVE smoke so tint is visible on all devices */
-  #redWash{position:fixed;inset:0;z-index:1300;pointer-events:none;opacity:0;background:linear-gradient(180deg, rgba(255,24,24,0.22), rgba(255,8,8,0.06));mix-blend-mode:overlay;transition:opacity 180ms linear}
-  #redWash.show{opacity:1}
-
-  /* Optional glitch overlays (do not double-play the video) */
-  .glitch-rgb{position:fixed;inset:0;z-index:1500;pointer-events:none;opacity:0;mix-blend-mode:screen;transition:opacity 100ms linear}
-  .glitch-rgb.show{opacity:1}
-  .glitch-rgb .rgb-red,.glitch-rgb .rgb-cyan{position:absolute;inset:0;background-repeat:no-repeat;background-size:cover;background-position:center;pointer-events:none}
-  .glitch-static{position:fixed;inset:0;z-index:1520;pointer-events:none;opacity:0;background:rgba(255,20,20,0.06);mix-blend-mode:screen;transition:opacity 120ms linear}
-  .glitch-static.show{opacity:1;animation:staticPop 120ms linear both}
-  @keyframes staticPop{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+  /* Use normal rendering (no heavy blend modes) so smoke looks natural */
+  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:0.92;filter:blur(2.8px) saturate(1) contrast(1);transition:filter 180ms linear,transform 160ms linear;will-change:filter,transform}
+  /* micro-shift for optional punch */
+  #smokeVideo.glitchShift{transform:translateX(-4px) rotate(-0.18deg);}
 
   /* Splats / blood (under smoke visually) */
   #surge{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 120ms linear}
@@ -76,12 +67,6 @@
   @keyframes splatIn{0%{transform:scale(.68) rotate(-8deg);opacity:0;filter:blur(1.2px)}60%{transform:scale(1.22) rotate(6deg);opacity:1;filter:blur(.2px)}100%{transform:scale(1) rotate(0);opacity:var(--splat-opacity)}}
   @keyframes drip{0%{transform:translateY(0)}30%{transform:translateY(6px)}100%{transform:translateY(26px);opacity:.86}}
 
-  /* Logo / CTAs (lower than smoke) */
-  #logo{position:fixed;top:9vh;left:50%;transform:translateX(-50%);z-index:1000}
-  .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:36px;z-index:1000;display:flex;flex-direction:column;gap:12px;align-items:center}
-  .cta{padding:12px 24px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800}
-  .primary{background:var(--red)}.secondary{background:#5865F2}
-
   @media(max-width:520px){
     #headlineText{font-size:clamp(20px,12vw,72px);-webkit-text-stroke:1.4px}
     .splat.left{width:300px;top:4%;left:2%}
@@ -92,7 +77,7 @@
 </head>
 <body>
 
-  <!-- Menu (topmost) -->
+  <!-- Anarchy menu (keeps highest z-index so it's above smoke and clickable) -->
   <button id="anarchyBtn" class="anarchyBtn" aria-expanded="false" aria-controls="anarchyMenu" title="Menu">
     <img src="anarchy.png" alt="Menu">
   </button>
@@ -104,47 +89,33 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- Headline (on top of smoke) -->
+  <!-- Headline, Logo, CTAs are under the smoke visually -->
   <div class="headline" id="headlineWrap" aria-hidden="true">
     <h1 id="headlineText" data-text="JOIN THE FIGHT">JOIN THE FIGHT</h1>
   </div>
 
-  <!-- Single smoke video (authoritative layer) -->
-  <div id="smoke-overlay" aria-hidden="true">
-    <video id="smokeVideo" autoplay muted playsinline loop preload="auto" crossorigin="anonymous">
-      <source src="Smoke.mp4?v=1" type="video/mp4">
-    </video>
-  </div>
-
-  <!-- Glitch overlays (snapshot echoes; optional, do NOT double-play the video) -->
-  <div id="glitchRGB" class="glitch-rgb" aria-hidden="true">
-    <div class="rgb-red"></div>
-    <div class="rgb-cyan"></div>
-  </div>
-  <div id="glitchStatic" class="glitch-static" aria-hidden="true"></div>
-
-  <!-- Red wash ABOVE smoke to guarantee visible tint -->
-  <div id="redWash" aria-hidden="true"></div>
-
-  <!-- Splats / blood (under smoke visually) -->
-  <div id="surge" aria-hidden="true">
-    <div class="splat left" id="splatLeft" aria-hidden="true"><img src="blood.png" alt=""></div>
-    <div class="splat right" id="splatRight" aria-hidden="true"><img src="blood1.png" alt=""></div>
-  </div>
-
-  <!-- Logo + CTAs -->
   <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
   <div class="widget-bar">
     <a class="cta primary" href="steam://connect/103.193.80.64:3436">Connect to Server</a>
     <a class="cta secondary" href="https://discord.gg/gSwkVzJyMT" target="_blank" rel="noopener">Join the Community</a>
   </div>
 
+  <!-- Smoke sits above most UI (pointer-events:none so it won't block clicks) -->
+  <div id="smoke-overlay" aria-hidden="true">
+    <video id="smokeVideo" autoplay muted playsinline loop preload="auto" crossorigin="anonymous">
+      <source src="Smoke.mp4?v=1" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- Splats / blood are rendered under smoke visually -->
+  <div id="surge" aria-hidden="true">
+    <div class="splat left" id="splatLeft" aria-hidden="true"><img src="blood.png" alt=""></div>
+    <div class="splat right" id="splatRight" aria-hidden="true"><img src="blood1.png" alt=""></div>
+  </div>
+
 <script>
 (function(){
   const video = document.getElementById('smokeVideo');
-  const redWash = document.getElementById('redWash');
-  const glitchRGB = document.getElementById('glitchRGB');
-  const glitchStatic = document.getElementById('glitchStatic');
   const surge = document.getElementById('surge');
   const splatLeft = document.getElementById('splatLeft');
   const splatRight = document.getElementById('splatRight');
@@ -157,126 +128,60 @@
   const PUNCH_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--punch-ms')) || 140;
   const TRIGGER_BEFORE_END = 1.0;
 
-  // Ensure only one video exists in DOM (sanity)
-  // If multiple videos found, remove extras (helps if file was merged incorrectly)
+  // Ensure only one smoke video exists
   (function removeExtraVideos(){
     const vids = Array.from(document.querySelectorAll('video#smokeVideo'));
-    if(vids.length>1){
-      vids.slice(1).forEach(v=>v.remove());
-    }
+    if(vids.length>1) vids.slice(1).forEach(v=>v.remove());
   })();
 
-  // Attempt to autoplay; many browsers block until interaction
+  // Attempt to autoplay
   video.play().catch(()=>{});
 
-  // Snapshot helper for glitch echoes (may be blocked by CORS; safe fallback)
-  function trySnapshot(){
-    try {
-      const c = document.createElement('canvas');
-      c.width = video.videoWidth || 1280;
-      c.height = video.videoHeight || 720;
-      const ctx = c.getContext('2d');
-      ctx.drawImage(video, 0, 0, c.width, c.height);
-      const dataUrl = c.toDataURL('image/webp');
-      const red = glitchRGB.querySelector('.rgb-red');
-      const cyan = glitchRGB.querySelector('.rgb-cyan');
-      if (red) red.style.backgroundImage = `url(${dataUrl})`;
-      if (cyan) cyan.style.backgroundImage = `url(${dataUrl})`;
-    } catch(e){
-      // cross-origin or other failure; glitch still runs via CSS transforms
-    }
-  }
-
-  // Make sure metadata is ready before time-based triggers
-  function ensureMeta(cb){
-    if(video.duration && !isNaN(video.duration)) return cb();
-    video.addEventListener('loadedmetadata', cb, { once:true });
-  }
-
-  ensureMeta(()=>{
-    video.addEventListener('timeupdate', ()=>{
-      if (!video.duration || isNaN(video.duration)) return;
-      const remaining = video.duration - video.currentTime;
-      if (remaining <= TRIGGER_BEFORE_END && !video._surgeTriggered){
-        video._surgeTriggered = true;
-        runSurge();
-      }
-    });
-  });
-
-  video.addEventListener('ended', ()=>{
-    video._surgeTriggered = false;
-    video.currentTime = 0;
-    video.play().catch(()=>{});
-  });
-
-  function runSurge(){
-    // snapshot for visual echoes (optional)
-    trySnapshot();
-
-    // 1) Keep headline visible and on top for the whole surge
+  // Keep headline visibility tied to manual trigger (no red tint)
+  function runSurgeNoRed(){
+    // show headline (it sits under smoke visually)
     headlineWrap.classList.add('show-headline');
     headlineWrap.setAttribute('aria-hidden','false');
 
-    // 2) Reveal red wash (overlay above video) — guarantees visible red
-    redWash.classList.add('show');
-
-    // 3) Quick micro-shift on the single video for scan/glitch feel
+    // optional micro-shift of smoke for impact
     video.classList.add('glitchShift');
 
-    // 4) Show glitch overlays briefly (they do not play video)
-    glitchRGB.classList.add('show');
-    glitchStatic.classList.add('show');
-
-    // 5) Show splats (they animate under the smoke visually)
+    // show splats (they animate but are visually under smoke)
     surge.classList.remove('show'); void surge.offsetWidth; surge.classList.add('show');
     surge.setAttribute('aria-hidden','false');
-    splatLeft.classList.remove('flash'); splatRight.classList.remove('flash');
     splatLeft.classList.add('flash'); splatRight.classList.add('flash');
     setTimeout(()=>{ splatLeft.classList.remove('flash'); splatRight.classList.remove('flash'); }, 520);
 
-    // 6) Mild screen punch to sell impact
+    // small screen punch
     document.body.style.transition = 'transform 160ms cubic-bezier(.2,.9,.3,1)';
     document.body.style.transform = 'translateY(-6px) rotate(-0.35deg)';
     setTimeout(()=>{ document.body.style.transform = ''; }, PUNCH_MS);
 
-    // 7) Remove short-lived static quickly so it's a punch
-    setTimeout(()=>{ glitchStatic.classList.remove('show'); }, PUNCH_MS + 10);
-
-    // 8) Keep all primary visuals until SURGE_MS then clear
+    // clear micro-shift + visuals after SURGE_MS
     setTimeout(()=>{
-      // hide tint and glitch
-      redWash.classList.remove('show');
-      glitchRGB.classList.remove('show');
       video.classList.remove('glitchShift');
-
-      // hide splats and headline
       surge.classList.remove('show'); surge.setAttribute('aria-hidden','true');
       headlineWrap.classList.remove('show-headline'); headlineWrap.setAttribute('aria-hidden','true');
-
-      // tiny buffer then allow next trigger
-      setTimeout(()=>{ video._surgeTriggered = false; }, 200);
     }, SURGE_MS);
   }
 
-  // Manual trigger helper for console testing
-  window.triggerSurge = runSurge;
+  // Expose for testing: run in console triggerSurge()
+  window.triggerSurge = runSurgeNoRed;
 
-  // Menu toggle logic
+  // Menu toggle
   function openMenu(open){
-    const menu = anarchyMenu;
     if(open){
-      menu.classList.add('open'); menu.setAttribute('aria-hidden','false'); anarchyBtn.setAttribute('aria-expanded','true');
-      const first = menu.querySelector('a'); if(first) first.focus();
+      anarchyMenu.classList.add('open'); anarchyMenu.setAttribute('aria-hidden','false'); anarchyBtn.setAttribute('aria-expanded','true');
+      const first = anarchyMenu.querySelector('a'); if(first) first.focus();
     } else {
-      menu.classList.remove('open'); menu.setAttribute('aria-hidden','true'); anarchyBtn.setAttribute('aria-expanded','false');
+      anarchyMenu.classList.remove('open'); anarchyMenu.setAttribute('aria-hidden','true'); anarchyBtn.setAttribute('aria-expanded','false');
     }
   }
   anarchyBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openMenu(!anarchyMenu.classList.contains('open')); });
   document.addEventListener('click', (e)=>{ if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) openMenu(false); });
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') openMenu(false); });
 
-  // Click anywhere to try unlock autoplay
+  // Click anywhere to attempt unlocking autoplay if blocked
   document.addEventListener('click', ()=>{ if(video.paused) video.play().catch(()=>{}); });
 })();
 </script>
