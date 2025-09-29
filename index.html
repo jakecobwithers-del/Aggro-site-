@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Aggro PvP — Join the Fight</title>
   <style>
-    /* Load custom font */
     @font-face {
       font-family: 'DayZFont';
       src: url('28 Days Later.ttf') format('truetype');
@@ -22,7 +21,7 @@
       overflow: hidden;
     }
 
-    /* Smoke overlay — stays on top */
+    /* Smoke overlay */
     #smoke-overlay {
       position: fixed;
       top: 0;
@@ -77,35 +76,52 @@
 
     .redBtn, .blueBtn {
       display: inline-block;
-      padding: 14px 24px;
+      padding: 16px 28px;
+      font-size: 18px;
       font-weight: bold;
-      font-size: 16px;
+      letter-spacing: 1.5px;
       border-radius: 10px;
       text-decoration: none;
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-      transition: background 0.3s ease;
+      border: none;
       color: #fff;
       font-family: 'DayZFont', sans-serif;
+      transform: perspective(1px) translateZ(0);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .redBtn {
       background: #ff3b3b;
+      box-shadow:
+        inset 0 -4px 0 rgba(0,0,0,0.3),
+        0 6px 12px rgba(0,0,0,0.6),
+        0 0 8px rgba(255,0,0,0.3);
     }
 
     .redBtn:hover {
-      background: #cc2a2a;
+      transform: translateY(-2px);
+      box-shadow:
+        inset 0 -4px 0 rgba(0,0,0,0.3),
+        0 8px 16px rgba(0,0,0,0.8),
+        0 0 12px rgba(255,0,0,0.5);
     }
 
     .blueBtn {
       background: #5865F2;
+      box-shadow:
+        inset 0 -4px 0 rgba(0,0,0,0.3),
+        0 6px 12px rgba(0,0,0,0.6),
+        0 0 8px rgba(88,101,242,0.3);
     }
 
     .blueBtn:hover {
-      background: #4752c4;
+      transform: translateY(-2px);
+      box-shadow:
+        inset 0 -4px 0 rgba(0,0,0,0.3),
+        0 8px 16px rgba(0,0,0,0.8),
+        0 0 12px rgba(88,101,242,0.5);
     }
 
-    /* Anarchy menu button — above smoke */
+    /* Anarchy icon — above smoke */
     .anarchyBtn {
       position: fixed;
       top: 20px;
@@ -128,21 +144,23 @@
         drop-shadow(0 0 36px rgba(255,0,0,0.4));
     }
 
-    /* Popup menu — above smoke and uses font */
+    /* Popup menu — above smoke, styled */
     .anarchyMenu {
       position: fixed;
       top: 110px;
       right: 20px;
       z-index: 1000001;
       background: rgba(0, 0, 0, 0.98);
-      padding: 14px;
+      padding: 16px;
       border-radius: 12px;
       display: none;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
       box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
       border: 1px solid rgba(255, 0, 0, 0.2);
       font-family: 'DayZFont', sans-serif;
+      font-size: 18px;
+      letter-spacing: 1.5px;
     }
 
     .anarchyMenu.open {
@@ -192,7 +210,7 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- Smoke overlay (on top of everything) -->
+  <!-- Smoke overlay -->
   <div id="smoke-overlay" aria-hidden="true">
     <video autoplay loop muted playsinline preload="auto" id="smokeVideo">
       <source src="Smoke.mp4?v=1" type="video/mp4">
@@ -200,7 +218,6 @@
   </div>
 
   <script>
-    // Smoke fallback
     const smokeVideo = document.getElementById('smokeVideo');
     const smokeOverlay = document.getElementById('smoke-overlay');
     smokeVideo.addEventListener('error', () => {
@@ -208,7 +225,6 @@
       smokeOverlay.style.display = 'none';
     });
 
-    // Anarchy menu toggle
     const anarchyBtn = document.getElementById('anarchyBtn');
     const anarchyMenu = document.getElementById('anarchyMenu');
     anarchyBtn.addEventListener('click', () => {
