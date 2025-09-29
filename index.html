@@ -56,9 +56,16 @@
       top: 30vh;
     }
 
+    @keyframes pulseLogo {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
     #logo img {
       width: min(300px, 40vw);
       filter: drop-shadow(0 18px 40px rgba(0,0,0,0.75));
+      animation: pulseLogo 2.5s ease-in-out infinite;
     }
 
     /* Bottom buttons */
