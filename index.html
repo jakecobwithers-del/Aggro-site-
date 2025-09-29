@@ -67,7 +67,32 @@
       gap: 20px;
     }
 
-    .actionBtn {
+    .icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .discordBtn {
+      display: inline-block;
+      padding: 14px 24px;
+      background: #5865F2;
+      color: #fff;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 10px;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      transition: background 0.3s ease;
+    }
+
+    .discordBtn:hover {
+      background: #4752c4;
+    }
+
+    .steamBtn {
       display: inline-block;
       padding: 14px 24px;
       background: #ff3b3b;
@@ -81,8 +106,8 @@
       transition: background 0.3s ease;
     }
 
-    .actionBtn:hover {
-      background: #ff5b5b;
+    .steamBtn:hover {
+      background: #cc2a2a;
     }
 
     /* Anarchy menu button */
@@ -147,8 +172,12 @@
 
   <!-- Bottom buttons -->
   <div class="widget-bar">
-    <a href="steam://connect/103.193.80.64:3436" class="actionBtn">🎮 Connect to DayZ Server</a>
-    <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="actionBtn">💬 Join Our Discord</a>
+    <a href="steam://connect/103.193.80.64:3436" class="steamBtn">
+      <img src="steam-icon.png" alt="Steam" class="icon"> Connect to DayZ Server
+    </a>
+    <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="discordBtn">
+      <img src="discord-icon.png" alt="Discord" class="icon"> Join Our Discord
+    </a>
   </div>
 
   <!-- Anarchy menu button -->
