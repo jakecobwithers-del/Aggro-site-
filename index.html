@@ -61,8 +61,8 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(1.8) rotate(-5deg);
-      width: 600px;
+      transform: translate(-50%, -50%) scale(1.6) rotate(-5deg);
+      width: 500px;
       opacity: 0.95;
       pointer-events: none;
     }
@@ -249,7 +249,7 @@
       triggerSurge();
     });
 
-        const triggerSurge = () => {
+    const triggerSurge = () => {
       smokeVideo.classList.add('redHue');
       surgeOverlay.classList.add('show');
 
@@ -259,13 +259,11 @@
       }, 2500);
     };
 
-    // Anarchy menu toggle
-    anarchyBtn.addEventListener('click', () => {
+      anarchyBtn.addEventListener('click', () => {
       const open = anarchyMenu.classList.toggle('open');
       anarchyMenu.setAttribute('aria-hidden', (!open).toString());
     });
 
-    // Close menu on outside click
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) {
         anarchyMenu.classList.remove('open');
@@ -276,3 +274,4 @@
 
 </body>
 </html>
+
