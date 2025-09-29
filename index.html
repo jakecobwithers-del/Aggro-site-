@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — Join the Fight</title>
+<title>Aggro PvP — Join the Fight (Polished + Menu)</title>
 <style>
   :root{
     --red:#ff2b2b;
-    --surge-ms:2600;    /* how long the visual state holds while the headline runs */
-    --punch-ms:140;     /* short flash/shake length */
-    --splat-opacity:0.78; /* base opacity for PNG splats (more see-through) */
+    --splat-opacity:0.66;
+    --surge-ms:2600;
+    --punch-ms:140;
+    --panel-alpha:0.30;
   }
 
   /* Font */
@@ -18,78 +19,95 @@
     src: url('28 Days Later.ttf') format('truetype');
     font-display:swap;
   }
-  html,body{height:100%;margin:0;background:#000;color:#fff;font-family:'DayZFont',system-ui,Segoe UI,Roboto,sans-serif;overflow:hidden}
+  html,body{height:100%;margin:0;background:#000;color:#fff;font-family:'DayZFont',system-ui,Segoe UI,Roboto,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
 
-  /* Layout */
-  #logo{position:fixed;top:10vh;left:50%;transform:translateX(-50%);z-index:60}
-  #logo img{width:min(360px,40vw);filter:drop-shadow(0 18px 40px rgba(0,0,0,0.75));display:block}
-  .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:36px;z-index:60;display:flex;flex-direction:column;gap:12px;align-items:center}
-  .cta{padding:12px 24px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800}
-  .primary{background:var(--red)}.secondary{background:#5865F2}
-
-  /* Smoke video (background) */
+  /* Background video */
   #smoke-overlay{position:fixed;inset:0;z-index:10;pointer-events:none}
   #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:0.62;mix-blend-mode:screen;filter:blur(5px) saturate(1.05);transition:filter 160ms linear}
   #smokeVideo.redHue{filter: blur(5px) saturate(1.45) hue-rotate(-42deg) contrast(1.06)}
 
+  /* Logo / CTAs */
+  #logo{position:fixed;top:9vh;left:50%;transform:translateX(-50%);z-index:60}
+  #logo img{width:min(360px,40vw);filter:drop-shadow(0 18px 40px rgba(0,0,0,0.75))}
+  .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:36px;z-index:60;display:flex;flex-direction:column;gap:12px;align-items:center}
+  .cta{padding:12px 24px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800}
+  .primary{background:var(--red)}.secondary{background:#5865F2}
+
+  /* Anarchy menu button + menu */
+  .anarchyBtn{
+    position:fixed;top:18px;right:18px;z-index:1200;background:transparent;border:0;padding:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter: blur(2px);
+  }
+  .anarchyBtn img{width:56px;height:56px;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.8))}
+  .anarchyMenu{
+    position:fixed;top:86px;right:18px;z-index:1200;display:none;flex-direction:column;gap:8px;padding:10px;background: rgba(10,10,10,0.95);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.6);min-width:180px;
+  }
+  .anarchyMenu.open{display:flex}
+  .anarchyMenu a{color:#fff;text-decoration:none;padding:8px 10px;border-radius:6px;font-weight:700;font-size:14px}
+  .anarchyMenu a:hover{background:rgba(255,255,255,0.03);transform:translateX(4px);transition:transform 140ms ease}
+
   /* Screen effects */
   .effects{position:fixed;inset:0;pointer-events:none;z-index:420}
   .grain{position:absolute;inset:0;opacity:0.11;background-image:
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);background-size:3px 3px,3px 3px;mix-blend-mode:overlay;animation:grain 6s steps(8) infinite}
+     linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+     linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);background-size:3px 3px,3px 3px;mix-blend-mode:overlay;animation:grain 6s steps(8) infinite}
   @keyframes grain{0%{transform:translate(0,0)}50%{transform:translate(1px,-1px)}100%{transform:translate(0,0)}}
   .vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 28%, rgba(0,0,0,0.68) 100%);mix-blend-mode:multiply}
   .rgb-split{position:absolute;inset:0;opacity:0;mix-blend-mode:screen;transition:opacity 80ms linear;filter:contrast(1.02)}
   .rgb-split.show{opacity:1}
 
-  /* Red static flash (short punch) */
+  /* Red static */
   #redStatic{position:fixed;inset:0;z-index:600;pointer-events:none;background:linear-gradient(180deg, rgba(255,24,24,0.08), rgba(255,16,16,0.04));opacity:0;transition:opacity 80ms linear;mix-blend-mode:screen}
   #redStatic.show{opacity:1}
 
-  /* Surge overlay (PNG splats + headline) */
+  /* Surge layer (PNG splats + headline panel) */
   #surge{position:fixed;inset:0;z-index:700;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 120ms linear}
   #surge.show{opacity:1}
-
-  /* PNG splats styling (use your blood.png & blood1.png) */
-  .splat{
-    position:absolute;pointer-events:none;will-change:transform,opacity,filter;mix-blend-mode:multiply;opacity:var(--splat-opacity);
-    filter:contrast(1.05) saturate(1.12) drop-shadow(0 12px 28px rgba(0,0,0,0.7));
-    transform-origin:center center;
-  }
+  .splat{position:absolute;pointer-events:none;will-change:transform,opacity,filter;mix-blend-mode:multiply;opacity:var(--splat-opacity);filter:contrast(1.05) saturate(1.08) drop-shadow(0 12px 28px rgba(0,0,0,0.7))}
   .splat.left{top:6%;left:4%;width:420px;transform:rotate(-26deg)}
   .splat.right{bottom:6%;right:4%;width:420px;transform:rotate(12deg)}
-  /* entrance + drip (same as before but tuned for PNG) */
   #surge.show .splat{animation:splatIn 520ms cubic-bezier(.2,.9,.3,1) forwards, drip 1200ms linear 420ms both}
   @keyframes splatIn{0%{transform:scale(0.72) rotate(-8deg);opacity:0}60%{transform:scale(1.18) rotate(6deg);opacity:1;filter:blur(0.6px)}100%{transform:scale(1) rotate(0);opacity:var(--splat-opacity)}}
   @keyframes drip{0%{transform:translateY(0)}40%{transform:translateY(6px)}100%{transform:translateY(18px);opacity:0.86}}
-
-  /* wet spec overlay for PNG (gives glossy sheen) */
   .splat .spec{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:0.12;background:
-    radial-gradient(circle at 24% 26%, rgba(255,255,255,0.18), transparent 16%),
+    radial-gradient(circle at 24% 26%, rgba(255,255,255,0.16), transparent 16%),
     radial-gradient(circle at 74% 74%, rgba(255,255,255,0.06), transparent 24%);border-radius:6px}
 
-  /* Headline: strong, readable, and persistent for SURGE_MS */
-  #headline{position:relative;z-index:720;color:var(--red);font-weight:900;letter-spacing:6px;font-size:9.2vw;line-height:1;text-align:center;padding:8px 18px;-webkit-text-stroke:2px rgba(0,0,0,0.96);text-shadow:0 2px 10px rgba(0,0,0,0.95),0 0 28px rgba(255,40,40,0.36);opacity:0;transform:translateY(12px) scale(0.98);filter:drop-shadow(0 6px 22px rgba(0,0,0,0.9));will-change:opacity,transform}
-  /* keyframes exist but JS will start them with precise timing */
-  @keyframes headlinePop{0%{opacity:0;transform:translateY(18px) scale(0.98)}8%{opacity:1;transform:translateY(0) scale(1.06)}70%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-8px) scale(0.98)}}
-  @keyframes headlineJitter{0%{transform:translateY(0)}10%{transform:translateY(-1px) translateX(1px)}30%{transform:translateY(1px) translateX(-1px)}100%{transform:translateY(0)}}
+  /* Headline panel */
+  .headline-wrap{position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:8vh 6vw}
+  .headline-panel{
+    display:inline-flex;align-items:center;justify-content:center;gap:14px;background:linear-gradient(180deg, rgba(0,0,0,var(--panel-alpha)), rgba(0,0,0,calc(var(--panel-alpha) + 0.02)));backdrop-filter: blur(6px) saturate(0.9);padding:20px 32px;border-radius:10px;box-shadow:0 18px 60px rgba(0,0,0,0.7);
+  }
+  .accent{width:8px;height:64px;border-radius:4px;background:linear-gradient(180deg,var(--red),#ff6b6b);box-shadow:0 8px 20px rgba(255,40,40,0.12);transform:translateY(-6px);opacity:0}
+  #headline{margin:0;pointer-events:none;z-index:920;color:#fff;font-weight:900;letter-spacing:6px;font-size:9.2vw;line-height:1;text-align:center;-webkit-text-stroke:2.6px rgba(0,0,0,0.98);text-shadow:0 2px 6px rgba(0,0,0,0.95),0 0 18px rgba(255,40,40,0.12),0 10px 30px rgba(0,0,0,0.55);transform:translateY(6px) scale(0.995);opacity:0;will-change:opacity,transform,filter;padding:6px 8px;white-space:nowrap;filter:drop-shadow(0 6px 22px rgba(0,0,0,0.9))}
+  .show-panel #headline{animation: headPop var(--surge-ms) cubic-bezier(.2,.9,.3,1) forwards}
+  .show-panel .accent{animation: accentPop 420ms cubic-bezier(.2,.9,.3,1) forwards}
+  @keyframes headPop{0%{opacity:0;transform:translateY(18px) scale(0.98)}8%{opacity:1;transform:translateY(0) scale(1.06)}70%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-8px) scale(0.98)}}
+  @keyframes accentPop{0%{opacity:0;transform:translateY(6px) scaleY(0.85)}60%{opacity:1;transform:translateY(0) scaleY(1)}100%{opacity:1;transform:translateY(0) scaleY(1)}}
 
-  /* RGB echo pseudo elements for a short cinematic echo */
-  #headline[data-text]::before,#headline[data-text]::after{content:attr(data-text);position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;mix-blend-mode:screen}
-  #headline::before{color:rgba(255,40,40,0.95);transform:translateX(-2px)}#headline::after{color:rgba(80,180,255,0.85);transform:translateX(2px)}
-
-  /* small-screen adjustments */
+  /* responsive */
   @media(max-width:520px){
-    #headline{font-size:15vw;letter-spacing:3px;-webkit-text-stroke:1.6px}
+    #headline{font-size:15vw;letter-spacing:3px;-webkit-text-stroke:1.6px;white-space:normal}
     .splat.left{width:260px;top:4%;left:2%}
     .splat.right{width:280px;right:2%;bottom:4%}
-    #logo img{width:min(300px,46vw)}
+    .accent{height:44px}
+    .anarchyBtn img{width:48px;height:48px}
+    .anarchyMenu{right:12px;top:74px;min-width:140px}
   }
-
-  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 </style>
 </head>
 <body>
+
+  <!-- Anarchy menu button + menu -->
+  <button id="anarchyBtn" class="anarchyBtn" aria-expanded="false" aria-controls="anarchyMenu" title="Menu">
+    <img src="anarchy.png" alt="Menu">
+  </button>
+  <nav id="anarchyMenu" class="anarchyMenu" aria-hidden="true" role="navigation">
+    <a href="rules.html">Rules</a>
+    <a href="support.html">Support</a>
+    <a href="donate.html">Donate</a>
+    <a href="killfeed.html">Kill Feed</a>
+    <a href="leaderboard.html">Leaderboard</a>
+  </nav>
 
   <!-- Logo + CTAs -->
   <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
@@ -98,129 +116,171 @@
     <a class="cta secondary" href="https://discord.gg/gSwkVzJyMT" target="_blank">Join the Community</a>
   </div>
 
-  <!-- Smoke background -->
+  <!-- Smoke video -->
   <div id="smoke-overlay" aria-hidden="true">
     <video id="smokeVideo" autoplay muted playsinline preload="auto">
       <source src="Smoke.mp4?v=1" type="video/mp4">
     </video>
   </div>
 
-  <!-- Effects -->
+  <!-- Screen effects -->
   <div class="effects" aria-hidden="true">
     <div class="grain"></div>
     <div class="vignette"></div>
     <div class="rgb-split" id="rgbSplit"></div>
   </div>
 
-  <!-- Short red static punch -->
+  <!-- Red static -->
   <div id="redStatic" aria-hidden="true"></div>
 
-  <!-- Surge overlay: use your PNGs here (blood.png, blood1.png) -->
+  <!-- Surge overlays using your PNGs -->
   <div id="surge" aria-hidden="true">
     <div class="splat left" id="splatLeft" aria-hidden="true">
       <img src="blood.png" alt="" style="width:100%;height:auto;display:block">
       <div class="spec" aria-hidden="true"></div>
     </div>
-
     <div class="splat right" id="splatRight" aria-hidden="true">
       <img src="blood1.png" alt="" style="width:100%;height:auto;display:block">
       <div class="spec" aria-hidden="true"></div>
     </div>
+  </div>
 
-    <h1 id="headline" data-text="JOIN THE FIGHT">JOIN THE FIGHT</h1>
+  <!-- Polished headline panel -->
+  <div class="headline-wrap">
+    <div class="headline-panel" id="headlinePanel" aria-hidden="true">
+      <div class="accent" id="accentBar" aria-hidden="true"></div>
+      <h1 id="headline" data-text="JOIN THE FIGHT">JOIN THE FIGHT</h1>
+    </div>
   </div>
 
 <script>
 (function(){
+  /* Elements */
   const video = document.getElementById('smokeVideo');
   const surge = document.getElementById('surge');
   const redStatic = document.getElementById('redStatic');
   const rgbSplit = document.getElementById('rgbSplit');
-  const headline = document.getElementById('headline');
   const splatLeft = document.getElementById('splatLeft');
   const splatRight = document.getElementById('splatRight');
+  const headlinePanel = document.getElementById('headlinePanel');
+  const headline = document.getElementById('headline');
+  const accent = document.getElementById('accentBar');
+  const anarchyBtn = document.getElementById('anarchyBtn');
+  const anarchyMenu = document.getElementById('anarchyMenu');
 
   const TRIGGER_BEFORE_END = 1.0;
   const SURGE_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--surge-ms')) || 2600;
   const PUNCH_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--punch-ms')) || 140;
 
+  /* Ensure video metadata */
   function ensureMeta(cb){
     if (video.duration && !isNaN(video.duration)) return cb();
     video.addEventListener('loadedmetadata', cb, { once:true });
   }
 
-  // Attempt play if paused (autoplay may be blocked)
+  /* Try autoplay if blocked */
   if (video.paused) video.play().catch(()=>{});
 
+  /* Trigger surge before video ends */
   ensureMeta(()=>{
     video.addEventListener('timeupdate', ()=>{
       if (!video.duration || isNaN(video.duration)) return;
       const remaining = video.duration - video.currentTime;
       if (remaining <= TRIGGER_BEFORE_END && !video._surgeTriggered){
         video._surgeTriggered = true;
-        triggerSurgeHoldUntilHeadlineDone();
+        runSurgeKeepPanel();
       }
     });
   });
 
+  /* Manual loop reset */
   video.addEventListener('ended', ()=>{
     video._surgeTriggered = false;
     video.currentTime = 0;
     video.play().catch(()=>{});
   });
 
-  function triggerSurgeHoldUntilHeadlineDone(){
-    // 1) tint video
+  /* Run surge and keep headline panel visible for SURGE_MS */
+  function runSurgeKeepPanel(){
     video.classList.add('redHue');
-
-    // 2) quick RGB split and red static punch
     rgbSplit.classList.add('show');
     redStatic.classList.add('show');
 
-    // 3) show PNG splats + headline (force reflow so animations restart)
     surge.classList.remove('show');
     void surge.offsetWidth;
     surge.classList.add('show');
     surge.setAttribute('aria-hidden','false');
 
-    // force image opacity in case browser cached style
+    // ensure splat opacity present
     splatLeft.style.opacity = '';
     splatRight.style.opacity = '';
 
-    // 4) start headline css animations via inline style so JS can detect end via timer
-    headline.style.animation = `headlinePop ${SURGE_MS}ms cubic-bezier(.2,.9,.3,1) forwards, headlineJitter ${SURGE_MS}ms steps(6) both`;
+    // headline panel animations
+    headlinePanel.setAttribute('aria-hidden','false');
+    headlinePanel.classList.add('show-panel');
+    void headlinePanel.offsetWidth;
+    headline.style.animation = `headPop ${SURGE_MS}ms cubic-bezier(.2,.9,.3,1) forwards`;
+    accent.style.animation = `accentPop 420ms cubic-bezier(.2,.9,.3,1) forwards`;
 
-    // 5) screen punch (shake)
+    // short screen shake
     document.body.style.transition = 'transform 160ms cubic-bezier(.2,.9,.3,1)';
     document.body.style.transform = 'translateY(-6px) rotate(-0.35deg)';
     setTimeout(()=>{ document.body.style.transform = ''; }, PUNCH_MS);
 
-    // 6) clear the very-short overlays quickly (so punch feels crisp), keep main surge for SURGE_MS
-    setTimeout(()=>{
-      redStatic.classList.remove('show');
-      rgbSplit.classList.remove('show');
-    }, PUNCH_MS + 10);
+    // clear punch overlays quick
+    setTimeout(()=>{ redStatic.classList.remove('show'); rgbSplit.classList.remove('show'); }, PUNCH_MS + 10);
 
-    // 7) after SURGE_MS remove tint and surge layer (ensures headline finished)
+    // clear visuals after SURGE_MS
     setTimeout(()=>{
       video.classList.remove('redHue');
       surge.classList.remove('show');
       surge.setAttribute('aria-hidden','true');
 
-      // clear headline inline animation so it can replay
+      headlinePanel.classList.remove('show-panel');
+      headlinePanel.setAttribute('aria-hidden','true');
       headline.style.animation = '';
-      // safety buffer then allow next trigger
+      accent.style.animation = '';
+
       setTimeout(()=>{ video._surgeTriggered = false; }, 200);
     }, SURGE_MS);
   }
 
-  // Manual helper to test from console
-  window.triggerSurge = triggerSurgeHoldUntilHeadlineDone;
+  /* Expose manual trigger for console */
+  window.triggerSurge = runSurgeKeepPanel;
+  window.showPolishedHeadline = (ms=SURGE_MS) => {
+    headlinePanel.setAttribute('aria-hidden','false');
+    headlinePanel.classList.add('show-panel');
+    void headlinePanel.offsetWidth;
+    headline.style.animation = `headPop ${ms}ms cubic-bezier(.2,.9,.3,1) forwards`;
+    accent.style.animation = `accentPop 420ms cubic-bezier(.2,.9,.3,1) forwards`;
+    setTimeout(()=>{
+      headlinePanel.classList.remove('show-panel');
+      headlinePanel.setAttribute('aria-hidden','true');
+      headline.style.animation = '';
+      accent.style.animation = '';
+    }, ms+40);
+  };
 
-  // allow user interaction to enable autoplay if blocked
-  document.addEventListener('click', ()=>{
-    if (video.paused) video.play().catch(()=>{});
-  });
+  /* Anarchy menu behavior */
+  function openMenu(open){
+    if(open){
+      anarchyMenu.classList.add('open');
+      anarchyMenu.setAttribute('aria-hidden','false');
+      anarchyBtn.setAttribute('aria-expanded','true');
+      const first = anarchyMenu.querySelector('a');
+      if(first) first.focus();
+    } else {
+      anarchyMenu.classList.remove('open');
+      anarchyMenu.setAttribute('aria-hidden','true');
+      anarchyBtn.setAttribute('aria-expanded','false');
+    }
+  }
+  anarchyBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openMenu(!anarchyMenu.classList.contains('open')); });
+  document.addEventListener('click', (e)=>{ if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) openMenu(false); });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') openMenu(false); });
+
+  /* click to un-block autoplay */
+  document.addEventListener('click', ()=>{ if(video.paused) video.play().catch(()=>{}); });
 })();
 </script>
 </body>
