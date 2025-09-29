@@ -246,7 +246,7 @@
       0%, 100% { opacity: 1; transform: scale(1); }
       25% { opacity: 0.6; transform: scale(1.05); }
       50% { opacity: 0.2; transform: scale(0.95); }
-      75% { opacity: 0.8; transform: scale(0.95); }
+      75% { opacity: 0.8; transform: scale(  0.95); }
       75% { opacity: 0.8; transform: scale(1.02); }
     }
 
@@ -287,3 +287,69 @@
   </div>
 
   <!-- Red static overlay with flickering text -->
+  <div id="glitchOverlay" aria-hidden="true">
+    <h1>JOIN THE FIGHT</h1>
+  </div>
+
+  <script>
+    const smokeVideo = document.getElementById('smokeVideo');
+    const smokeOverlay = document.getElementById('smoke-overlay');
+    const logo = document.getElementById('logo');
+    const widgetBar = document.querySelector('.widget-bar');
+    const anarchyBtn = document.querySelector('.anarchyBtn');
+    const anarchyMenu = document.getElementById('anarchyMenu');
+    const glitchOverlay = document.getElementById('glitchOverlay');
+
+    smokeVideo.addEventListener('error', () => {
+      console.warn('Smoke video failed to load');
+      smokeOverlay.style.display = 'none';
+    });
+
+    const triggerGlitch = () => {
+      document.body.classList.add('glitching');
+      logo.classList.add('glitching');
+      widgetBar.classList.add('glitching');
+      anarchyBtn.classList.add('glitching');
+      anarchyMenu.classList.add('glitching');
+      smokeOverlay.classList.add('glitching');
+      glitchOverlay.classList.add('show');
+
+      setTimeout(() => {
+        document.body.classList.remove('glitching');
+        logo.classList.remove('glitching');
+        widgetBar.classList.remove('glitching');
+        anarchyBtn.classList.remove('glitching');
+        anarchyMenu.classList.remove('glitching');
+        smokeOverlay.classList.remove('glitching');
+        glitchOverlay.classList.remove('show');
+      }, 600);
+    };
+
+    smokeVideo.addEventListener('timeupdate', () => {
+      if (smokeVideo.duration - smokeVideo.currentTime < 0.5) {
+        if (!document.body.classList.contains('glitching')) {
+          triggerGlitch();
+        }
+      }
+    });
+
+    const anarchyBtnEl = document.getElementById('anarchyBtn');
+    const anarchyMenuEl = document.getElementById('anarchyMenu');
+    anarchyBtnEl.addEventListener('click', () => {
+      const open = anarchyMenuEl.classList.toggle('open');
+      anarchyMenuEl.setAttribute('aria-hidden', (!open).toString());
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) {
+        anarchyMenuEl.classList.remove('open');
+        anarchyMenuEl.setAttribute('aria-hidden', 'true');
+      }
+    });
+  </script>
+
+</body>
+</html>
+
+
+  
