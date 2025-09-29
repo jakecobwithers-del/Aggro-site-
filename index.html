@@ -3,26 +3,22 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — Fixed loop/timing, JOIN surge</title>
+<title>Aggro PvP — JOIN surge (1 loop, readable text + splats)</title>
 <style>
   :root{
-    --loops-before-glitch:2;    /* how many smoke loops before the surge */
-    --surge-ms:2000;            /* total visible time for red+join+splat (ms) */
-    --glitch-ms:420;            /* quick micro-glitch inside the surge (ms) */
-    --smoke-opacity:0.56;       /* smoke opacity so UI beneath reads */
-    --red-strength:0.30;        /* red wash opacity */
-    --splat-opacity:0.9;        /* blood opacity */
-    --min-video-duration:1.6;   /* if smoke shorter than this, we use time-based fallback */
+    --loops-before-glitch:1;
+    --surge-ms:2000;
+    --glitch-ms:420;
+    --smoke-opacity:0.56;
+    --red-strength:0.30;
+    --splat-opacity:0.92;
   }
 
-  /* === Your custom font (28 Days Later.ttf) ===
-     Place "28 Days Later.ttf" in repo root. Browser will use it directly.
-     If you convert to woff2 later, update src accordingly for better perf.
-  */
+  /* Load ONLY the TTF you provided. Put "28 Days Later.ttf" in repo root (exact filename). */
   @font-face{
     font-family: "28Days";
     src: url("28 Days Later.ttf") format("truetype");
-    font-weight: 400 900;
+    font-weight: 400 800;
     font-style: normal;
     font-display: swap;
   }
@@ -31,38 +27,69 @@
   img{display:block;max-width:100%}
   button{background:transparent;border:0;cursor:pointer;color:inherit;font:inherit}
 
-  /* z stack: menu (6000) > smoke (5000) > red paint (4600) > surge visuals (join+splat) (3000) > UI (1000) */
+  /* z-order:
+     6000 menu (clickable)
+     5000 smoke (top overlay)
+     4600 red-wash (brief overlay under smoke)
+     3000 surge visuals (JOIN + splats) — placed under smoke visually but made readable
+     1000 UI (logo/buttons)
+  */
+
+  /* Menu */
   .anarchyBtn{position:fixed;top:18px;right:18px;z-index:6000;padding:6px}
   .anarchyBtn img{width:56px;height:56px;display:block}
   .anarchyMenu{position:fixed;top:86px;right:18px;z-index:6000;display:none;flex-direction:column;gap:8px;padding:10px;background:rgba(6,6,6,0.98);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,0.6)}
   .anarchyMenu.open{display:flex}
   .anarchyMenu a{font-family:28Days,inherit;font-weight:700;color:#fff;text-decoration:none;padding:8px 12px;border-radius:6px;font-size:15px;letter-spacing:0.6px}
 
-  /* SURGE visuals container (join+splat). They are placed under the smoke so smoke overlays them,
-     but remain visible because smoke is semi-transparent. Hidden until triggered. */
-  .surgeContainer{position:fixed;inset:0;z-index:3000;pointer-events:none;display:flex;align-items:center;justify-content:center}
-  #joinImg{width:74vw;max-width:900px;opacity:0;transform:translateY(26px) scale(.98);transition:opacity 180ms ease,transform 260ms cubic-bezier(.2,.9,.3,1);filter:drop-shadow(0 20px 36px rgba(0,0,0,0.9));display:none}
-  #joinImg.show{display:block;opacity:1;transform:translateY(0) scale(1.02)}
-  /* fallback text rendered in your font */
-  #joinText{display:none;font-family:28Days,inherit;font-size:clamp(28px,9vw,92px);font-weight:900;letter-spacing:6px;text-align:center;-webkit-text-stroke:1.6px rgba(0,0,0,0.95);text-shadow:0 10px 28px rgba(0,0,0,0.9)}
-  #joinText.show{display:block;opacity:1;transform:none}
+  /* SURGE visuals - hidden by default */
+  .surgeContainer{position:fixed;inset:0;z-index:3000;pointer-events:none;display:flex;align-items:center;justify-content:center;padding:6vh 4vw}
+  /* Readable JOIN text: thick stroke, heavier drop shadow, slight red outer glow */
+  #joinText{
+    display:none;
+    font-family:28Days,Inter,Helvetica,Arial,sans-serif;
+    font-size:clamp(30px,10vw,96px);
+    font-weight:900;
+    line-height:0.94;
+    text-align:center;
+    letter-spacing:6px;
+    color: #fff;
+    -webkit-text-stroke:2px rgba(0,0,0,0.95); /* thick stroke for legibility under smoke */
+    text-shadow:
+      0 6px 20px rgba(0,0,0,0.9),
+      0 0 10px rgba(255,16,16,0.12); /* subtle red glow */
+    transform:translateY(20px) scale(.98);
+    opacity:0;
+    transition:opacity 200ms ease, transform 260ms cubic-bezier(.2,.9,.3,1);
+    pointer-events:none;
+    mix-blend-mode:normal;
+    padding: 8px 12px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.08)); /* tiny backing to help contrast */
+    border-radius:8px;
+    backdrop-filter: blur(2px) saturate(1.05);
+  }
+  #joinText.show{display:block;opacity:1;transform:translateY(0) scale(1.02)}
 
-  /* blood splats (initially hidden) */
-  .splat{position:fixed;pointer-events:none;mix-blend-mode:multiply;opacity:0;transition:opacity 200ms linear,transform 360ms cubic-bezier(.2,.9,.3,1)}
-  .splat.left{top:4%;left:3.5%;width:420px;transform:translateY(18px) rotate(-18deg) scale(.9);z-index:3000}
-  .splat.right{bottom:4%;right:3.5%;width:380px;transform:translateY(18px) rotate(12deg) scale(.9);z-index:3000}
+  /* Blood splats (hidden until surge). Slight inner shadow to help pop through smoke. */
+  .splat{
+    position:fixed;pointer-events:none;mix-blend-mode:multiply;opacity:0;
+    transition:opacity 220ms linear, transform 360ms cubic-bezier(.2,.9,.3,1);
+    filter:drop-shadow(0 8px 18px rgba(0,0,0,0.7));
+    z-index:3000;
+  }
+  .splat.left{top:4%;left:3.5%;width:420px;transform:translateY(18px) rotate(-18deg) scale(.9)}
+  .splat.right{bottom:4%;right:3.5%;width:380px;transform:translateY(18px) rotate(12deg) scale(.9)}
   .splat.show{opacity:var(--splat-opacity);transform:translateY(0) scale(1)}
 
-  /* subtle red paint (composited under the smoke but above surge visuals for mild color) */
+  /* subtle red wash (brief) to tint smoke during surge; sits under smoke but still affects look */
   .glitch-paint{position:fixed;inset:0;z-index:4600;pointer-events:none;opacity:0;transition:opacity 100ms linear}
   .glitch-paint.show{opacity:1}
   .red-wash{position:absolute;inset:0;background:rgba(255,18,18,var(--red-strength));mix-blend-mode:overlay;pointer-events:none}
 
-  /* Smoke is topmost visual overlay so it appears above join+splat. Keep pointer-events none so UI clickable. */
+  /* Smoke sits on top visually; keep pointer-events none so UI stays interactive */
   #smoke-wrap{position:fixed;inset:0;z-index:5000;pointer-events:none}
   #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(1.6px) saturate(1) contrast(1);transform-origin:center center;will-change:transform,filter,opacity}
-  /* non-destructive micro-transform during surge to add punch */
-  #smokeVideo.glitch{transition:transform var(--glitch-ms) cubic-bezier(.22,.9,.3,1),filter var(--glitch-ms) linear,opacity var(--glitch-ms) linear;transform:translateY(-6px) scale(1.02);filter:blur(3px) contrast(1.06) saturate(1.12);opacity:0.96;}
+  #smokeVideo.glitch{transition:transform var(--glitch-ms) cubic-bezier(.22,.9,.3,1),filter var(--glitch-ms) linear,opacity var(--glitch-ms) linear;transform:translateY(-6px) scale(1.02);filter:blur(3px) contrast(1.06) saturate(1.12);opacity:0.96}
 
   /* UI under smoke */
   #logo{position:fixed;top:9vh;left:50%;transform:translateX(-50%);z-index:1000}
@@ -71,9 +98,9 @@
   .primary{background:rgba(255,40,40,0.95)}.secondary{background:#5865F2}
 
   @media(max-width:520px){
-    #joinImg{width:86vw}
-    .splat.left{width:320px}
-    .splat.right{width:300px}
+    #joinText{font-size:clamp(20px,14vw,56px)}
+    .splat.left{width:320px;top:3%}
+    .splat.right{width:300px;right:2%;bottom:3%}
     .anarchyBtn img{width:48px;height:48px}
   }
 </style>
@@ -92,21 +119,19 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- Surge visuals (hidden until triggered) -->
+  <!-- SURGE visuals (hidden until surge) -->
   <div class="surgeContainer" id="surgeContainer" aria-hidden="true">
-    <!-- If you have a join.png using your font, include it; otherwise fallback text will show -->
-    <img id="joinImg" src="join.png?cb=1" alt="JOIN THE FIGHT" onerror="this.style.display='none';document.getElementById('joinText').style.display='none'">
     <div id="joinText" aria-hidden="true">JOIN THE FIGHT</div>
   </div>
 
-  <!-- Blood splats -->
+  <!-- blood splats (images must exist in repo root) -->
   <img id="splatLeft" class="splat left" src="blood.png" alt="blood left" />
   <img id="splatRight" class="splat right" src="blood1.png" alt="blood right" />
 
-  <!-- Red wash (shown briefly during surge) -->
+  <!-- red wash (brief) -->
   <div id="glitchPaint" class="glitch-paint" aria-hidden="true"><div class="red-wash"></div></div>
 
-  <!-- Smoke (topmost visual overlay) -->
+  <!-- Smoke video (top visual overlay) - keep file at repo root as Smoke.mp4 -->
   <div id="smoke-wrap" aria-hidden="true">
     <video id="smokeVideo" muted playsinline preload="auto" crossorigin="anonymous">
       <source src="Smoke.mp4?v=1" type="video/mp4">
@@ -123,125 +148,99 @@
 <script>
 (function(){
   const smoke = document.getElementById('smokeVideo');
-  const joinImg = document.getElementById('joinImg');
   const joinText = document.getElementById('joinText');
   const splatL = document.getElementById('splatLeft');
   const splatR = document.getElementById('splatRight');
   const glitchPaint = document.getElementById('glitchPaint');
 
-  const LOOPS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--loops-before-glitch')) || 2;
-  const SURGE_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--surge-ms')) || 2000;
-  const GLITCH_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--glitch-ms')) || 420;
-  const MIN_VIDEO_DUR = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--min-video-duration')) || 1.6;
+  const LOOPS = Math.max(1, parseInt(getComputedStyle(document.documentElement).getPropertyValue('--loops-before-glitch')) || 1);
+  const SURGE_MS = Math.max(0, parseInt(getComputedStyle(document.documentElement).getPropertyValue('--surge-ms')) || 2000);
+  const GLITCH_MS = Math.max(0, parseInt(getComputedStyle(document.documentElement).getPropertyValue('--glitch-ms')) || 420);
 
   let prevTime = 0;
   let loopCount = 0;
   let surgeActive = false;
   let timeFallbackTimer = null;
 
-  // Safety: remove duplicate video elements if any
+  // Ensure only one video element exists
   (function removeDupes(){ const v = document.querySelectorAll('video#smokeVideo'); if(v.length>1) v.forEach((el,i)=>{ if(i>0) el.remove(); }); })();
 
-  // Ensure looping playback so video never stops
+  // Keep video looping so it doesn't stop playback
   smoke.loop = true;
 
-  // Start playback - if autoplay blocked we'll resume on first user interaction
+  // Try start playback (may be blocked until user interacts)
   smoke.play().catch(()=>{});
 
-  // Utility: show/hide surge visuals
+  // Helpers to show/hide visuals during surge
   function showSurgeVisuals(){
-    // prefer join image if present and successfully loaded
-    const imgVisible = joinImg && joinImg.complete && joinImg.naturalWidth > 0 && joinImg.style.display !== 'none';
-    if (imgVisible){
-      joinImg.classList.add('show');
-      joinImg.style.display = '';
-    } else {
-      // fallback text in font
-      joinText.classList.add('show');
-      joinText.style.display = 'block';
-    }
-    splatL.classList.add('show');
-    splatR.classList.add('show');
+    // make text visible, with backing and stroke for readability
+    joinText.classList.add('show'); joinText.style.display = 'block';
+    splatL.classList.add('show'); splatR.classList.add('show');
     glitchPaint.classList.add('show');
   }
   function hideSurgeVisuals(){
-    if (joinImg) joinImg.classList.remove('show');
-    joinText.classList.remove('show');
-    splatL.classList.remove('show');
-    splatR.classList.remove('show');
+    joinText.classList.remove('show'); joinText.style.display = 'none';
+    splatL.classList.remove('show'); splatR.classList.remove('show');
     glitchPaint.classList.remove('show');
   }
 
-  // Core surge routine: non-destructive (smoke keeps looping and remains top overlay)
+  // Core surge routine (non-destructive: smoke keeps looping and remains top overlay)
   async function runSurge(){
     if (surgeActive) return;
     surgeActive = true;
 
-    // ensure smoke is playing
+    // ensure video is playing
     smoke.play().catch(()=>{});
 
-    // visual micro-punch on smoke (non-blocking)
+    // slight micro-transform on smoke for punch (visually only)
     smoke.classList.add('glitch');
 
-    // show join + splats + red
     showSurgeVisuals();
 
     // hold micro-glitch
     await new Promise(r => setTimeout(r, GLITCH_MS));
 
-    // remove micro-punch quickly
+    // remove micro transform quickly
     smoke.classList.remove('glitch');
 
-    // keep surge visible for remainder of SURGE_MS
+    // keep whole surge visible for remainder of SURGE_MS
     await new Promise(r => setTimeout(r, Math.max(0, SURGE_MS - GLITCH_MS)));
 
-    // hide all surge visuals
     hideSurgeVisuals();
 
-    surgeActive = false;
+    // short cooldown
+    setTimeout(()=>{ surgeActive = false; }, 120);
   }
 
-  // Robust loop detection for short videos:
-  // Detect when currentTime wraps backward by a margin -> count a loop.
+  // Loop detection for short clips: detect timewrap (prevTime > currentTime by margin)
   smoke.addEventListener('timeupdate', ()=>{
     const t = smoke.currentTime || 0;
 
-    // Ignore tiny initial jumps under .12s which some browsers emit on load.
+    // detect wrap (looped back to start)
     if (prevTime - t > 0.28){
       loopCount++;
-      // If video is extremely short, sometimes multiple wraps happen quickly; clamp loopCount.
-      if (loopCount < 0) loopCount = 0;
       if (loopCount >= LOOPS){
         loopCount = 0;
-        runSurge().catch(()=>{ surgeActive = false; hideSurgeVisuals(); });
+        runSurge().catch(()=>{ hideSurgeVisuals(); surgeActive = false; });
       }
     }
     prevTime = t;
   });
 
-  // Fallback: if video metadata isn't available or duration too short, time-based trigger every (videoDuration*LOOPS + SURGE_MS)
+  // Fallback: if metadata missing or duration very small, use a timer
   smoke.addEventListener('loadedmetadata', ()=>{
     const dur = smoke.duration || 0;
-    if (!isFinite(dur) || dur <= 0 || dur < MIN_VIDEO_DUR){
-      // fallback periodic timer: approximate 2 loops of short clip (assume ~2s per loop)
+    if (!isFinite(dur) || dur <= 0 || dur < 0.5){
       if (timeFallbackTimer) clearInterval(timeFallbackTimer);
-      const estimatedLoopMs = Math.max(800, (dur > 0 ? dur : 1.0) * 1000);
-      const cycle = (estimatedLoopMs * LOOPS) + SURGE_MS + 120;
+      const estimatedLoopMs = Math.max(600, (dur > 0 ? dur : 1.0) * 1000);
+      const cycle = (estimatedLoopMs * LOOPS) + SURGE_MS + 80;
       timeFallbackTimer = setInterval(()=>{ runSurge().catch(()=>{}); }, cycle);
     } else {
-      // clear fallback if it exists and video is okay
       if (timeFallbackTimer){ clearInterval(timeFallbackTimer); timeFallbackTimer = null; }
     }
   });
 
-  // If join image fails to load, use text fallback only
-  joinImg.addEventListener('error', ()=>{
-    joinImg.style.display = 'none';
-    joinImg.classList.remove('show');
-    joinText.style.display = 'none';
-  });
-
-  // Menu toggle logic
+  // Menu toggle logic (menu remains clickable above everything)
   const anarchyBtn = document.getElementById('anarchyBtn');
   const anarchyMenu = document.getElementById('anarchyMenu');
   function openMenu(open){
@@ -263,7 +262,7 @@
   // Resume playback on first user interaction if autoplay blocked
   document.addEventListener('click', ()=>{ if(smoke.paused) smoke.play().catch(()=>{}); });
 
-  // Ensure video starts at 0 for reliable loop detection
+  // Ensure playback starts at 0 for reliable loop detection
   (async function init(){
     try { smoke.currentTime = 0; await smoke.play(); } catch(e){}
   })();
