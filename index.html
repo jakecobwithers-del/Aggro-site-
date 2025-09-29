@@ -5,295 +5,235 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Aggro PvP — Join the Fight</title>
 <style>
-  /* ---------- Font ---------- */
+  /* CONFIG */
+  :root{
+    --red: #ff2b2b;
+    --surge-visual-time: 2600ms; /* total visual time for headline/splats */
+    --punch-time: 160ms;         /* short red static / shake punch */
+    --trigger-before-end: 1.0;   /* seconds before video end to launch surge */
+  }
+
+  /* FONT */
   @font-face{
     font-family:'DayZFont';
     src: url('28 Days Later.ttf') format('truetype');
-    font-display:swap;
+    font-display: swap;
   }
 
-  /* ---------- Base ---------- */
-  :root{
-    --red:#ff2b2b;
-    --dark-ink:rgba(0,0,0,0.92);
-  }
-  html,body{height:100%;width:100%;margin:0;padding:0;background:#000;overflow:hidden;font-family:'DayZFont', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;color:#fff;}
+  /* BASE */
+  html,body{height:100%;margin:0;background:#000;color:#fff;font-family:'DayZFont',system-ui,Segoe UI,Roboto,sans-serif;overflow:hidden}
+  a{color:inherit}
 
-  /* ---------- Video (smoke) ---------- */
-  #smoke-overlay{position:fixed;inset:0;z-index:800;pointer-events:none}
-  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:0.62;mix-blend-mode:screen;filter:blur(6px) saturate(1.05);transition:filter 160ms linear}
+  /* LAYOUT */
+  #stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;z-index:60}
+  #logo{margin-top:8vh}
+  #logo img{width:min(360px,40vw);filter:drop-shadow(0 18px 40px rgba(0,0,0,0.75))}
 
-  /* red tint applied to video only */
-  #smokeVideo.redHue{filter: blur(6px) saturate(1.45) hue-rotate(-40deg) contrast(1.06);}
+  .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:36px;z-index:60;display:flex;flex-direction:column;gap:12px;align-items:center}
+  .cta{padding:12px 24px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800}
+  .cta.primary{background:var(--red)}
+  .cta.secondary{background:#5865F2}
 
-  /* ---------- Screen effects (grain, vignette, rgb-split) ---------- */
-  .screen-effects{
-    position:fixed;inset:0;z-index:1060;pointer-events:none;mix-blend-mode:normal;
-  }
-  /* grain layer */
-  .grain{
-    position:absolute;inset:0;background-image:
-      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size:3px 3px, 3px 3px;opacity:0.12;mix-blend-mode:overlay;animation:grainShift 6s steps(10) infinite;
-    pointer-events:none;
-  }
-  @keyframes grainShift{0%{transform:translate(0,0)}50%{transform:translate(1px,-1px)}100%{transform:translate(0,0)}}
+  /* SMOKE VIDEO (back) */
+  #smoke-overlay{position:fixed;inset:0;z-index:10;pointer-events:none}
+  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:0.62;mix-blend-mode:screen;filter:blur(5px) saturate(1.05);transition:filter 160ms linear}
+  #smokeVideo.redHue{filter: blur(5px) saturate(1.45) hue-rotate(-42deg) contrast(1.06)}
 
-  /* quick RGB split flash (applies briefly during surge) */
-  .rgb-split{position:absolute;inset:0;pointer-events:none;opacity:0;mix-blend-mode:screen;transition:opacity 80ms linear;filter:contrast(1.02);}
-  .rgb-split.show{opacity:1;backdrop-filter:contrast(1.05);}
+  /* EFFECT LAYERS */
+  .effects{position:fixed;inset:0;pointer-events:none;z-index:420}
+  .grain{position:absolute;inset:0;opacity:0.11;background-image:
+     linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+     linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+     background-size:3px 3px,3px 3px;mix-blend-mode:overlay;animation:grain 6s steps(8) infinite}
+  @keyframes grain{0%{transform:translate(0,0)}50%{transform:translate(1px,-1px)}100%{transform:translate(0,0)}}
+  .vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 30%, rgba(0,0,0,0.6) 100%);mix-blend-mode:multiply}
+  .rgb-split{position:absolute;inset:0;opacity:0;mix-blend-mode:screen;transition:opacity 80ms linear;filter:contrast(1.02)}
+  .rgb-split.show{opacity:1}
 
-  /* subtle vignette to anchor center */
-  .vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 30%, rgba(0,0,0,0.55) 100%);opacity:1;mix-blend-mode:multiply}
-
-  /* ---------- Quick red static flash (punch) ---------- */
-  #redStatic{position:fixed;inset:0;z-index:1085;pointer-events:none;background:linear-gradient(180deg, rgba(255,30,30,0.06), rgba(255,20,20,0.04));mix-blend-mode:screen;opacity:0;transition:opacity 100ms linear}
+  /* RED STATIC FLASH */
+  #redStatic{position:fixed;inset:0;z-index:600;pointer-events:none;background:linear-gradient(180deg, rgba(255,30,30,0.07), rgba(255,20,20,0.04));opacity:0;transition:opacity 80ms linear;mix-blend-mode:screen}
   #redStatic.show{opacity:1}
 
-  /* ---------- Surge overlay: splatters + text ---------- */
-  #surgeOverlay{
-    position:fixed;inset:0;z-index:1100;pointer-events:none;display:flex;align-items:center;justify-content:center;
-    opacity:0;transition:opacity 140ms linear;
-  }
-  #surgeOverlay.show{opacity:1}
+  /* SURGE LAYER */
+  #surge{position:fixed;inset:0;z-index:700;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 120ms linear}
+  #surge.show{opacity:1}
 
-  /* splatter: improved look via blend-mode, filters, transform origins */
-  .bloodSplatter{
-    position:absolute;pointer-events:none;opacity:0.98;will-change:transform,opacity,filter;
-    mix-blend-mode:multiply;filter:contrast(1.03) saturate(1.12) drop-shadow(0 10px 18px rgba(0,0,0,0.75));
-    transform-origin:center center;
-  }
-  .bloodTopLeft{top:6%;left:4%;width:420px;transform:rotate(-26deg) translateZ(0)}
-  .bloodBottomRight{bottom:6%;right:4%;width:420px;transform:rotate(12deg) translateZ(0)}
+  .blood{position:absolute;pointer-events:none;mix-blend-mode:multiply;will-change:transform,opacity,filter;filter:contrast(1.04) saturate(1.12) drop-shadow(0 10px 22px rgba(0,0,0,0.7))}
+  .blood.left{top:6%;left:4%;width:420px;transform:rotate(-24deg)}
+  .blood.right{bottom:6%;right:4%;width:420px;transform:rotate(10deg)}
+  .blood-highlight{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:0.14;background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), transparent 20%),
+    radial-gradient(circle at 70% 70%, rgba(255,255,255,0.06), transparent 28%)}
 
-  /* splatter animation: smear + drip + scale */
-  #surgeOverlay.show .bloodSplatter{animation:splatIn 520ms cubic-bezier(.2,.9,.3,1) forwards, drip 1600ms linear 380ms both}
+  /* splat animations */
+  #surge.show .blood{animation: splatIn 520ms cubic-bezier(.2,.9,.3,1) forwards, drip 1200ms linear 420ms both}
   @keyframes splatIn{
-    0%{transform:scale(0.6) rotate(-8deg);opacity:0}
-    55%{transform:scale(1.18) rotate(6deg);opacity:1; filter:blur(0.6px) saturate(1.25)}
+    0%{transform:scale(0.6) rotate(-6deg);opacity:0;filter:blur(1.2px)}
+    55%{transform:scale(1.16) rotate(6deg);opacity:1;filter:blur(0.3px)}
     100%{transform:scale(1) rotate(0deg);opacity:0.98;filter:blur(0)}
   }
-  /* long subtle drip to sell realism */
-  @keyframes drip{
-    0%{transform:translateY(0)}
-    40%{transform:translateY(6px)}
-    100%{transform:translateY(18px);opacity:0.88}
-  }
+  @keyframes drip{0%{transform:translateY(0)}40%{transform:translateY(6px)}100%{transform:translateY(18px);opacity:0.9}}
 
-  /* add a faint smear using pseudo-element for each splatter via an overlay class */
-  .bloodSplatter::after{
-    content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 20%, rgba(255,255,255,0.02), transparent 18%), radial-gradient(circle at 80% 80%, rgba(0,0,0,0.06), transparent 22%);mix-blend-mode:overlay;opacity:0.14;pointer-events:none
-  }
-
-  /* ---------- Headline text: stronger, improved, wobble + flicker ---------- */
-  #surgeOverlay h1{
-    margin:0;padding:0;pointer-events:none;z-index:1150;
-    color:var(--red);font-weight:900;letter-spacing:6px;
-    font-size:9.5vw;line-height:1;text-align:center;
-    -webkit-text-stroke:2px rgba(0,0,0,0.95);
-    text-shadow:
-      0 2px 6px rgba(0,0,0,0.95),
-      0 0 18px rgba(255,40,40,0.35),
-      0 0 36px rgba(255,15,15,0.12);
-    opacity:0;transform:translateY(10px) scale(0.985);will-change:opacity,transform;
-    filter:drop-shadow(0 3px 14px rgba(0,0,0,0.9));
-  }
-  /* play animation when overlay toggles */
-  #surgeOverlay.show h1{animation:textInOut 2500ms cubic-bezier(.2,.9,.3,1) forwards, headlineJitter 2500ms steps(6) both}
-  @keyframes textInOut{
+  /* HEADLINE */
+  #headline{position:relative;z-index:720;color:var(--red);font-weight:900;letter-spacing:6px;font-size:9.2vw;line-height:1;text-align:center;padding:10px 20px;-webkit-text-stroke:2px rgba(0,0,0,0.95);text-shadow:0 2px 8px rgba(0,0,0,0.9),0 0 18px rgba(255,40,40,0.35);opacity:0;transform:translateY(12px) scale(0.98);filter:drop-shadow(0 4px 18px rgba(0,0,0,0.9));will-change:opacity,transform,filter}
+  /* animation controlled by JS timing so we can detect when it finishes */
+  @keyframes headlinePop{
     0%{opacity:0;transform:translateY(18px) scale(0.98)}
-    8%{opacity:1;transform:translateY(0) scale(1.04)}
-    65%{opacity:1;transform:translateY(0) scale(1)}
+    8%{opacity:1;transform:translateY(0) scale(1.06);filter:brightness(1.06)}
+    70%{opacity:1;transform:translateY(0) scale(1)}
     100%{opacity:0;transform:translateY(-8px) scale(0.98)}
   }
-  /* micro jitter to mimic screen vibration / intensity */
   @keyframes headlineJitter{
     0%{transform:translateY(0)}
     10%{transform:translateY(-1px) translateX(1px)}
     20%{transform:translateY(0)}
     30%{transform:translateY(1px) translateX(-1px)}
     40%{transform:translateY(0)}
-    50%{transform:translateY(-1px)}
-    70%{transform:translateY(0)}
     100%{transform:translateY(0)}
   }
 
-  /* tiny RGB split on the headline for a moment (via pseudo elements) */
-  #surgeOverlay h1::before, #surgeOverlay h1::after{
-    content:attr(data-text);position:absolute;left:0;right:0;top:0;bottom:0;z-index:-1;pointer-events:none;mix-blend-mode:screen;opacity:0;transform:translateZ(0)
-  }
-  #surgeOverlay h1::before{color:rgba(255,40,40,0.9);transform:translateX(-2px);filter:blur(0)}
-  #surgeOverlay h1::after{color:rgba(80,180,255,0.7);transform:translateX(2px);filter:blur(0)}
-  #surgeOverlay.show h1::before,#surgeOverlay.show h1::after{animation:rgbText 280ms linear 40ms both}
-  @keyframes rgbText{0%{opacity:0;transform:translateX(0)}60%{opacity:1}100%{opacity:0;transform:translateX(0)}}
+  /* RGB echo pseudo elements */
+  #headline[data-text]::before,#headline[data-text]::after{content:attr(data-text);position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;mix-blend-mode:screen}
+  #headline::before{color:rgba(255,40,40,0.9);transform:translateX(-2px)}
+  #headline::after{color:rgba(80,180,255,0.8);transform:translateX(2px)}
 
-  /* ensure headline is readable on small screens */
+  /* small screens */
   @media(max-width:520px){
-    #surgeOverlay h1{font-size:15.5vw;letter-spacing:3px;-webkit-text-stroke:1.6px}
-    .bloodTopLeft{width:260px;top:4%;left:2%}
-    .bloodBottomRight{width:280px;right:2%;bottom:4%}
+    #headline{font-size:15vw;letter-spacing:3px;-webkit-text-stroke:1.6px}
+    .blood.left{width:260px;top:4%;left:2%}
+    .blood.right{width:280px;right:2%;bottom:4%}
+    #logo img{width:min(300px,46vw)}
   }
 
-  /* ---------- Logo & UI ---------- */
-  #logo{position:relative;z-index:700;text-align:center;margin-top:12vh}
-  #logo img{width:min(360px,40vw);filter:drop-shadow(0 18px 40px rgba(0,0,0,0.75));animation:pulseLogo 2.6s ease-in-out infinite}
-  @keyframes pulseLogo{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
-
-  .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:40px;z-index:700;display:flex;flex-direction:column;gap:12px;align-items:center}
-  .redBtn,.blueBtn{color:#fff;text-decoration:none;padding:12px 22px;border-radius:10px;font-weight:800;display:inline-block}
-  .redBtn{background:#ff3b3b}
-  .blueBtn{background:#5865F2}
-
-  .anarchyBtn{position:fixed;top:18px;right:18px;z-index:1200;background:none;border:0;padding:0;cursor:pointer}
-  .anarchyBtn img{width:72px;height:72px}
-  .anarchyMenu{position:fixed;right:18px;top:100px;z-index:1200;display:none;flex-direction:column;padding:12px;background:rgba(0,0,0,0.96);border-radius:10px}
-  .anarchyMenu.open{display:flex}
-  .anarchyMenu a{color:#fff;text-decoration:none;padding:8px 10px;border-radius:6px;font-weight:700}
+  /* hide utility */
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 </style>
 </head>
 <body>
 
-  <!-- logo/UI under everything -->
-  <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
-  <div class="widget-bar">
-    <a class="redBtn" href="steam://connect/103.193.80.64:3436">Connect to Server</a>
-    <a class="blueBtn" href="https://discord.gg/gSwkVzJyMT" target="_blank">Join the Community</a>
+  <!-- LOGO + CTAs -->
+  <div id="stage">
+    <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
   </div>
 
-  <button class="anarchyBtn" id="anarchyBtn" aria-expanded="false" aria-controls="anarchyMenu"><img src="anarchy.png" alt="Menu"></button>
-  <nav id="anarchyMenu" class="anarchyMenu" aria-hidden="true">
-    <a href="rules.html">Rules</a>
-    <a href="support.html">Support</a>
-    <a href="donate.html">Donate</a>
-    <a href="killfeed.html">Kill Feed</a>
-    <a href="leaderboard.html">Leaderboard</a>
-  </nav>
+  <div class="widget-bar">
+    <a class="cta primary" href="steam://connect/103.193.80.64:3436">Connect to Server</a>
+    <a class="cta secondary" href="https://discord.gg/gSwkVzJyMT" target="_blank">Join the Community</a>
+  </div>
 
-  <!-- Smoke video (no loop attribute) -->
+  <!-- SMOKE VIDEO -->
   <div id="smoke-overlay" aria-hidden="true">
     <video id="smokeVideo" autoplay muted playsinline preload="auto">
       <source src="Smoke.mp4?v=1" type="video/mp4">
     </video>
   </div>
 
-  <!-- Screen effects container -->
-  <div class="screen-effects" aria-hidden="true">
+  <!-- EFFECTS -->
+  <div class="effects" aria-hidden="true">
     <div class="grain"></div>
     <div class="vignette"></div>
     <div class="rgb-split" id="rgbSplit"></div>
   </div>
 
-  <!-- Short red static flash -->
+  <!-- RED STATIC -->
   <div id="redStatic" aria-hidden="true"></div>
 
-  <!-- Surge overlay: two splatters + centered text -->
-  <div id="surgeOverlay" aria-hidden="true">
-    <img src="blood.png" class="bloodSplatter bloodTopLeft" alt="">
-    <img src="blood1.png" class="bloodSplatter bloodBottomRight" alt="">
-    <h1 id="joinText" data-text="JOIN THE FIGHT">JOIN THE FIGHT</h1>
+  <!-- SURGE LAYER -->
+  <div id="surge" aria-hidden="true">
+    <div class="blood left">
+      <img src="blood.png" alt="" style="width:100%;height:auto;display:block">
+      <div class="blood-highlight" aria-hidden="true"></div>
+    </div>
+    <div class="blood right">
+      <img src="blood1.png" alt="" style="width:100%;height:auto;display:block">
+      <div class="blood-highlight" aria-hidden="true"></div>
+    </div>
+
+    <h1 id="headline" data-text="JOIN THE FIGHT">JOIN THE FIGHT</h1>
   </div>
 
 <script>
-(function(){
-  const v = document.getElementById('smokeVideo');
-  const overlay = document.getElementById('surgeOverlay');
+(function () {
+  const smoke = document.getElementById('smokeVideo');
+  const surge = document.getElementById('surge');
   const redStatic = document.getElementById('redStatic');
   const rgbSplit = document.getElementById('rgbSplit');
-  const anarchyBtn = document.getElementById('anarchyBtn');
-  const anarchyMenu = document.getElementById('anarchyMenu');
+  const headline = document.getElementById('headline');
 
-  // seconds before video end to trigger the surge
-  const TRIGGER_BEFORE_END = 1.0;
+  const TRIGGER_BEFORE_END = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--trigger-before-end')) || 1.0;
+  const SURGE_VISUAL_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--surge-visual-time')) || 2600;
+  const PUNCH_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--punch-time')) || 160;
 
-  // Ensure metadata loaded (duration available) before attaching timeupdate logic
-  function ensureMetadata(cb){
-    if (v.duration && !isNaN(v.duration)) return cb();
-    v.addEventListener('loadedmetadata', cb, { once: true });
+  // Ensure video metadata available
+  function ensureMeta(cb) {
+    if (smoke.duration && !isNaN(smoke.duration)) return cb();
+    smoke.addEventListener('loadedmetadata', cb, { once: true });
   }
 
-  // Robust trigger: uses timeupdate and a flag to avoid repeats
-  ensureMetadata(() => {
-    v.addEventListener('timeupdate', () => {
-      if (!v.duration || isNaN(v.duration)) return;
-      const remaining = v.duration - v.currentTime;
-      if (remaining <= TRIGGER_BEFORE_END && !v._surgeTriggered) {
-        v._surgeTriggered = true;
-        triggerSurge();
+  // Launch code: trigger surge slightly before end
+  ensureMeta(() => {
+    smoke.addEventListener('timeupdate', () => {
+      if (!smoke.duration || isNaN(smoke.duration)) return;
+      const remaining = smoke.duration - smoke.currentTime;
+      if (remaining <= TRIGGER_BEFORE_END && !smoke._surgeTriggered) {
+        smoke._surgeTriggered = true;
+        startSurgeAndHoldUntilHeadlineEnds();
       }
     });
   });
 
-  // When the video ends, reset trigger and restart playback (manual loop)
-  v.addEventListener('ended', () => {
-    v._surgeTriggered = false;
-    v.currentTime = 0;
-    v.play().catch(()=>{ /* autoplay may require interaction on some browsers */ });
+  // Manual loop restart & safety reset
+  smoke.addEventListener('ended', () => {
+    smoke._surgeTriggered = false;
+    smoke.currentTime = 0;
+    smoke.play().catch(() => {});
   });
 
-  // Core surge: red hue on video, red flash, rgb split, show splatters + text with better animations
-  function triggerSurge(){
-    // 1) Red hue on video
-    v.classList.add('redHue');
+  // Start the surge and keep all visuals until the headline animation fully ends.
+  function startSurgeAndHoldUntilHeadlineEnds() {
+    // 1) Red tint on video
+    smoke.classList.add('redHue');
 
-    // 2) Quick RGB split panel (subtle chroma separation)
+    // 2) Show small RGB split overlay and red static flash
     rgbSplit.classList.add('show');
-
-    // 3) short red static flash (punch)
     redStatic.classList.add('show');
-    redStatic.setAttribute('aria-hidden','false');
 
-    // 4) restart overlay animations reliably
-    overlay.classList.remove('show');
-    void overlay.offsetWidth; // force reflow
-    overlay.classList.add('show');
-    overlay.setAttribute('aria-hidden','false');
+    // 3) Show surge layer (restart animations)
+    surge.classList.remove('show');
+    void surge.offsetWidth; // force reflow to restart CSS animations
+    surge.classList.add('show');
+    surge.setAttribute('aria-hidden', 'false');
 
-    // 5) brief mild screen shake by toggling a transform on body (short lived)
+    // 4) quick screen shake (short)
     document.body.style.transition = 'transform 160ms cubic-bezier(.2,.9,.3,1)';
-    document.body.style.transform = 'translateY(-6px) rotate(-0.4deg)';
-    setTimeout(()=>{ document.body.style.transform = ''; }, 140);
+    document.body.style.transform = 'translateY(-6px) rotate(-0.35deg)';
+    setTimeout(() => { document.body.style.transform = ''; }, PUNCH_MS);
 
-    // remove quick static and rgb split after punch
-    setTimeout(()=>{
+    // 5) Clear the very-short punch overlays quickly so they feel like a hit,
+    // but keep the main surge layer active for the full SURGE_VISUAL_MS.
+    setTimeout(() => {
       redStatic.classList.remove('show');
-      redStatic.setAttribute('aria-hidden','true');
       rgbSplit.classList.remove('show');
-    }, 160);
+    }, PUNCH_MS + 10);
 
-    // remove everything after visual window
-    setTimeout(()=>{
-      v.classList.remove('redHue');
-      overlay.classList.remove('show');
-      overlay.setAttribute('aria-hidden','true');
-      // clear flag after a short buffer so ended handler can also reset reliably
-      setTimeout(()=>{ v._surgeTriggered = false; }, 200);
-    }, 2600);
+    // 6) Keep the surge visuals active until the headline animation is done.
+    // We'll use a JS timer equal to SURGE_VISUAL_MS to ensure removal only after animation is expected to finish.
+    setTimeout(() => {
+      // remove visual effects
+      smoke.classList.remove('redHue');
+      surge.classList.remove('show');
+      surge.setAttribute('aria-hidden', 'true');
+      // small safety buffer before allowing next trigger
+      setTimeout(() => { smoke._surgeTriggered = false; }, 200);
+    }, SURGE_VISUAL_MS);
   }
 
-  // Expose manual helper for console testing
-  window.triggerSurge = triggerSurge;
+  // Expose manual trigger for quick console testing
+  window.triggerSurge = startSurgeAndHoldUntilHeadlineEnds;
 
-  // Anarchy menu toggle + accessible attributes
-  anarchyBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const open = anarchyMenu.classList.toggle('open');
-    anarchyMenu.setAttribute('aria-hidden', (!open).toString());
-    anarchyBtn.setAttribute('aria-expanded', open.toString());
-  });
-
-  // Close menu on outside click
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) {
-      anarchyMenu.classList.remove('open');
-      anarchyMenu.setAttribute('aria-hidden','true');
-      anarchyBtn.setAttribute('aria-expanded','false');
-    }
-  });
-
-  // Try to start playback if browser paused it
-  if (v.paused) {
-    v.play().catch(()=>{ /* ignore autoplay block; manual interaction will start it */ });
+  // Try to start playback in case browser blocked it
+  if (smoke.paused) {
+    smoke.play().catch(() => { /* autoplay blocked — user interaction will allow play */ });
   }
 })();
 </script>
