@@ -3,62 +3,67 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — Looping Smoke with Flip-Down Interstitial</title>
+<title>Aggro PvP — Glitch Red Smoke + JOIN THE FIGHT</title>
 <style>
   :root{
-    --surge-ms:2600;         /* how long the headline stays visible during interstitial */
-    --flip-slide-ms:520;     /* slide-in duration for the flipped clip */
-    --flip-hold-ms:120;      /* small hold after flip clip ends before resuming */
-    --smoke-opacity:0.56;    /* main smoke transparency */
+    --surge-ms:2600;
+    --flip-ms:700;
+    --smoke-opacity:0.52;
+    --red-strength:0.28;
     --splat-opacity:0.72;
     --splat-contrast:1.18;
   }
 
   /* Base */
-  html,body{height:100%;margin:0;background:#000;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;overflow:hidden;-webkit-font-smoothing:antialiased}
+  html,body{height:100%;margin:0;background:#000;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;overflow:hidden}
   img{max-width:100%;display:block}
 
   /* Z-order:
-     3000 = Anarchy menu (top interactive)
-     2200 = Headline + Splats (must be visible during interstitial)
-     2000 = flip video (slides down from top)
-     1500 = main smoke video (bobbing background, but visually underneath flip & headline)
-     1000 = logo / CTAs (under smoke)
+     4000 = Anarchy menu (always top)
+     3000 = Headline + Splats (must be visible)
+     2500 = Glitch layers + red overlay (on top of smoke during surge)
+     2000 = Smoke video (bobbing background)
+     1000 = Logo / CTAs (under smoke)
   */
 
-  /* Menu (above everything and clickable) */
-  .anarchyBtn{position:fixed;top:18px;right:18px;z-index:3000;background:transparent;border:0;padding:6px;cursor:pointer}
-  .anarchyBtn img{width:56px;height:56px;display:block;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.8))}
-  .anarchyMenu{position:fixed;top:86px;right:18px;z-index:3000;display:none;flex-direction:column;gap:8px;padding:10px;background:rgba(10,10,10,0.98);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.6);min-width:180px}
+  /* Anarchy menu (top) */
+  .anarchyBtn{position:fixed;top:18px;right:18px;z-index:4000;background:transparent;border:0;padding:6px;cursor:pointer}
+  .anarchyBtn img{width:56px;height:56px;display:block}
+  .anarchyMenu{position:fixed;top:86px;right:18px;z-index:4000;display:none;flex-direction:column;gap:8px;padding:10px;background:rgba(10,10,10,0.98);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.6)}
   .anarchyMenu.open{display:flex}
   .anarchyMenu a{color:#fff;text-decoration:none;padding:8px 10px;border-radius:6px;font-weight:700;font-size:14px}
-  .anarchyMenu a:hover{background:rgba(255,255,255,0.03)}
 
-  /* Headline + Splats (visible above flip & main smoke) */
-  .headline{position:fixed;inset:0;z-index:2200;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:6vh 4vw}
+  /* Headline visible above everything except menu */
+  .headline{position:fixed;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:6vh 4vw}
   #headlineText{
     margin:0;color:#fff;font-weight:900;letter-spacing:6px;text-align:center;
     -webkit-text-stroke:2px rgba(0,0,0,0.95);
-    text-shadow:0 6px 24px rgba(0,0,0,0.9),0 0 20px rgba(255,40,40,0.08);
+    text-shadow:0 6px 14px rgba(0,0,0,0.9),0 0 18px rgba(255,40,40,0.08);
     font-size:clamp(28px,9.2vw,96px);opacity:0;white-space:nowrap;padding:6px 10px;will-change:opacity,transform;
   }
   @keyframes headlinePop{0%{opacity:0;transform:translateY(28px) scale(.98)}12%{opacity:1;transform:translateY(0) scale(1.06)}80%{opacity:1}100%{opacity:0;transform:translateY(-14px) scale(.98)}}
   .show-headline #headlineText{animation: headlinePop var(--surge-ms) cubic-bezier(.2,.9,.3,1) forwards;opacity:1}
 
-  /* Flip video container (slides down from top when active) */
-  #flip-wrap{position:fixed;left:0;right:0;top:-100vh;height:100vh;z-index:2000;pointer-events:none;display:flex;align-items:flex-start;justify-content:center;overflow:hidden}
-  #flip-wrap.active{animation:slideIn var(--flip-slide-ms) cubic-bezier(.2,.9,.3,1) forwards}
-  @keyframes slideIn{0%{top:-100vh}100%{top:0}}
+  /* Main smoke (looping, subtle bob) */
+  #smoke-wrap{position:fixed;inset:0;z-index:2000;pointer-events:none}
+  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(2px) contrast(1) saturate(1);transform-origin:center center;animation:smokeBob 6.6s ease-in-out infinite;will-change:transform,opacity}
+  @keyframes smokeBob{0%{transform:translateY(0)}25%{transform:translateY(-5px)}50%{transform:translateY(0)}75%{transform:translateY(5px)}100%{transform:translateY(0)}}
 
-  #flipVideo{width:100%;height:100%;object-fit:cover;transform-origin:center center;opacity:1;filter:blur(2.8px) saturate(1) contrast(1);}
+  /* Glitch overlays + red wash (appear over smoke during glitch) */
+  #glitchLayer{position:fixed;inset:0;z-index:2500;pointer-events:none;opacity:0;transition:opacity 90ms linear}
+  #glitchLayer.show{opacity:1}
+  #redWash{position:fixed;inset:0;z-index:2495;pointer-events:none;background:rgba(255,24,24,var(--red-strength));mix-blend-mode:overlay;opacity:0;transition:opacity 160ms linear}
+  #redWash.show{opacity:1}
+  /* RGB split stripes for quick glitch */
+  .rgb-slice{position:absolute;inset:0;background-repeat:no-repeat;background-size:cover;background-position:center;mix-blend-mode:screen;opacity:0.95;pointer-events:none}
+  .rgb-slice.r{filter:hue-rotate(-10deg) contrast(1.07) saturate(1.2);transform:translateX(-6px)}
+  .rgb-slice.b{filter:hue-rotate(30deg) contrast(1.02) saturate(1.05);transform:translateX(6px)}
 
-  /* Main smoke (loops) - lower z so flip is over it */
-  #main-smoke{position:fixed;inset:0;z-index:1500;pointer-events:none}
-  #mainVideo{width:100%;height:100%;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(2px) saturate(1) contrast(1);animation:smokeBob 6.6s ease-in-out infinite;will-change:transform,opacity}
-  @keyframes smokeBob{0%{transform:translateY(0)}25%{transform:translateY(-6px)}50%{transform:translateY(0)}75%{transform:translateY(6px)}100%{transform:translateY(0)}}
+  /* Glitch transform: flip + jitter but not permanently upside-down */
+  #smokeVideo.glitchFlip{transition:transform var(--flip-ms) cubic-bezier(.22,.9,.3,1), filter 220ms linear;transform:rotateX(180deg) scale(1.02);filter:blur(3.6px) contrast(1.05) saturate(1.08)}
 
-  /* Splats appear above flip/main so they are readable */
-  #surge{position:fixed;inset:0;z-index:2200;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 120ms linear}
+  /* Splats (blood) above smoke and glitch layers */
+  #surge{position:fixed;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 120ms linear}
   #surge.show{opacity:1}
   .splat{position:absolute;pointer-events:none;will-change:transform,opacity,filter;mix-blend-mode:multiply;opacity:var(--splat-opacity)}
   .splat img{display:block;width:100%;height:auto;filter:contrast(var(--splat-contrast)) saturate(1.1)}
@@ -67,23 +72,24 @@
   .splat.flash{animation:splatFlash 420ms ease-out both}
   @keyframes splatFlash{0%{filter:brightness(1)}40%{filter:brightness(1.26)}100%{filter:brightness(1)}}
 
-  /* Logo and CTAs under smoke */
+  /* Logo/buttons under smoke */
   #logo{position:fixed;top:9vh;left:50%;transform:translateX(-50%);z-index:1000}
   .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:36px;z-index:1000;display:flex;flex-direction:column;gap:12px;align-items:center}
   .cta{padding:12px 24px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800;background:rgba(0,0,0,0.45)}
   .primary{background:rgba(255,40,40,0.95)}.secondary{background:#5865F2}
 
+  /* Small screens */
   @media(max-width:520px){
-    #headlineText{font-size:clamp(20px,12vw,72px);-webkit-text-stroke:1.4px}
+    #headlineText{font-size:clamp(18px,10vw,64px)}
     .splat.left{width:300px;top:6%}
-    .splat.right{width:260px;right:2%;bottom:6%}
+    .splat.right{width:260px;right:3%;bottom:6%}
     .anarchyBtn img{width:48px;height:48px}
   }
 </style>
 </head>
 <body>
 
-  <!-- Menu (top) -->
+  <!-- Anarchy menu (always above smoke) -->
   <button id="anarchyBtn" class="anarchyBtn" aria-expanded="false" aria-controls="anarchyMenu" title="Menu">
     <img src="anarchy.png" alt="Menu">
   </button>
@@ -95,9 +101,9 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- Headline + splats (visible during interstitial) -->
+  <!-- Headline + splats -->
   <div class="headline" id="headlineWrap" aria-hidden="true">
-    <h1 id="headlineText" data-text="JOIN THE FIGHT">JOIN THE FIGHT</h1>
+    <h1 id="headlineText">JOIN THE FIGHT</h1>
   </div>
 
   <div id="surge" aria-hidden="true">
@@ -105,19 +111,21 @@
     <div class="splat right" id="splatRight" aria-hidden="true"><img src="blood1.png" alt=""></div>
   </div>
 
-  <!-- Flip container (slides down from top when active). Will play flipped video -->
-  <div id="flip-wrap" aria-hidden="true">
-    <video id="flipVideo" playsinline muted crossorigin="anonymous"></video>
+  <!-- Glitch layer + red wash (hidden until triggered) -->
+  <div id="glitchLayer" aria-hidden="true">
+    <div class="rgb-slice r" id="rgbR"></div>
+    <div class="rgb-slice b" id="rgbB"></div>
   </div>
+  <div id="redWash" aria-hidden="true"></div>
 
-  <!-- Main looping smoke (always looping) -->
-  <div id="main-smoke" aria-hidden="true">
-    <video id="mainVideo" autoplay muted playsinline loop preload="auto" crossorigin="anonymous">
+  <!-- Main smoke (looping background) -->
+  <div id="smoke-wrap" aria-hidden="true">
+    <video id="smokeVideo" autoplay muted playsinline loop preload="auto" crossorigin="anonymous">
       <source src="Smoke.mp4?v=1" type="video/mp4">
     </video>
   </div>
 
-  <!-- Logo + CTAs under smoke -->
+  <!-- Logo + CTAs (under smoke) -->
   <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
   <div class="widget-bar">
     <a class="cta primary" href="steam://connect/103.193.80.64:3436">Connect to Server</a>
@@ -126,175 +134,131 @@
 
 <script>
 (function(){
-  const mainVideo = document.getElementById('mainVideo');
-  const flipVideo = document.getElementById('flipVideo');
-  const flipWrap = document.getElementById('flip-wrap');
+  const smoke = document.getElementById('smokeVideo');
+  const glitchLayer = document.getElementById('glitchLayer');
+  const redWash = document.getElementById('redWash');
+  const rgbR = document.getElementById('rgbR');
+  const rgbB = document.getElementById('rgbB');
 
   const headlineWrap = document.getElementById('headlineWrap');
   const surge = document.getElementById('surge');
-  const splatLeft = document.getElementById('splatLeft');
-  const splatRight = document.getElementById('splatRight');
+  const splatL = document.getElementById('splatLeft');
+  const splatR = document.getElementById('splatRight');
 
-  const anarchyBtn = document.getElementById('anarchyBtn');
-  const anarchyMenu = document.getElementById('anarchyMenu');
-
-  // timing & config
   const SURGE_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--surge-ms')) || 2600;
-  const FLIP_SLIDE_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--flip-slide-ms')) || 520;
-  const FLIP_HOLD_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--flip-hold-ms')) || 120;
+  const FLIP_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--flip-ms')) || 700;
+  const TRIGGER_BEFORE_END = 0.28; // seconds before end to trigger glitch
 
-  // Which source to play as the flipped top-down clip.
-  // If you have a dedicated flip clip, put its path here (recommended for consistent flip visuals).
-  // If left blank, the script will use the same Smoke.mp4 but play it upside-down visually.
-  const FLIP_SRC = 'Smoke_flipped.mp4?v=1'; // replace with your flip clip or leave '' to reuse Smoke.mp4
+  // Ensure single smoke element
+  (function cleanDupes(){ const v = document.querySelectorAll('video#smokeVideo'); if(v.length>1) v.forEach((el,i)=>{ if(i>0) el.remove(); }); })();
 
-  // threshold (seconds before end) to trigger interstitial
-  const TRIGGER_BEFORE_END = 0.35;
+  // Try autoplay
+  smoke.play().catch(()=>{});
 
-  // Safety: ensure mainVideo is looping
-  mainVideo.loop = true;
-
-  // Prepare flipVideo but don't set src yet to avoid preloading if not needed
-  function setFlipSource(src){
-    if(!src) {
-      // use same file as main but we will visually flip it (no source change)
-      flipVideo.removeAttribute('src');
-      while(flipVideo.firstChild) flipVideo.removeChild(flipVideo.firstChild);
-      const s = document.createElement('source');
-      s.src = mainVideo.querySelector('source').src;
-      s.type = 'video/mp4';
-      flipVideo.appendChild(s);
-    } else {
-      // set provided file
-      flipVideo.removeAttribute('src');
-      while(flipVideo.firstChild) flipVideo.removeChild(flipVideo.firstChild);
-      const s = document.createElement('source');
-      s.src = src;
-      s.type = 'video/mp4';
-      flipVideo.appendChild(s);
+  // Prepare RGB glitch backgrounds by snapshot (may be blocked by CORS; safe fallback)
+  function makeRGBSnapshot(){
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = smoke.videoWidth || 1280;
+      canvas.height = smoke.videoHeight || 720;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(smoke, 0, 0, canvas.width, canvas.height);
+      const data = canvas.toDataURL('image/webp');
+      rgbR.style.backgroundImage = `url(${data})`;
+      rgbB.style.backgroundImage = `url(${data})`;
+    } catch(e){
+      // cross-origin snapshot blocked — we'll still use transforms for glitch
+      rgbR.style.backgroundColor = 'rgba(255,40,40,0.06)';
+      rgbB.style.backgroundColor = 'rgba(120,200,255,0.03)';
     }
-    flipVideo.load();
   }
 
-  // show headline + splats
-  function showInterstitialVisuals(){
+  // Show headline + splats
+  function showHeadlineAndSplats(){
     headlineWrap.classList.add('show-headline');
     headlineWrap.setAttribute('aria-hidden','false');
     surge.classList.add('show'); surge.setAttribute('aria-hidden','false');
-    splatLeft.classList.add('flash'); splatRight.classList.add('flash');
-    setTimeout(()=>{ splatLeft.classList.remove('flash'); splatRight.classList.remove('flash'); }, 520);
+    splatL.classList.add('flash'); splatR.classList.add('flash');
+    setTimeout(()=>{ splatL.classList.remove('flash'); splatR.classList.remove('flash'); }, 520);
   }
-  function hideInterstitialVisuals(){
+  function hideHeadlineAndSplats(){
     headlineWrap.classList.remove('show-headline');
     headlineWrap.setAttribute('aria-hidden','true');
     surge.classList.remove('show'); surge.setAttribute('aria-hidden','true');
   }
 
-  // Run the flip-down interstitial:
-  // 1) pause main video (still looping will resume later)
-  // 2) prepare flip video src, visually flip it (CSS transform) and slide down flipWrap
-  // 3) play flip clip (or flipped main) once; show JOIN THE FIGHT while it plays
-  // 4) when flip ends, slide flipWrap away and restart main loop from start
-  let interstitialRunning = false;
-  async function runFlipDownInterstitial(){
-    if(interstitialRunning) return;
-    interstitialRunning = true;
+  // Primary glitch routine: flip visually (rotateX), show red & RGB slices briefly, then restore
+  async function runGlitchSequence(){
+    if (smoke._glitchRunning) return;
+    smoke._glitchRunning = true;
 
-    // pause the main video so background motion feels static while flip plays
-    try { mainVideo.pause(); } catch(e){}
+    makeRGBSnapshot();
 
-    // set flip video source (use provided clip or reuse main)
-    // if FLIP_SRC file not found or blank, fallback to main video source
-    const flipSrcCandidate = (typeof FLIP_SRC === 'string' && FLIP_SRC.trim().length > 0) ? FLIP_SRC : mainVideo.querySelector('source').src;
-    setFlipSource(flipSrcCandidate);
+    // show red wash + glitch layer
+    redWash.classList.add('show');
+    glitchLayer.classList.add('show');
 
-    // force flip visual: upside down
-    flipVideo.style.transform = 'scaleY(-1) rotate(180deg)';
+    // apply visual flip (rotateX 180deg) — looks like a quick flip, not permanent upside-down video
+    smoke.classList.add('glitchFlip');
 
-    // ensure flipWrap is off-screen top, then activate slide-in via class
-    flipWrap.classList.remove('active');
-    void flipWrap.offsetWidth; // reflow
+    // small jitter: alternate quick translate offsets for a scanline effect
+    smoke.style.transition = `transform ${FLIP_MS}ms cubic-bezier(.22,.9,.3,1), filter 220ms linear`;
+    // show headline & blood during glitch
+    showHeadlineAndSplats();
 
-    // show flip wrap (slides down)
-    flipWrap.classList.add('active');
+    // short animated RGB nudge sequence
+    rgbR.style.transform = 'translateX(-18px) translateY(-6px) scale(1.015)';
+    rgbB.style.transform = 'translateX(18px) translateY(6px) scale(1.01)';
+    rgbR.style.transition = rgbB.style.transition = 'transform 120ms linear';
 
-    // small delay for slide-in to start
-    await new Promise(r => setTimeout(r, FLIP_SLIDE_MS * 0.45));
+    await new Promise(r => setTimeout(r, FLIP_MS));
 
-    // play the flipped video
-    try {
-      await flipVideo.play();
-    } catch(e){
-      // autoplay may be blocked — still show visuals and wait a bit, user interaction required to resume
-    }
+    // quick reverse micro shifts to enhance glitch feel
+    rgbR.style.transform = 'translateX(-6px) translateY(-2px) scale(1.005)';
+    rgbB.style.transform = 'translateX(6px) translateY(2px) scale(1.003)';
 
-    // show headline + splats while flip plays (and keep them visible for SURGE_MS minimum)
-    showInterstitialVisuals();
+    // hold headline for SURGE_MS then clear visuals
+    setTimeout(()=>{ 
+      // restore smoke visuals
+      smoke.classList.remove('glitchFlip');
+      redWash.classList.remove('show');
+      glitchLayer.classList.remove('show');
+      rgbR.style.transform = rgbB.style.transform = '';
+      hideHeadlineAndSplats();
+      smoke._glitchRunning = false;
+    }, SURGE_MS);
 
-    // wait for flip to end (use ended event if available)
-    const endedPromise = new Promise(resolve => {
-      const onEnded = ()=>{ flipVideo.removeEventListener('ended', onEnded); resolve(); };
-      flipVideo.addEventListener('ended', onEnded);
-    });
-
-    // fallback timeout in case 'ended' doesn't fire
-    const fallback = new Promise(resolve => setTimeout(resolve, (flipVideo.duration && !isNaN(flipVideo.duration) ? (flipVideo.duration * 1000) : 1500) + 2500));
-
-    await Promise.race([endedPromise, fallback]);
-
-    // hold briefly so the effect lands visually
-    await new Promise(r => setTimeout(r, FLIP_HOLD_MS));
-
-    // hide interstitial visuals
-    hideInterstitialVisuals();
-
-    // slide flipWrap back up (remove class; CSS places it off-screen)
-    flipWrap.classList.remove('active');
-
-    // small delay to allow slide-out
-    await new Promise(r => setTimeout(r, FLIP_SLIDE_MS));
-
-    // reset flip video playback position
-    try { flipVideo.pause(); flipVideo.currentTime = 0; } catch(e){}
-
-    // restart main smoke from start and resume loop
-    try { mainVideo.currentTime = 0; await mainVideo.play(); } catch(e){}
-
-    interstitialRunning = false;
   }
 
-  // Trigger interstitial when mainVideo is near its end
-  function onMainTimeUpdate(){
-    if(interstitialRunning) return;
-    if(!mainVideo.duration || isNaN(mainVideo.duration)) return;
-    const remaining = mainVideo.duration - mainVideo.currentTime;
-    if(remaining <= TRIGGER_BEFORE_END){
-      runFlipDownInterstitial().catch(()=>{ interstitialRunning = false; });
+  // Trigger glitch automatically near video end
+  function onTimeUpdate(){
+    if (smoke._glitchRunning) return;
+    if (!smoke.duration || isNaN(smoke.duration)) return;
+    const remaining = smoke.duration - smoke.currentTime;
+    if (remaining <= TRIGGER_BEFORE_END){
+      // run snapshot + glitch; ensure plays even if remaining is tiny
+      runGlitchSequence().catch(()=>{ smoke._glitchRunning = false; });
     }
   }
-  mainVideo.addEventListener('timeupdate', onMainTimeUpdate);
+  smoke.addEventListener('timeupdate', onTimeUpdate);
 
-  // Also allow manual testing
-  window.triggerFlipInterstitial = function(){ runFlipDownInterstitial().catch(()=>{ interstitialRunning = false; }); };
+  // Expose manual trigger for testing
+  window.triggerGlitch = function(){ runGlitchSequence().catch(()=>{ smoke._glitchRunning = false; }); };
 
-  // Menu toggle logic
+  // Menu toggle behavior
+  const anarchyBtn = document.getElementById('anarchyBtn');
+  const anarchyMenu = document.getElementById('anarchyMenu');
   function openMenu(open){
-    if(open){
-      anarchyMenu.classList.add('open'); anarchyMenu.setAttribute('aria-hidden','false'); anarchyBtn.setAttribute('aria-expanded','true');
-      const first = anarchyMenu.querySelector('a'); if(first) first.focus();
-    } else {
-      anarchyMenu.classList.remove('open'); anarchyMenu.setAttribute('aria-hidden','true'); anarchyBtn.setAttribute('aria-expanded','false');
-    }
+    if(open){ anarchyMenu.classList.add('open'); anarchyMenu.setAttribute('aria-hidden','false'); anarchyBtn.setAttribute('aria-expanded','true'); const f = anarchyMenu.querySelector('a'); if(f) f.focus(); }
+    else { anarchyMenu.classList.remove('open'); anarchyMenu.setAttribute('aria-hidden','true'); anarchyBtn.setAttribute('aria-expanded','false'); }
   }
-  anarchyBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openMenu(!anarchyMenu.classList.contains('open')); });
-  document.addEventListener('click', (e)=>{ if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) openMenu(false); });
-  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') openMenu(false); });
+  anarchyBtn.addEventListener('click', e=>{ e.stopPropagation(); openMenu(!anarchyMenu.classList.contains('open')); });
+  document.addEventListener('click', e=>{ if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) openMenu(false); });
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') openMenu(false); });
 
-  // Try to unlock autoplay after first interaction
-  document.addEventListener('click', ()=>{ if(mainVideo.paused && !interstitialRunning) mainVideo.play().catch(()=>{}); });
+  // attempt to unlock playback on first interaction
+  document.addEventListener('click', ()=>{ if(smoke.paused) smoke.play().catch(()=>{}); });
 
-  // Initial setup: ensure main loop is playing
-  mainVideo.play().catch(()=>{});
 })();
 </script>
 </body>
