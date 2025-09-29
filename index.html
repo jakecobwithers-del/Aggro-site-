@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — JOIN surge (TTF ready)</title>
+<title>Aggro PvP — JOIN surge (TTF wired)</title>
 <style>
   :root{
     --loops-before-glitch:1;
@@ -11,89 +11,90 @@
     --glitch-ms:420;
     --smoke-opacity:0.56;
     --red-strength:0.30;
-    --splat-opacity:0.92;
-    --min-video-duration:0.5;
+    --splat-opacity:1;
   }
 
-  /* ONLY load the exact TTF file you confirmed. Put "28 Days Later.ttf" in repo root. */
+  /* Bulletproof TTF loading: percent-encoded + raw + cache-bust */
   @font-face{
     font-family: "28Days";
-    src: url("28 Days Later.ttf") format("truetype");
+    src: url("28%20Days%20Later.ttf?v=2") format("truetype"),
+         url("28 Days Later.ttf?v=2") format("truetype");
     font-weight: 400 900;
     font-style: normal;
     font-display: swap;
   }
 
-  html,body{height:100%;margin:0;background:#050505;color:#fff;font-family:28Days,Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;overflow:hidden;-webkit-font-smoothing:antialiased}
+  html,body{
+    height:100%;margin:0;background:#050505;color:#fff;
+    font-family:28Days,Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+    overflow:hidden;-webkit-font-smoothing:antialiased
+  }
   img{display:block;max-width:100%}
   button{background:transparent;border:0;cursor:pointer;color:inherit;font:inherit}
 
-  /* Z order:
-     7000 = menu button + menu (always interactive)
-     5000 = smoke (top visual overlay)
-     4600 = subtle red wash (brief)
-     3000 = surge visuals (JOIN + splats) under smoke visually but made very readable
-     1000 = logo/buttons
-  */
-
-  /* Menu */
-  .anarchyBtn{position:fixed;top:18px;right:18px;z-index:7000;padding:6px}
+  /* Layout z-order */
+  .anarchyBtn{position:fixed;top:18px;right:18px;z-index:8000;padding:6px}
   .anarchyBtn img{width:56px;height:56px;display:block}
-  .anarchyMenu{position:fixed;top:86px;right:18px;z-index:7000;display:none;flex-direction:column;gap:8px;padding:10px;background:rgba(6,6,6,0.98);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,0.6)}
+  .anarchyMenu{
+    position:fixed;top:86px;right:18px;z-index:8000;display:none;
+    flex-direction:column;gap:8px;padding:10px;
+    background:linear-gradient(180deg, rgba(10,10,10,0.98), rgba(6,6,6,0.96));
+    border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.6);min-width:160px;
+  }
   .anarchyMenu.open{display:flex}
-  .anarchyMenu a{font-family:28Days,inherit;font-weight:700;color:#fff;text-decoration:none;padding:8px 12px;border-radius:6px;font-size:15px;letter-spacing:0.6px}
+  .anarchyMenu a{
+    font-family:28Days,Inter,system-ui,Helvetica,Arial,sans-serif;
+    font-weight:800;color:#ffdfe0;text-decoration:none;padding:10px 12px;border-radius:8px;
+    display:block;letter-spacing:.8px;font-size:15px;line-height:1;transition:background 160ms,transform 120ms;
+  }
+  .anarchyMenu a:hover,.anarchyMenu a:focus{background:rgba(255,16,16,0.06);transform:translateX(-4px);outline:none}
 
-  /* SURGE visuals (hidden by default) */
-  .surgeContainer{position:fixed;inset:0;z-index:3000;pointer-events:none;display:flex;align-items:center;justify-content:center;padding:6vh 4vw}
-  /* Readable JOIN text in your font with strong stroke, backing and subtle glow */
+  /* Surge visuals container */
+  .surgeContainer{position:fixed;inset:0;z-index:3000;pointer-events:none;display:flex;align-items:center;justify-content:center;padding:5vh 4vw}
   #joinText{
-    display:none;
-    font-family:28Days,Inter,Helvetica,Arial,sans-serif;
-    font-size:clamp(30px,10vw,96px);
-    font-weight:900;
-    line-height:0.94;
-    text-align:center;
-    letter-spacing:6px;
-    color:#fff;
-    -webkit-text-stroke:2px rgba(0,0,0,0.96);
-    text-shadow:0 8px 28px rgba(0,0,0,0.9),0 0 10px rgba(255,16,16,0.12);
-    transform:translateY(20px) scale(.98);
-    opacity:0;
-    transition:opacity 200ms ease, transform 260ms cubic-bezier(.2,.9,.3,1);
-    pointer-events:none;
-    padding:8px 14px;
-    border-radius:10px;
-    background:linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.06));
-    backdrop-filter: blur(2px) saturate(1.05);
-    box-shadow:0 8px 30px rgba(0,0,0,0.6) inset;
-    mix-blend-mode:normal;
+    display:none;font-family:28Days,Inter,Helvetica,Arial,sans-serif;
+    font-size:clamp(28px,10vw,96px);font-weight:900;letter-spacing:6px;color:#fff;
+    -webkit-text-stroke:2px rgba(0,0,0,.96);
+    text-shadow:0 10px 30px rgba(0,0,0,.95),0 0 10px rgba(255,22,22,.10);
+    transform:translateY(20px) scale(.98);opacity:0;
+    transition:opacity 180ms ease,transform 260ms cubic-bezier(.2,.9,.3,1);
+    pointer-events:none;padding:10px 16px;border-radius:10px;
+    background:linear-gradient(180deg, rgba(0,0,0,.14), rgba(0,0,0,.08));
+    backdrop-filter: blur(3px) saturate(1.02);
   }
   #joinText.show{display:block;opacity:1;transform:translateY(0) scale(1.02)}
 
-  /* Blood splats (hidden until surge). Add subtle drop shadow to help read through smoke */
-  .splat{position:fixed;pointer-events:none;mix-blend-mode:multiply;opacity:0;transition:opacity 220ms linear,transform 360ms cubic-bezier(.2,.9,.3,1);filter:drop-shadow(0 10px 22px rgba(0,0,0,0.7));z-index:3000}
-  .splat.left{top:4%;left:3.5%;width:420px;transform:translateY(18px) rotate(-18deg) scale(.9)}
-  .splat.right{bottom:4%;right:3.5%;width:380px;transform:translateY(18px) rotate(12deg) scale(.9)}
-  .splat.show{opacity:var(--splat-opacity);transform:translateY(0) scale(1)}
+  /* Blood splats */
+  .splat{position:fixed;pointer-events:none;opacity:0;transition:opacity 200ms linear,transform 360ms cubic-bezier(.2,.9,.3,1),filter 200ms;z-index:3000}
+  .splat.left{top:3.6%;left:2.8%;width:440px;transform:translateY(22px) rotate(-18deg) scale(.92)}
+  .splat.right{bottom:3.6%;right:2.8%;width:400px;transform:translateY(22px) rotate(12deg) scale(.92)}
+  .splat.show{
+    opacity:var(--splat-opacity);
+    transform:translateY(0) scale(1.08);
+    filter:brightness(1.25) contrast(1.18) saturate(1.12) drop-shadow(0 18px 28px rgba(0,0,0,.7));
+    mix-blend-mode:screen;
+  }
 
-  /* Red wash shown briefly during surge (kept subtle). Sits under smoke but above other visuals for tinting. */
-  .glitch-paint{position:fixed;inset:0;z-index:4600;pointer-events:none;opacity:0;transition:opacity 100ms linear}
+  /* Red tint during surge */
+  .glitch-paint{position:fixed;inset:0;z-index:4600;pointer-events:none;opacity:0;transition:opacity 120ms linear}
   .glitch-paint.show{opacity:1}
   .red-wash{position:absolute;inset:0;background:rgba(255,18,18,var(--red-strength));mix-blend-mode:overlay;pointer-events:none}
 
-  /* Smoke is topmost visual overlay so it overlays JOIN + splats. Keep pointer-events none so UI clickable. */
+  /* Smoke overlay (top) */
   #smoke-wrap{position:fixed;inset:0;z-index:5000;pointer-events:none}
-  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(1.6px) saturate(1) contrast(1);transform-origin:center center;will-change:transform,filter,opacity}
-  #smokeVideo.glitch{transition:transform var(--glitch-ms) cubic-bezier(.22,.9,.3,1),filter var(--glitch-ms) linear,opacity var(--glitch-ms) linear;transform:translateY(-6px) scale(1.02);filter:blur(3px) contrast(1.06) saturate(1.12);opacity:0.96}
+  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(1.6px) saturate(1) contrast(1);will-change:transform,filter,opacity}
+  #smokeVideo.glitch{transition:transform var(--glitch-ms) cubic-bezier(.22,.9,.3,1),filter var(--glitch-ms) linear,opacity var(--glitch-ms) linear;transform:translateY(-6px) scale(1.02);filter:blur(3px) contrast(1.06) saturate(1.12);opacity:.98}
 
   /* UI under smoke */
   #logo{position:fixed;top:9vh;left:50%;transform:translateX(-50%);z-index:1000}
   .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:36px;z-index:1000;display:flex;flex-direction:column;gap:12px;align-items:center}
-  .cta{padding:12px 20px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800;background:rgba(0,0,0,0.45)}
-  .primary{background:rgba(255,40,40,0.95)}.secondary{background:#5865F2}
+  .cta{padding:12px 20px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800;background:rgba(0,0,0,.45)}
+  .primary{background:rgba(255,40,40,.95)}.secondary{background:#5865F2}
 
-  /* Utility hidden class for immediate-hide fallbacks */
   .hidden{display:none!important;opacity:0!important}
+
+  /* Force elements to use the font during testing */
+  #joinText, .anarchyMenu a, .anarchyBtn { font-family: "28Days", Inter, sans-serif !important; }
 
   @media(max-width:520px){
     #joinText{font-size:clamp(20px,14vw,56px)}
@@ -105,16 +106,16 @@
 </head>
 <body>
 
-  <!-- Menu (topmost, always interactive) -->
+  <!-- Menu -->
   <button id="anarchyBtn" class="anarchyBtn" aria-expanded="false" aria-controls="anarchyMenu" title="Menu">
-    <img src="anarchy.PNG" alt="Menu">
+    <img src="anarchy.png" alt="Menu">
   </button>
   <nav id="anarchyMenu" class="anarchyMenu" aria-hidden="true" role="navigation">
-    <a href="rules.html">Rules</a>
-    <a href="support.html">Support</a>
-    <a href="donate.html">Donate</a>
-    <a href="killfeed.html">Kill Feed</a>
-    <a href="leaderboard.html">Leaderboard</a>
+    <a id="menuRules" href="rules.html">Rules</a>
+    <a id="menuSupport" href="support.html">Support</a>
+    <a id="menuDonate" href="donate.html">Donate</a>
+    <a id="menuKillfeed" href="killfeed.html">Kill Feed</a>
+    <a id="menuLeaderboard" href="leaderboard.html">Leaderboard</a>
   </nav>
 
   <!-- Surge visuals (hidden until triggered) -->
@@ -126,10 +127,10 @@
   <img id="splatLeft" class="splat left hidden" src="blood.png" alt="blood left" />
   <img id="splatRight" class="splat right hidden" src="blood1.png" alt="blood right" />
 
-  <!-- Red wash (brief) -->
+  <!-- Red wash -->
   <div id="glitchPaint" class="glitch-paint" aria-hidden="true"><div class="red-wash"></div></div>
 
-  <!-- Smoke video (top visual overlay) - keep file at repo root as Smoke.mp4 -->
+  <!-- Smoke video -->
   <div id="smoke-wrap" aria-hidden="true">
     <video id="smokeVideo" muted playsinline preload="auto" crossorigin="anonymous">
       <source src="Smoke.mp4" type="video/mp4">
@@ -140,7 +141,7 @@
   <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
   <div class="widget-bar" role="navigation" aria-label="Quick actions">
     <a class="cta primary" href="steam://connect/103.193.80.64:3436">Connect to Server</a>
-    <a class="cta secondary" href="https://discord.gg/gSwkVzJyMT" target="_blank" rel="noopener">Join the Community</a>
+    <a class="cta secondary" href="https://discord.gg/gSwkVzJyMT" target="_blank" rel="noopener">Join Community</a>
   </div>
 
 <script>
@@ -154,34 +155,30 @@
   const LOOPS = Math.max(1, parseInt(getComputedStyle(document.documentElement).getPropertyValue('--loops-before-glitch')) || 1);
   const SURGE_MS = Math.max(0, parseInt(getComputedStyle(document.documentElement).getPropertyValue('--surge-ms')) || 2000);
   const GLITCH_MS = Math.max(0, parseInt(getComputedStyle(document.documentElement).getPropertyValue('--glitch-ms')) || 420);
-  const MIN_VIDEO_DUR = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--min-video-duration')) || 0.5;
+  const MIN_VIDEO_DUR = 0.5;
 
   let prevTime = 0;
   let loopCount = 0;
   let surgeActive = false;
   let fallbackTimer = null;
 
-  // Ensure only one smoke video element
+  // Ensure single smoke video element
   (function removeDupes(){ const v = document.querySelectorAll('video#smokeVideo'); if(v.length>1) v.forEach((el,i)=>{ if(i>0) el.remove(); }); })();
 
-  // Ensure smoke loops so it doesn't stop
   smoke.loop = true;
-
-  // Start playback (may be blocked until user interaction)
   smoke.play().catch(()=>{});
 
-  // Utility: toggle visibility via classes (keeps transitions)
   function show(el){
     el.classList.remove('hidden');
-    requestAnimationFrame(()=>el.classList.add('show'));
+    requestAnimationFrame(()=> el.classList.add('show'));
   }
   function hide(el){
     el.classList.remove('show');
-    // wait transition then hide display to force initial-hidden behavior
     setTimeout(()=> el.classList.add('hidden'), 260);
   }
 
   function showSurgeVisuals(){
+    joinText.textContent = 'JOIN THE FIGHT';
     show(joinText);
     show(splatL);
     show(splatR);
@@ -194,37 +191,20 @@
     glitchPaint.classList.remove('show');
   }
 
-  // Core surge: non-destructive (smoke keeps looping and remains topmost)
   async function runSurge(){
     if (surgeActive) return;
     surgeActive = true;
-
-    // ensure smoke is playing
     smoke.play().catch(()=>{});
-
-    // visual micro-punch on smoke element
     smoke.classList.add('glitch');
-
-    // reveal visuals
     showSurgeVisuals();
-
-    // micro-glitch hold
-    await new Promise(r => setTimeout(r, GLITCH_MS));
-
-    // stop micro-punch
+    await new Promise(r=>setTimeout(r, GLITCH_MS));
     smoke.classList.remove('glitch');
-
-    // keep visible for remaining SURGE_MS
-    await new Promise(r => setTimeout(r, Math.max(0, SURGE_MS - GLITCH_MS)));
-
-    // hide visuals
+    await new Promise(r=>setTimeout(r, Math.max(0, SURGE_MS - GLITCH_MS)));
     hideSurgeVisuals();
-
-    // brief cooldown
-    setTimeout(()=> { surgeActive = false; }, 140);
+    setTimeout(()=> surgeActive = false, 140);
   }
 
-  // Reliable loop detection for short clips: detect currentTime wrap backward
+  // Loop detection
   smoke.addEventListener('timeupdate', ()=>{
     const t = smoke.currentTime || 0;
     if (prevTime - t > 0.28){
@@ -237,7 +217,6 @@
     prevTime = t;
   });
 
-  // Fallback timer if metadata missing or very short clip
   smoke.addEventListener('loadedmetadata', ()=>{
     const dur = smoke.duration || 0;
     if (!isFinite(dur) || dur <= 0 || dur < MIN_VIDEO_DUR){
@@ -250,7 +229,7 @@
     }
   });
 
-  // Menu toggle logic
+  // Menu toggle
   const anarchyBtn = document.getElementById('anarchyBtn');
   const anarchyMenu = document.getElementById('anarchyMenu');
   function openMenu(open){
@@ -269,10 +248,8 @@
   document.addEventListener('click', e=>{ if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) openMenu(false); });
   document.addEventListener('keydown', e=>{ if(e.key === 'Escape') openMenu(false); });
 
-  // Resume playback on user interaction if autoplay was blocked
   document.addEventListener('click', ()=>{ if(smoke.paused) smoke.play().catch(()=>{}); });
 
-  // Start video from zero for reliable loop detection
   (async function init(){ try { smoke.currentTime = 0; await smoke.play(); } catch(e){} })();
 
 })();
