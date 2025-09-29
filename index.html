@@ -1,114 +1,166 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Aggro PvP — Join the Fight</title>
-  <style>
-    /* Font */
-    @font-face {
-      font-family: 'DayZFont';
-      src: url('28 Days Later.ttf') format('truetype');
-      font-display: swap;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Aggro PvP — Join the Fight</title>
+<style>
+  /* ---------- Font ---------- */
+  @font-face{
+    font-family:'DayZFont';
+    src: url('28 Days Later.ttf') format('truetype');
+    font-display:swap;
+  }
 
-    /* Base */
-    html,body { height:100%; width:100%; margin:0; padding:0; background:#000; overflow:hidden; font-family:'DayZFont', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  /* ---------- Base ---------- */
+  :root{
+    --red:#ff2b2b;
+    --dark-ink:rgba(0,0,0,0.92);
+  }
+  html,body{height:100%;width:100%;margin:0;padding:0;background:#000;overflow:hidden;font-family:'DayZFont', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;color:#fff;}
 
-    /* Smoke layer (video only) */
-    #smoke-overlay { position:fixed; inset:0; z-index:900; pointer-events:none; }
-    #smokeVideo {
-      width:100%; height:100%; object-fit:cover;
-      opacity:0.62; mix-blend-mode:screen;
-      filter: blur(6px) saturate(1.05);
-      transition: filter 180ms linear;
-    }
-    /* Red tint applied only to the video */
-    #smokeVideo.redHue {
-      filter: blur(6px) saturate(1.35) hue-rotate(-40deg) contrast(1.06);
-    }
+  /* ---------- Video (smoke) ---------- */
+  #smoke-overlay{position:fixed;inset:0;z-index:800;pointer-events:none}
+  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:0.62;mix-blend-mode:screen;filter:blur(6px) saturate(1.05);transition:filter 160ms linear}
 
-    /* Short red static flash */
-    #redStatic {
-      position:fixed; inset:0; z-index:1085; pointer-events:none;
-      background: rgba(255,18,18,0.08); mix-blend-mode:screen; opacity:0;
-      transition: opacity 100ms linear;
-    }
-    #redStatic.show { opacity:1; }
+  /* red tint applied to video only */
+  #smokeVideo.redHue{filter: blur(6px) saturate(1.45) hue-rotate(-40deg) contrast(1.06);}
 
-    /* Surge overlay containing splatters + text */
-    #surgeOverlay {
-      position:fixed; inset:0; z-index:1100; pointer-events:none;
-      display:flex; align-items:center; justify-content:center;
-      opacity:0; transition: opacity 120ms linear;
-    }
-    #surgeOverlay.show { opacity:1; }
+  /* ---------- Screen effects (grain, vignette, rgb-split) ---------- */
+  .screen-effects{
+    position:fixed;inset:0;z-index:1060;pointer-events:none;mix-blend-mode:normal;
+  }
+  /* grain layer */
+  .grain{
+    position:absolute;inset:0;background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size:3px 3px, 3px 3px;opacity:0.12;mix-blend-mode:overlay;animation:grainShift 6s steps(10) infinite;
+    pointer-events:none;
+  }
+  @keyframes grainShift{0%{transform:translate(0,0)}50%{transform:translate(1px,-1px)}100%{transform:translate(0,0)}}
 
-    /* Dual splatters */
-    .bloodSplatter { position:absolute; pointer-events:none; opacity:0.98; will-change:transform,opacity; }
-    .bloodTopLeft { top:6%; left:4%; width:320px; transform:rotate(-30deg) translateZ(0); }
-    .bloodBottomRight { bottom:6%; right:4%; width:360px; transform:rotate(15deg) translateZ(0); }
+  /* quick RGB split flash (applies briefly during surge) */
+  .rgb-split{position:absolute;inset:0;pointer-events:none;opacity:0;mix-blend-mode:screen;transition:opacity 80ms linear;filter:contrast(1.02);}
+  .rgb-split.show{opacity:1;backdrop-filter:contrast(1.05);}
 
-    /* Splat-in animation (restarts when overlay toggles) */
-    #surgeOverlay.show .bloodSplatter { animation: splatIn 420ms cubic-bezier(.2,.9,.3,1) forwards; }
-    @keyframes splatIn {
-      0% { transform: scale(0.7) translateZ(0); opacity:0; }
-      60% { transform: scale(1.15) translateZ(0); opacity:1; }
-      100% { transform: scale(1) translateZ(0); opacity:0.98; }
-    }
+  /* subtle vignette to anchor center */
+  .vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 30%, rgba(0,0,0,0.55) 100%);opacity:1;mix-blend-mode:multiply}
 
-    /* Center text highly visible and animated in/out */
-    #surgeOverlay h1 {
-      margin:0; padding:0; pointer-events:none; z-index:1150;
-      color:#ff2b2b; font-weight:900; letter-spacing:6px;
-      font-size:9.5vw; line-height:1; text-align:center;
-      -webkit-text-stroke:2px rgba(0,0,0,0.9);
-      text-shadow: 0 2px 6px rgba(0,0,0,0.95), 0 0 18px rgba(255,40,40,0.45);
-      opacity:0; transform:translateY(8px) scale(0.98);
-      will-change: opacity, transform;
-    }
-    #surgeOverlay.show h1 { animation: textInOut 2500ms cubic-bezier(.2,.9,.3,1) forwards; }
-    @keyframes textInOut {
-      0%   { opacity:0; transform:translateY(12px) scale(0.98); }
-      10%  { opacity:1; transform:translateY(0) scale(1.02); }
-      70%  { opacity:1; transform:translateY(0) scale(1); }
-      100% { opacity:0; transform:translateY(-6px) scale(0.98); }
-    }
+  /* ---------- Quick red static flash (punch) ---------- */
+  #redStatic{position:fixed;inset:0;z-index:1085;pointer-events:none;background:linear-gradient(180deg, rgba(255,30,30,0.06), rgba(255,20,20,0.04));mix-blend-mode:screen;opacity:0;transition:opacity 100ms linear}
+  #redStatic.show{opacity:1}
 
-    /* Logo & UI */
-    #logo { position:relative; z-index:100; text-align:center; margin-top:12vh; }
-    #logo img { width:min(340px,40vw); filter:drop-shadow(0 18px 40px rgba(0,0,0,0.75)); animation: pulseLogo 2.5s ease-in-out infinite; }
-    @keyframes pulseLogo { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
+  /* ---------- Surge overlay: splatters + text ---------- */
+  #surgeOverlay{
+    position:fixed;inset:0;z-index:1100;pointer-events:none;display:flex;align-items:center;justify-content:center;
+    opacity:0;transition:opacity 140ms linear;
+  }
+  #surgeOverlay.show{opacity:1}
 
-    .widget-bar { position:fixed; left:50%; transform:translateX(-50%); bottom:40px; z-index:100; display:flex; flex-direction:column; gap:14px; align-items:center; }
-    .redBtn, .blueBtn { color:#fff; text-decoration:none; padding:14px 26px; border-radius:10px; font-weight:800; display:inline-block; }
-    .redBtn { background:#ff3b3b; }
-    .blueBtn { background:#5865F2; }
+  /* splatter: improved look via blend-mode, filters, transform origins */
+  .bloodSplatter{
+    position:absolute;pointer-events:none;opacity:0.98;will-change:transform,opacity,filter;
+    mix-blend-mode:multiply;filter:contrast(1.03) saturate(1.12) drop-shadow(0 10px 18px rgba(0,0,0,0.75));
+    transform-origin:center center;
+  }
+  .bloodTopLeft{top:6%;left:4%;width:420px;transform:rotate(-26deg) translateZ(0)}
+  .bloodBottomRight{bottom:6%;right:4%;width:420px;transform:rotate(12deg) translateZ(0)}
 
-    .anarchyBtn { position:fixed; top:18px; right:18px; z-index:1200; background:none; border:0; padding:0; cursor:pointer; }
-    .anarchyBtn img { width:72px; height:72px; filter:drop-shadow(0 0 12px rgba(255,0,0,0.85)); }
-    .anarchyMenu { position:fixed; right:18px; top:100px; z-index:1200; display:none; flex-direction:column; padding:12px; background:rgba(0,0,0,0.96); border-radius:10px; }
-    .anarchyMenu.open { display:flex; }
-    .anarchyMenu a { color:#fff; text-decoration:none; padding:8px 10px; border-radius:6px; font-weight:700; }
+  /* splatter animation: smear + drip + scale */
+  #surgeOverlay.show .bloodSplatter{animation:splatIn 520ms cubic-bezier(.2,.9,.3,1) forwards, drip 1600ms linear 380ms both}
+  @keyframes splatIn{
+    0%{transform:scale(0.6) rotate(-8deg);opacity:0}
+    55%{transform:scale(1.18) rotate(6deg);opacity:1; filter:blur(0.6px) saturate(1.25)}
+    100%{transform:scale(1) rotate(0deg);opacity:0.98;filter:blur(0)}
+  }
+  /* long subtle drip to sell realism */
+  @keyframes drip{
+    0%{transform:translateY(0)}
+    40%{transform:translateY(6px)}
+    100%{transform:translateY(18px);opacity:0.88}
+  }
 
-    @media (max-width:520px) {
-      .bloodTopLeft { width:220px; top:4%; left:2%; }
-      .bloodBottomRight { width:240px; right:2%; bottom:4%; }
-      #surgeOverlay h1 { font-size:14vw; letter-spacing:3px; -webkit-text-stroke:1.6px; }
-    }
-  </style>
+  /* add a faint smear using pseudo-element for each splatter via an overlay class */
+  .bloodSplatter::after{
+    content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 20%, rgba(255,255,255,0.02), transparent 18%), radial-gradient(circle at 80% 80%, rgba(0,0,0,0.06), transparent 22%);mix-blend-mode:overlay;opacity:0.14;pointer-events:none
+  }
+
+  /* ---------- Headline text: stronger, improved, wobble + flicker ---------- */
+  #surgeOverlay h1{
+    margin:0;padding:0;pointer-events:none;z-index:1150;
+    color:var(--red);font-weight:900;letter-spacing:6px;
+    font-size:9.5vw;line-height:1;text-align:center;
+    -webkit-text-stroke:2px rgba(0,0,0,0.95);
+    text-shadow:
+      0 2px 6px rgba(0,0,0,0.95),
+      0 0 18px rgba(255,40,40,0.35),
+      0 0 36px rgba(255,15,15,0.12);
+    opacity:0;transform:translateY(10px) scale(0.985);will-change:opacity,transform;
+    filter:drop-shadow(0 3px 14px rgba(0,0,0,0.9));
+  }
+  /* play animation when overlay toggles */
+  #surgeOverlay.show h1{animation:textInOut 2500ms cubic-bezier(.2,.9,.3,1) forwards, headlineJitter 2500ms steps(6) both}
+  @keyframes textInOut{
+    0%{opacity:0;transform:translateY(18px) scale(0.98)}
+    8%{opacity:1;transform:translateY(0) scale(1.04)}
+    65%{opacity:1;transform:translateY(0) scale(1)}
+    100%{opacity:0;transform:translateY(-8px) scale(0.98)}
+  }
+  /* micro jitter to mimic screen vibration / intensity */
+  @keyframes headlineJitter{
+    0%{transform:translateY(0)}
+    10%{transform:translateY(-1px) translateX(1px)}
+    20%{transform:translateY(0)}
+    30%{transform:translateY(1px) translateX(-1px)}
+    40%{transform:translateY(0)}
+    50%{transform:translateY(-1px)}
+    70%{transform:translateY(0)}
+    100%{transform:translateY(0)}
+  }
+
+  /* tiny RGB split on the headline for a moment (via pseudo elements) */
+  #surgeOverlay h1::before, #surgeOverlay h1::after{
+    content:attr(data-text);position:absolute;left:0;right:0;top:0;bottom:0;z-index:-1;pointer-events:none;mix-blend-mode:screen;opacity:0;transform:translateZ(0)
+  }
+  #surgeOverlay h1::before{color:rgba(255,40,40,0.9);transform:translateX(-2px);filter:blur(0)}
+  #surgeOverlay h1::after{color:rgba(80,180,255,0.7);transform:translateX(2px);filter:blur(0)}
+  #surgeOverlay.show h1::before,#surgeOverlay.show h1::after{animation:rgbText 280ms linear 40ms both}
+  @keyframes rgbText{0%{opacity:0;transform:translateX(0)}60%{opacity:1}100%{opacity:0;transform:translateX(0)}}
+
+  /* ensure headline is readable on small screens */
+  @media(max-width:520px){
+    #surgeOverlay h1{font-size:15.5vw;letter-spacing:3px;-webkit-text-stroke:1.6px}
+    .bloodTopLeft{width:260px;top:4%;left:2%}
+    .bloodBottomRight{width:280px;right:2%;bottom:4%}
+  }
+
+  /* ---------- Logo & UI ---------- */
+  #logo{position:relative;z-index:700;text-align:center;margin-top:12vh}
+  #logo img{width:min(360px,40vw);filter:drop-shadow(0 18px 40px rgba(0,0,0,0.75));animation:pulseLogo 2.6s ease-in-out infinite}
+  @keyframes pulseLogo{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+  .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:40px;z-index:700;display:flex;flex-direction:column;gap:12px;align-items:center}
+  .redBtn,.blueBtn{color:#fff;text-decoration:none;padding:12px 22px;border-radius:10px;font-weight:800;display:inline-block}
+  .redBtn{background:#ff3b3b}
+  .blueBtn{background:#5865F2}
+
+  .anarchyBtn{position:fixed;top:18px;right:18px;z-index:1200;background:none;border:0;padding:0;cursor:pointer}
+  .anarchyBtn img{width:72px;height:72px}
+  .anarchyMenu{position:fixed;right:18px;top:100px;z-index:1200;display:none;flex-direction:column;padding:12px;background:rgba(0,0,0,0.96);border-radius:10px}
+  .anarchyMenu.open{display:flex}
+  .anarchyMenu a{color:#fff;text-decoration:none;padding:8px 10px;border-radius:6px;font-weight:700}
+</style>
 </head>
 <body>
-  <!-- Logo -->
-  <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
 
-  <!-- Buttons -->
+  <!-- logo/UI under everything -->
+  <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
   <div class="widget-bar">
     <a class="redBtn" href="steam://connect/103.193.80.64:3436">Connect to Server</a>
     <a class="blueBtn" href="https://discord.gg/gSwkVzJyMT" target="_blank">Join the Community</a>
   </div>
 
-  <!-- Anarchy menu -->
   <button class="anarchyBtn" id="anarchyBtn" aria-expanded="false" aria-controls="anarchyMenu"><img src="anarchy.png" alt="Menu"></button>
   <nav id="anarchyMenu" class="anarchyMenu" aria-hidden="true">
     <a href="rules.html">Rules</a>
@@ -125,102 +177,125 @@
     </video>
   </div>
 
-  <!-- Red static flash -->
+  <!-- Screen effects container -->
+  <div class="screen-effects" aria-hidden="true">
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div class="rgb-split" id="rgbSplit"></div>
+  </div>
+
+  <!-- Short red static flash -->
   <div id="redStatic" aria-hidden="true"></div>
 
   <!-- Surge overlay: two splatters + centered text -->
   <div id="surgeOverlay" aria-hidden="true">
     <img src="blood.png" class="bloodSplatter bloodTopLeft" alt="">
     <img src="blood1.png" class="bloodSplatter bloodBottomRight" alt="">
-    <h1 id="joinText">JOIN THE FIGHT</h1>
+    <h1 id="joinText" data-text="JOIN THE FIGHT">JOIN THE FIGHT</h1>
   </div>
 
-  <script>
-    (function(){
-      const v = document.getElementById('smokeVideo');
-      const overlay = document.getElementById('surgeOverlay');
-      const redStatic = document.getElementById('redStatic');
-      const anarchyBtn = document.getElementById('anarchyBtn');
-      const anarchyMenu = document.getElementById('anarchyMenu');
+<script>
+(function(){
+  const v = document.getElementById('smokeVideo');
+  const overlay = document.getElementById('surgeOverlay');
+  const redStatic = document.getElementById('redStatic');
+  const rgbSplit = document.getElementById('rgbSplit');
+  const anarchyBtn = document.getElementById('anarchyBtn');
+  const anarchyMenu = document.getElementById('anarchyMenu');
 
-      // seconds before video end to trigger the surge
-      const TRIGGER_BEFORE_END = 1.0;
+  // seconds before video end to trigger the surge
+  const TRIGGER_BEFORE_END = 1.0;
 
-      // Ensure metadata loaded (duration available) before attaching timeupdate logic
-      function ensureMetadata(cb){
-        if (v.duration && !isNaN(v.duration)) return cb();
-        v.addEventListener('loadedmetadata', cb, { once: true });
+  // Ensure metadata loaded (duration available) before attaching timeupdate logic
+  function ensureMetadata(cb){
+    if (v.duration && !isNaN(v.duration)) return cb();
+    v.addEventListener('loadedmetadata', cb, { once: true });
+  }
+
+  // Robust trigger: uses timeupdate and a flag to avoid repeats
+  ensureMetadata(() => {
+    v.addEventListener('timeupdate', () => {
+      if (!v.duration || isNaN(v.duration)) return;
+      const remaining = v.duration - v.currentTime;
+      if (remaining <= TRIGGER_BEFORE_END && !v._surgeTriggered) {
+        v._surgeTriggered = true;
+        triggerSurge();
       }
+    });
+  });
 
-      ensureMetadata(() => {
-        v.addEventListener('timeupdate', () => {
-          if (!v.duration || isNaN(v.duration)) return;
-          const remaining = v.duration - v.currentTime;
-          if (remaining <= TRIGGER_BEFORE_END && !v._surgeTriggered) {
-            v._surgeTriggered = true;
-            triggerSurge();
-          }
-        });
-      });
+  // When the video ends, reset trigger and restart playback (manual loop)
+  v.addEventListener('ended', () => {
+    v._surgeTriggered = false;
+    v.currentTime = 0;
+    v.play().catch(()=>{ /* autoplay may require interaction on some browsers */ });
+  });
 
-      // When the video ends, reset trigger and restart playback (manual loop)
-      v.addEventListener('ended', () => {
-        v._surgeTriggered = false;
-        v.currentTime = 0;
-        v.play().catch(()=>{ /* autoplay may require interaction on some browsers */ });
-      });
+  // Core surge: red hue on video, red flash, rgb split, show splatters + text with better animations
+  function triggerSurge(){
+    // 1) Red hue on video
+    v.classList.add('redHue');
 
-      // Core surge: red hue on video, short red static flash, show splatters + text
-      function triggerSurge(){
-        // Add red hue to the video
-        v.classList.add('redHue');
+    // 2) Quick RGB split panel (subtle chroma separation)
+    rgbSplit.classList.add('show');
 
-        // flash a short red static
-        redStatic.classList.add('show');
-        redStatic.setAttribute('aria-hidden','false');
+    // 3) short red static flash (punch)
+    redStatic.classList.add('show');
+    redStatic.setAttribute('aria-hidden','false');
 
-        // reset overlay animations reliably by forcing reflow
-        overlay.classList.remove('show');
-        void overlay.offsetWidth;
-        overlay.classList.add('show');
-        overlay.setAttribute('aria-hidden','false');
+    // 4) restart overlay animations reliably
+    overlay.classList.remove('show');
+    void overlay.offsetWidth; // force reflow
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden','false');
 
-        // remove the quick red static flash fast (punch)
-        setTimeout(()=>{ redStatic.classList.remove('show'); redStatic.setAttribute('aria-hidden','true'); }, 140);
+    // 5) brief mild screen shake by toggling a transform on body (short lived)
+    document.body.style.transition = 'transform 160ms cubic-bezier(.2,.9,.3,1)';
+    document.body.style.transform = 'translateY(-6px) rotate(-0.4deg)';
+    setTimeout(()=>{ document.body.style.transform = ''; }, 140);
 
-        // revert everything after the visual window (2.5s)
-        setTimeout(()=>{
-          v.classList.remove('redHue');
-          overlay.classList.remove('show');
-          overlay.setAttribute('aria-hidden','true');
-        }, 2500);
-      }
+    // remove quick static and rgb split after punch
+    setTimeout(()=>{
+      redStatic.classList.remove('show');
+      redStatic.setAttribute('aria-hidden','true');
+      rgbSplit.classList.remove('show');
+    }, 160);
 
-      // Expose manual test helper for console
-      window.triggerSurge = triggerSurge;
+    // remove everything after visual window
+    setTimeout(()=>{
+      v.classList.remove('redHue');
+      overlay.classList.remove('show');
+      overlay.setAttribute('aria-hidden','true');
+      // clear flag after a short buffer so ended handler can also reset reliably
+      setTimeout(()=>{ v._surgeTriggered = false; }, 200);
+    }, 2600);
+  }
 
-      // Anarchy menu toggle + accessible attributes
-      anarchyBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const open = anarchyMenu.classList.toggle('open');
-        anarchyMenu.setAttribute('aria-hidden', (!open).toString());
-        anarchyBtn.setAttribute('aria-expanded', open.toString());
-      });
+  // Expose manual helper for console testing
+  window.triggerSurge = triggerSurge;
 
-      // Close menu on outside click
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) {
-          anarchyMenu.classList.remove('open');
-          anarchyMenu.setAttribute('aria-hidden','true');
-          anarchyBtn.setAttribute('aria-expanded','false');
-        }
-      });
+  // Anarchy menu toggle + accessible attributes
+  anarchyBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const open = anarchyMenu.classList.toggle('open');
+    anarchyMenu.setAttribute('aria-hidden', (!open).toString());
+    anarchyBtn.setAttribute('aria-expanded', open.toString());
+  });
 
-      // Try to start playback if browser paused it
-      if (v.paused) {
-        v.play().catch(()=>{ /* ignore autoplay block; manual interaction will start it */ });
-      }
-    })();
-  </script>
+  // Close menu on outside click
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) {
+      anarchyMenu.classList.remove('open');
+      anarchyMenu.setAttribute('aria-hidden','true');
+      anarchyBtn.setAttribute('aria-expanded','false');
+    }
+  });
+
+  // Try to start playback if browser paused it
+  if (v.paused) {
+    v.play().catch(()=>{ /* ignore autoplay block; manual interaction will start it */ });
+  }
+})();
+</script>
 </body>
 </html>
