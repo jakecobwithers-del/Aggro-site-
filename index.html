@@ -3,22 +3,20 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — JOIN the fight (Under-smoke, High-Contrast)</title>
+<title>Aggro PvP — JOIN with staged blood splatter</title>
 <style>
   :root{
-    --loops-before-glitch:1;
+    --smoke-opacity:0.56;
     --surge-ms:2200;
     --glitch-ms:420;
-    --smoke-opacity:0.56;
     --splat-opacity:1;
-    --splat-pop-scale:1.12;
   }
 
-  /* Font loading (use your exact file in repo root) */
+  /* Font (use your TTF in repo root) */
   @font-face{
     font-family: "28Days";
-    src: url("28%20Days%20Later.ttf?v=5") format("truetype"),
-         url("28 Days Later.ttf?v=5") format("truetype");
+    src: url("28%20Days%20Later.ttf?v=7") format("truetype"),
+         url("28 Days Later.ttf?v=7") format("truetype");
     font-weight: 400 900;
     font-style: normal;
     font-display: swap;
@@ -29,125 +27,160 @@
     margin:0;
     background:#050505;
     color:#fff;
-    font-family:"28Days",Inter,system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-family:"28Days",Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
     -webkit-font-smoothing:antialiased;
     overflow:hidden;
   }
 
-  img{display:block;max-width:100%;height:auto}
-  button{background:transparent;border:0;cursor:pointer;color:inherit;font:inherit}
-
-  /* UI stacking:
-     - smoke is intentionally topmost (z-index:5000)
-     - joinText and its whirl are under smoke but enhanced so they remain readable
+  /* layout and stacking:
+     - smoke (z-4000)
+     - join container (z-4200)
+     - blood splat pieces (z-4300) — rendered over the join text
+     - UI/menu above everything (z-9600)
   */
-
-  /* Top menu (unchanged) */
-  .anarchyBtn{position:fixed;top:14px;right:14px;z-index:9200;padding:6px}
+  .anarchyBtn{position:fixed;top:14px;right:14px;z-index:9600;padding:6px}
   .anarchyBtn img{width:56px;height:56px;display:block}
-  .anarchyMenu{position:fixed;top:84px;right:14px;z-index:9200;display:none;flex-direction:column;gap:8px;padding:10px;background:linear-gradient(180deg, rgba(12,12,12,0.98), rgba(6,6,6,0.96));border-radius:12px;box-shadow:0 18px 48px rgba(0,0,0,0.6);min-width:170px;backdrop-filter:blur(6px) saturate(1.02)}
+  .anarchyMenu{position:fixed;top:84px;right:14px;z-index:9600;display:none;flex-direction:column;gap:8px;padding:10px;background:linear-gradient(180deg,rgba(12,12,12,0.98),rgba(6,6,6,0.96));border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,0.6)}
   .anarchyMenu.open{display:flex}
-  .anarchyMenu a{font-family:"28Days",Inter,system-ui,Helvetica,Arial,sans-serif;font-weight:800;color:#ffdede;text-decoration:none;padding:10px 12px;border-radius:8px;display:block;letter-spacing:.6px;font-size:15px}
-  .anarchyMenu a:hover{background:rgba(255,16,16,0.06);transform:translateX(-6px)}
+  .anarchyMenu a{font-family:"28Days",Inter,system-ui,Helvetica,Arial;font-weight:800;color:#ffdede;text-decoration:none;padding:10px;border-radius:8px;display:block}
 
-  /* SURGE container (holds joinText and its whirl). z-index lower than smoke so smoke overlays it. */
-  .surgeLayer{
+  /* Smoke (cinematic overlay) */
+  #smoke-wrap{position:fixed;inset:0;z-index:4000;pointer-events:none}
+  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(1.6px) saturate(1) contrast(1)}
+
+  /* Join container on top of smoke */
+  #joinContainer{
     position:fixed;
     inset:0;
-    z-index:2900; /* below smoke (5000) */
-    pointer-events:none;
+    z-index:4200;
     display:flex;
     align-items:center;
     justify-content:center;
+    pointer-events:none;
     padding:5vh 6vw;
   }
 
-  /* Animated subtle whirl behind text — purely decorative, helps lift text contrast */
-  .whirl {
-    position:absolute;
-    width:min(86vw,960px);
-    height:min(28vh,240px);
-    left:50%;
-    top:45%;
-    transform:translate(-50%,-50%) scale(1);
-    filter:blur(10px) saturate(1.1);
-    opacity:0.14;
-    pointer-events:none;
-    mix-blend-mode:screen;
-    transition:opacity .24s ease;
-  }
-  .whirl.show{opacity:0.24}
-
-  /* JOIN: boosted white, heavy stroke, bright core, very readable through smoke */
+  /* The JOIN text — visually strong but not obstructed */
   #joinText{
     position:relative;
-    z-index:2920; /* above whirl but still under smoke */
-    display:none;
-    width:100%;
-    max-width:88ch;
-    box-sizing:border-box;
-    font-family:"28Days",Inter,system-ui,Helvetica,Arial,sans-serif;
-    font-weight:900;
-    text-align:center;
-    font-size:clamp(28px,9.6vw,96px);
+    z-index:4220;
+    display:inline-block;
+    font-size:clamp(28px,10vw,96px);
     line-height:0.92;
     letter-spacing:6px;
-    color:#ffffff; /* pure white core */
-    -webkit-text-stroke:2px rgba(0,0,0,0.95); /* solid dark outline to read through smoke */
-    text-shadow:
-      0 10px 30px rgba(0,0,0,0.95),
-      0 0 28px rgba(255,255,255,0.08); /* soft outer glow helps white read under smoke */
-    padding:0.4em 1.0em;
+    font-weight:900;
+    color:#fff;
+    -webkit-text-stroke:1.8px rgba(0,0,0,0.96);
+    text-shadow:0 12px 36px rgba(0,0,0,0.95), 0 0 12px rgba(255,255,255,0.06);
+    padding:0.36em 1.0em;
     border-radius:12px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    backdrop-filter: blur(4px) saturate(1.05);
-    transform:translateY(18px) scale(.985);
+    background:linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.06));
+    backdrop-filter: blur(4px) saturate(1.02);
+    transform: translateY(16px) scale(.99);
     opacity:0;
-    transition:opacity 180ms ease, transform 240ms cubic-bezier(.2,.9,.3,1);
+    transition:opacity 220ms cubic-bezier(.2,.9,.3,1), transform 300ms cubic-bezier(.2,.9,.3,1);
     pointer-events:none;
-    box-shadow:0 14px 36px rgba(0,0,0,0.7);
+    white-space:nowrap;
   }
-  #joinText.show{display:block;opacity:1;transform:translateY(0) scale(1)}
+  #joinText.visible{opacity:1;transform: translateY(0) scale(1);}
 
-  /* Blood splats (unchanged but stronger when shown) */
-  .splat{position:fixed;pointer-events:none;opacity:0;mix-blend-mode:screen;transition:opacity 220ms linear,transform 360ms cubic-bezier(.2,.9,.3,1),filter 200ms;z-index:3000}
-  .splat.left{top:4%;left:3%;width:min(36vw,480px);transform:translateY(20px) rotate(-16deg) scale(.92)}
-  .splat.right{bottom:4%;right:3%;width:min(32vw,420px);transform:translateY(20px) rotate(12deg) scale(.92)}
-  .splat.show{opacity:var(--splat-opacity);transform:translateY(0) scale(var(--splat-pop-scale));filter:brightness(1.35) contrast(1.2) saturate(1.18) drop-shadow(0 22px 36px rgba(0,0,0,0.75));mix-blend-mode:screen}
-
-  /* Soft red tint when glitch active (kept subtle) */
-  .glitch-paint{position:fixed;inset:0;z-index:4600;pointer-events:none;opacity:0;transition:opacity 140ms linear}
-  .glitch-paint.show{opacity:1}
-  .red-wash{position:absolute;inset:0;background:radial-gradient(1200px 600px at 10% 20%, rgba(255,40,40,0.06), transparent 20%),linear-gradient(180deg, rgba(255,14,14,0.18), rgba(255,14,14,0.08));mix-blend-mode:overlay;filter:blur(8px) saturate(1.04);pointer-events:none}
-
-  /* Smoke overlay on top — unchanged z-index:5000 so it sits above join text */
-  #smoke-wrap{position:fixed;inset:0;z-index:5000;pointer-events:none}
-  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(1.6px) saturate(1) contrast(1);will-change:transform,filter,opacity}
-  #smokeVideo.glitch{transition:transform var(--glitch-ms) cubic-bezier(.22,.9,.3,1),filter var(--glitch-ms) linear,opacity var(--glitch-ms) linear;transform:translateY(-6px) scale(1.02);filter:blur(3px) contrast(1.06) saturate(1.12);opacity:0.98}
-
-  /* UI under smoke (logo, CTAs) */
-  #logo{position:fixed;top:8.5vh;left:50%;transform:translateX(-50%);z-index:1200}
-  .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:34px;z-index:1200;display:flex;flex-direction:column;gap:12px;align-items:center}
-  .cta{padding:12px 20px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800;background:rgba(0,0,0,0.45)}
-  .primary{background:linear-gradient(90deg,#ff4040,#ff1a1a)}.secondary{background:#5865F2}
-  .hidden{display:none!important;opacity:0!important}
-
-  /* Force font family while testing; remove !important when stable */
-  #joinText, .anarchyMenu a, .anarchyBtn { font-family: "28Days", Inter, sans-serif !important; }
-
-  @media(max-width:720px){
-    #joinText{font-size:clamp(20px,12.5vw,64px);padding:0.32em 0.8em}
-    .whirl{height:min(26vh,200px)}
+  /* Blood splatter pieces container — sits above the text so pieces appear to land on it */
+  .splat-stage{
+    position:absolute;
+    z-index:4300;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width: min(86vw,1000px);
+    height: auto;
+    pointer-events:none;
+    overflow:visible;
   }
-  @media(max-width:420px){
-    #joinText{font-size:clamp(18px,14vw,44px);letter-spacing:2px;padding:0.26em 0.6em}
-    .whirl{width:92vw}
+
+  /* We'll use multiple splat piece images positioned with absolute coordinates.
+     Each piece animates from scale(0.6)+translateY(-8px)+rotate(-15..15deg) to scale(1)+translateY(0)+rotate(0)
+     with staggered delays for the "drip then spread then stain" feel.
+  */
+  .splat-piece{
+    position:absolute;
+    width:auto;
+    height:auto;
+    opacity:0;
+    transform-origin:center;
+    mix-blend-mode:multiply; /* darken the white text behind it slightly, choose multiply for realistic blood */
+    filter:contrast(1.08) saturate(1.08) brightness(.95);
+    transition:opacity 180ms linear;
+    will-change:opacity,transform,filter;
+  }
+
+  /* Example placements relative to .splat-stage (adjust to fit your splat image) */
+  /* Piece 1: center-left drip */
+  .p1{ left:36%; top:32%; width:220px; transform: translate(-50%,-50%) scale(.6) rotate(-12deg) translateY(-8px); opacity:0; filter:brightness(.9); }
+  /* Piece 2: center-right blob */
+  .p2{ left:54%; top:28%; width:240px; transform: translate(-50%,-50%) scale(.6) rotate(8deg) translateY(-12px); opacity:0; filter:brightness(.9); }
+  /* Piece 3: top-left scatter */
+  .p3{ left:28%; top:18%; width:140px; transform: translate(-50%,-50%) scale(.6) rotate(-6deg) translateY(-6px); opacity:0; filter:brightness(.85); }
+  /* Piece 4: bottom-right drip */
+  .p4{ left:62%; top:48%; width:200px; transform: translate(-50%,-50%) scale(.6) rotate(15deg) translateY(-10px); opacity:0; filter:brightness(.92); }
+  /* Piece 5: mid stain for coverage */
+  .p5{ left:50%; top:38%; width:300px; transform: translate(-50%,-50%) scale(.6) rotate(0deg) translateY(-6px); opacity:0; filter:brightness(.88); }
+
+  /* visible state applied by JS to each piece */
+  .splat-piece.show{
+    opacity:var(--splat-opacity);
+    transform: translate(-50%,-50%) scale(1) rotate(0deg) translateY(0);
+    filter:brightness(1.12) contrast(1.18) saturate(1.08) drop-shadow(0 18px 30px rgba(0,0,0,0.7));
+    transition: transform 420ms cubic-bezier(.2,.9,.28,1), opacity 160ms linear, filter 260ms;
+  }
+
+  /* Final overall stain overlay to darken/readjust color across text after pieces land */
+  .final-stain{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width: min(86vw,1000px);
+    height:auto;
+    z-index:4320;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity 240ms linear;
+    mix-blend-mode:multiply;
+    filter:brightness(.92) contrast(1.05) saturate(1.05);
+  }
+  .final-stain.show{opacity:0.98}
+
+  /* subtle glow flash to help readability when splat lands */
+  .flash{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width: min(86vw,1000px);
+    height:120px;
+    z-index:4210;
+    pointer-events:none;
+    opacity:0;
+    background:radial-gradient(closest-side, rgba(255,255,255,0.12), transparent 45%);
+    border-radius:12px;
+    transition:opacity 180ms linear;
+  }
+  .flash.show{opacity:1}
+
+  /* small responsive adjustments */
+  @media(max-width:520px){
+    .p1{ width:140px; left:34%; top:34% }
+    .p2{ width:160px; left:56%; top:30% }
+    .p3{ width:92px; left:24%; top:20% }
+    .p4{ width:140px; left:64%; top:52% }
+    .p5{ width:200px; left:50%; top:40% }
+    #joinText{font-size:clamp(18px,14vw,48px); padding:0.28em 0.6em}
   }
 </style>
 </head>
 <body>
 
-  <!-- Top menu -->
+  <!-- Menu (unchanged) -->
   <button id="anarchyBtn" class="anarchyBtn" aria-expanded="false" aria-controls="anarchyMenu" title="Menu">
     <img src="anarchy.png" alt="Menu">
   </button>
@@ -159,169 +192,136 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- SURGE LAYER: whirl + join text (intentionally below smoke) -->
-  <div class="surgeLayer" aria-hidden="true">
-    <!-- decorative animated whirl (SVG) sitting directly behind the JOIN text -->
-    <svg class="whirl" viewBox="0 0 1200 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <defs>
-        <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.85"/><stop offset="1" stop-color="#fff" stop-opacity="0.25"/></linearGradient>
-        <filter id="f" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="8" result="b"/></filter>
-      </defs>
-      <g filter="url(#f)">
-        <path id="p1" d="M0 120 C180 0, 360 240, 540 120 C720 0, 900 240, 1200 120" fill="none" stroke="url(#g)" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"/>
-      </g>
-      <animate xlink:href="#p1" attributeName="d" dur="6s" repeatCount="indefinite"
-        values="
-          M0 120 C180 0, 360 240, 540 120 C720 0, 900 240, 1200 120;
-          M0 110 C180 20, 360 200, 540 100 C720 20, 900 220, 1200 110;
-          M0 130 C180 -10, 360 260, 540 130 C720 -10, 900 260, 1200 130;
-          M0 120 C180 0, 360 240, 540 120 C720 0, 900 240, 1200 120
-        " />
-    </svg>
+  <!-- Smoke (under everything except UI) -->
+  <div id="smoke-wrap"><video id="smokeVideo" muted playsinline preload="auto" crossorigin="anonymous"><source src="Smoke.mp4" type="video/mp4"></video></div>
 
-    <div id="joinText" class="hidden" role="status" aria-live="polite">JOIN THE FIGHT</div>
+  <!-- Join container (text visible above smoke) -->
+  <div id="joinContainer">
+    <div class="flash" id="flash"></div>
+    <div id="joinText" aria-live="polite" role="status">JOIN THE FIGHT</div>
+
+    <!-- splat-stage placed relative to join container so pieces align with the text -->
+    <div class="splat-stage" id="splatStage" aria-hidden="true">
+      <!-- Use the same blood.png file but we place it multiple times and mask/clip visually by size/position.
+           If you prefer, replace these src values with trimmed piece PNGs for more realistic fragments.
+      -->
+      <img class="splat-piece p1" id="p1" src="blood.png" alt="">
+      <img class="splat-piece p2" id="p2" src="blood1.png" alt="">
+      <img class="splat-piece p3" id="p3" src="blood.png" alt="">
+      <img class="splat-piece p4" id="p4" src="blood1.png" alt="">
+      <img class="splat-piece p5" id="p5" src="blood.png" alt="">
+      <img class="final-stain" id="finalStain" src="blood1.png" alt="">
+    </div>
   </div>
 
-  <!-- Blood splats (pop during surge) -->
-  <img id="splatLeft" class="splat left hidden" src="blood.png" alt="blood left" />
-  <img id="splatRight" class="splat right hidden" src="blood1.png" alt="blood right" />
-
-  <!-- Subtle red tint overlay shown during glitch -->
-  <div id="glitchPaint" class="glitch-paint" aria-hidden="true"><div class="red-wash"></div></div>
-
-  <!-- Smoke overlay (topmost visual) -->
-  <div id="smoke-wrap" aria-hidden="true">
-    <video id="smokeVideo" muted playsinline preload="auto" crossorigin="anonymous" aria-hidden="true">
-      <source src="Smoke.mp4" type="video/mp4">
-    </video>
-  </div>
-
-  <!-- Logo and CTAs under smoke -->
+  <!-- UI under visuals -->
   <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
-  <div class="widget-bar" role="navigation" aria-label="Quick actions">
+  <div class="widget-bar" style="position:fixed;left:50%;transform:translateX(-50%);bottom:34px;z-index:9600">
     <a class="cta primary" href="steam://connect/103.193.80.64:3436">Connect to Server</a>
-    <a class="cta secondary" href="https://discord.gg/gSwkVzJyMT" target="_blank" rel="noopener">Join Community</a>
+    <a class="cta secondary" href="https://discord.gg/gSwkVzJyMT" target="_blank">Join Community</a>
   </div>
 
 <script>
 (function(){
   const smoke = document.getElementById('smokeVideo');
   const joinText = document.getElementById('joinText');
-  const whirl = document.querySelector('.whirl');
-  const splatL = document.getElementById('splatLeft');
-  const splatR = document.getElementById('splatRight');
-  const glitchPaint = document.getElementById('glitchPaint');
-  const anarchyBtn = document.getElementById('anarchyBtn');
-  const anarchyMenu = document.getElementById('anarchyMenu');
+  const flash = document.getElementById('flash');
+  const p1 = document.getElementById('p1');
+  const p2 = document.getElementById('p2');
+  const p3 = document.getElementById('p3');
+  const p4 = document.getElementById('p4');
+  const p5 = document.getElementById('p5');
+  const finalStain = document.getElementById('finalStain');
 
-  const LOOPS = Math.max(1, parseInt(getComputedStyle(document.documentElement).getPropertyValue('--loops-before-glitch')) || 1);
-  const SURGE_MS = Math.max(0, parseInt(getComputedStyle(document.documentElement).getPropertyValue('--surge-ms')) || 2200);
-  const GLITCH_MS = Math.max(80, parseInt(getComputedStyle(document.documentElement).getPropertyValue('--glitch-ms')) || 420);
-
-  let prevTime = 0;
-  let loopCount = 0;
-  let surgeActive = false;
-  let fallbackTimer = null;
-
-  // dedupe video elements
-  (function removeDupes(){ const v = document.querySelectorAll('video#smokeVideo'); if(v.length>1) v.forEach((el,i)=>{ if(i>0) el.remove(); }); })();
-
-  // ensure looping and try autoplay
+  // play smoke loop
   smoke.loop = true;
   smoke.play().catch(()=>{});
 
-  // helper show/hide
-  function reveal(el){ el.classList.remove('hidden'); requestAnimationFrame(()=> el.classList.add('show')); }
-  function conceal(el){ el.classList.remove('show'); setTimeout(()=> el.classList.add('hidden'), 260); }
+  // helper to show join text immediately and then run splatter sequence
+  function showJoinThenSplat(){
+    // show text
+    joinText.classList.add('visible');
+    // small flash to help readability
+    flash.classList.add('show');
 
-  function showSurgeVisuals(){
-    // show whirl slightly brighter and the join text (both are under smoke)
-    whirl.classList.add('show');
-    joinText.textContent = 'JOIN THE FIGHT';
-    reveal(joinText);
+    // clear any prior states
+    [p1,p2,p3,p4,p5,finalStain].forEach(el=>{
+      el.classList.remove('show');
+      el.style.opacity = 0;
+      el.style.transform = el.style.transform; // noop to force repaint if needed
+    });
 
-    // blood splats pop
-    reveal(splatL);
-    reveal(splatR);
+    // staged timings (in ms)
+    const timings = [
+      {el: p3, delay: 180},  // small scatter first
+      {el: p1, delay: 320},  // left drip
+      {el: p2, delay: 420},  // main right blob
+      {el: p4, delay: 520},  // bottom-right drip
+      {el: p5, delay: 640},  // central stain / spread
+      {el: finalStain, delay: 980} // final overall stain overlay to darken
+    ];
 
-    // tint
-    glitchPaint.classList.add('show');
+    // reveal each piece with a slight sound of "landing" feel (staggered)
+    timings.forEach(item=>{
+      setTimeout(()=>{
+        item.el.classList.add('show');
+      }, item.delay);
+    });
+
+    // fade the flash quickly so text reads under splat
+    setTimeout(()=> flash.classList.remove('show'), 260);
+
+    // keep join text visible for the surge duration then fade
+    const SURGE_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--surge-ms')) || 2200;
+    setTimeout(()=> {
+      // remove pieces gracefully
+      [p1,p2,p3,p4,p5,finalStain].forEach((el,i)=>{
+        setTimeout(()=> el.classList.remove('show'), i*60);
+      });
+      joinText.classList.remove('visible');
+    }, SURGE_MS + 420);
   }
 
-  function hideSurgeVisuals(){
-    whirl.classList.remove('show');
-    conceal(joinText);
-    conceal(splatL);
-    conceal(splatR);
-    glitchPaint.classList.remove('show');
-  }
-
+  // Public run: shows join then splatter. You can call runSurge() to trigger.
   async function runSurge(){
-    if (surgeActive) return;
-    surgeActive = true;
-
-    smoke.play().catch(()=>{});
+    // visual micro-glitch on smoke (brief)
     smoke.classList.add('glitch');
-
-    showSurgeVisuals();
-
-    await new Promise(r => setTimeout(r, GLITCH_MS));
-    smoke.classList.remove('glitch');
-
-    await new Promise(r => setTimeout(r, Math.max(0, SURGE_MS - GLITCH_MS)));
-
-    hideSurgeVisuals();
-    setTimeout(()=> surgeActive = false, 140);
+    // show join+splatter sequence
+    showJoinThenSplat();
+    // short hold then remove glitch class
+    const GLITCH_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--glitch-ms')) || 420;
+    setTimeout(()=> smoke.classList.remove('glitch'), GLITCH_MS);
   }
 
-  // loop detection: detect wrapback on currentTime
+  // Loop trigger: use a manual call or hook into smoke loop detection.
+  // We'll attempt to detect the smoke looping (works if Smoke.mp4 is a tight loop).
+  let prevTime = 0, loopCount = 0;
   smoke.addEventListener('timeupdate', ()=>{
     const t = smoke.currentTime || 0;
     if (prevTime - t > 0.28){
       loopCount++;
-      if (loopCount >= LOOPS){
+      // run on first loop (adjust as you like)
+      if (loopCount >= 1){
         loopCount = 0;
-        runSurge().catch(()=>{ hideSurgeVisuals(); surgeActive = false; });
+        runSurge();
       }
     }
     prevTime = t;
   });
 
-  // fallback for missing metadata or tiny file durations
+  // Fallback: if metadata missing, run on interval
   smoke.addEventListener('loadedmetadata', ()=>{
     const dur = smoke.duration || 0;
     if (!isFinite(dur) || dur <= 0 || dur < 0.5){
-      if (fallbackTimer) clearInterval(fallbackTimer);
-      const estimatedLoopMs = Math.max(600, (dur > 0 ? dur : 1.0) * 1000);
-      const cycle = (estimatedLoopMs * LOOPS) + SURGE_MS + 120;
-      fallbackTimer = setInterval(()=> runSurge().catch(()=>{}), cycle);
-    } else {
-      if (fallbackTimer){ clearInterval(fallbackTimer); fallbackTimer = null; }
+      setInterval(()=> runSurge(), 3000);
     }
   });
 
-  // menu toggle
-  function openMenu(open){
-    if(open){
-      anarchyMenu.classList.add('open');
-      anarchyMenu.setAttribute('aria-hidden','false');
-      anarchyBtn.setAttribute('aria-expanded','true');
-      const f = anarchyMenu.querySelector('a'); if(f) f.focus();
-    } else {
-      anarchyMenu.classList.remove('open');
-      anarchyMenu.setAttribute('aria-hidden','true');
-      anarchyBtn.setAttribute('aria-expanded','false');
-    }
-  }
-  anarchyBtn.addEventListener('click', e=>{ e.stopPropagation(); openMenu(!anarchyMenu.classList.contains('open')); });
-  document.addEventListener('click', e=>{ if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) openMenu(false); });
-  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') openMenu(false); });
+  // Allow manual trigger for testing in console: runSurge()
+  window.runSurge = runSurge;
 
-  // resume playback on interaction if blocked
-  document.addEventListener('click', ()=>{ if(smoke.paused) smoke.play().catch(()=>{}); });
-
-  // initialize
-  (async function init(){ try { smoke.currentTime = 0; await smoke.play(); } catch(e){} })();
+  // init attempt to start playback
+  (async function init(){ try{ smoke.currentTime = 0; await smoke.play(); }catch(e){} })();
 
 })();
 </script>
