@@ -128,7 +128,7 @@
         0 0 12px rgba(88,101,242,0.5);
     }
 
-    /* Anarchy icon — above smoke */
+    /* Anarchy icon */
     .anarchyBtn {
       position: fixed;
       top: 20px;
@@ -151,7 +151,7 @@
         drop-shadow(0 0 36px rgba(255,0,0,0.4));
     }
 
-    /* Popup menu — above smoke, styled */
+    /* Popup menu */
     .anarchyMenu {
       position: fixed;
       top: 110px;
@@ -207,6 +207,49 @@
     #smoke-overlay.glitching video {
       animation: screenGlitch 0.6s ease-in-out;
     }
+
+    /* Red static overlay with flickering text */
+    #glitchOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(255, 0, 0, 0.1);
+      mix-blend-mode: screen;
+      z-index: 1000003;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    #glitchOverlay.show {
+      opacity: 1;
+    }
+
+    #glitchOverlay h1 {
+      color: #ff0000;
+      font-family: 'DayZFont', sans-serif;
+      font-size: 4vw;
+      letter-spacing: 2px;
+      text-shadow:
+        0 0 5px #ff0000,
+        0 0 10px #ff0000,
+        0 0 20px #ff0000;
+      animation: flickerText 0.6s linear infinite;
+    }
+
+    @keyframes flickerText {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      25% { opacity: 0.6; transform: scale(1.05); }
+      50% { opacity: 0.2; transform: scale(0.95); }
+      75% { opacity: 0.8; transform: scale(0.95); }
+      75% { opacity: 0.8; transform: scale(1.02); }
+    }
+
   </style>
 </head>
 <body>
@@ -242,61 +285,5 @@
       <source src="Smoke.mp4?v=1" type="video/mp4">
     </video>
   </div>
-  <script>
-    const smokeVideo = document.getElementById('smokeVideo');
-    const smokeOverlay = document.getElementById('smoke-overlay');
-    const logo = document.getElementById('logo');
-    const widgetBar = document.querySelector('.widget-bar');
-    const anarchyBtn = document.querySelector('.anarchyBtn');
-    const anarchyMenu = document.getElementById('anarchyMenu');
 
-    smokeVideo.addEventListener('error', () => {
-      console.warn('Smoke video failed to load');
-      smokeOverlay.style.display = 'none';
-    });
-
-    const triggerGlitch = () => {
-      document.body.classList.add('glitching');
-      logo.classList.add('glitching');
-      widgetBar.classList.add('glitching');
-      anarchyBtn.classList.add('glitching');
-      anarchyMenu.classList.add('glitching');
-      smokeOverlay.classList.add('glitching');
-
-      setTimeout(() => {
-        document.body.classList.remove('glitching');
-        logo.classList.remove('glitching');
-        widgetBar.classList.remove('glitching');
-        anarchyBtn.classList.remove('glitching');
-        anarchyMenu.classList.remove('glitching');
-        smokeOverlay.classList.remove('glitching');
-      }, 600); // Match animation duration
-    };
-
-    smokeVideo.addEventListener('timeupdate', () => {
-      if (smokeVideo.duration - smokeVideo.currentTime < 0.5) {
-        if (!document.body.classList.contains('glitching')) {
-          triggerGlitch();
-        }
-      }
-    });
-
-    const anarchyBtnEl = document.getElementById('anarchyBtn');
-    const anarchyMenuEl = document.getElementById('anarchyMenu');
-    anarchyBtnEl.addEventListener('click', () => {
-      const open = anarchyMenuEl.classList.toggle('open');
-      anarchyMenuEl.setAttribute('aria-hidden', (!open).toString());
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) {
-        anarchyMenuEl.classList.remove('open');
-        anarchyMenuEl.setAttribute('aria-hidden', 'true');
-      }
-    });
-  </script>
-
-</body>
-</html>
-
- 
+  <!-- Red static overlay with flickering text -->
