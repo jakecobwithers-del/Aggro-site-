@@ -21,7 +21,6 @@
       height: 100vh;
       z-index: 9999;
       pointer-events: none;
-      background: url('smoke-fallback.jpg') center center / cover no-repeat;
     }
     #smoke-overlay video {
       width: 100%;
@@ -108,107 +107,4 @@
   </nav>
 
   <!-- Smoke overlay -->
-  <div id="smoke-overlay" aria-hidden="true"></div>
-
-  <script>
-    const VIDEO_BASE_MP4 = 'smoke.mp4';
-    const VIDEO_BASE_WEBM = 'smoke.webm';
-    const VIDEO_POLL_INTERVAL_MS = 60000;
-
-    const smokeOverlay = document.getElementById('smoke-overlay');
-    const smokeVideo = document.createElement('video');
-    smokeVideo.id = 'smokeVideo';
-    smokeVideo.autoplay = true;
-    smokeVideo.loop = true;
-    smokeVideo.muted = true;
-    smokeVideo.playsInline = true;
-    smokeVideo.setAttribute('preload', 'auto');
-    smokeVideo.setAttribute('aria-hidden', 'true');
-
-    const t = Date.now();
-    const sourceWebm = document.createElement('source');
-    sourceWebm.setAttribute('data-src', VIDEO_BASE_WEBM);
-    sourceWebm.type = 'video/webm';
-    sourceWebm.src = VIDEO_BASE_WEBM + '?v=' + t;
-    smokeVideo.appendChild(sourceWebm);
-
-    const sourceMp4 = document.createElement('source');
-    sourceMp4.setAttribute('data-src', VIDEO_BASE_MP4);
-    sourceMp4.type = 'video/mp4';
-    sourceMp4.src = VIDEO_BASE_MP4 + '?v=' + t;
-    smokeVideo.appendChild(sourceMp4);
-
-    smokeOverlay.appendChild(smokeVideo);
-    smokeVideo.load();
-    smokeVideo.play().catch(console.warn);
-
-    let currentEtag = null;
-    let currentLastModified = null;
-    let checking = false;
-
-    async function fetchHeaders(url) {
-      try {
-        const res = await fetch(url, { method: 'HEAD', cache: 'no-cache' });
-        if (!res.ok) throw new Error('HEAD failed: ' + res.status);
-        return { etag: res.headers.get('etag'), lastModified: res.headers.get('last-modified') };
-      } catch (err) {
-        try {
-          const res2 = await fetch(url, { method: 'GET', headers: { Range: 'bytes=0-0' }, cache: 'no-cache' });
-          if (!res2.ok) throw new Error('Range failed: ' + res2.status);
-          return { etag: res2.headers.get('etag'), lastModified: res2.headers.get('last-modified') };
-        } catch (err2) {
-          console.warn('Header check failed for', url, err2);
-          return null;
-        }
-      }
-    }
-
-    async function checkForUpdate() {
-      if (checking) return;
-      checking = true;
-      const headers = await fetchHeaders(VIDEO_BASE_MP4);
-      if (headers) {
-        const { etag, lastModified } = headers;
-        const changed = (etag && etag !== currentEtag) || (lastModified && lastModified !== currentLastModified);
-        if (currentEtag === null && currentLastModified === null) {
-          currentEtag = etag;
-          currentLastModified = lastModified;
-        } else if (changed) {
-          currentEtag = etag;
-          currentLastModified = lastModified;
-          const t = Date.now();
-          Array.from(smokeVideo.querySelectorAll('source')).forEach((s) => {
-            const base = s.getAttribute('data-src') || s.src.split('?')[0];
-            s.src = base + '?v=' + t;
-          });
-          smokeVideo.load();
-          smokeVideo.play().catch(()=>{});
-          console.log('Smoke video updated and reloaded at', new Date().toISOString());
-        }
-      }
-      checking = false;
-    }
-
-    setInterval(checkForUpdate, VIDEO_POLL_INTERVAL_MS);
-
-    smokeVideo.addEventListener('error', (e) => {
-      console.warn('Smoke video error:', e);
-      smokeOverlay.style.display = 'none';
-    });
-
-    const menuBtn = document.getElementById('menuBtn');
-    const menu = document.getElementById('menu');
-    menuBtn.addEventListener('click', () => {
-      const open = menu.classList.toggle('open');
-      menu.setAttribute('aria-hidden', (!open).toString());
-    });
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.menuBtn') && !e.target.closest('.menu')) {
-        menu.classList.remove('open');
-        menu.setAttribute('aria-hidden', 'true');
-      }
-    });
-  </script>
-
-</body>
-</html>
+  <div id="smoke-overlay" aria-hidden="true">
