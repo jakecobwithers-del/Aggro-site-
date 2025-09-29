@@ -3,81 +3,86 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — Smoke On Top (No Red Tint)</title>
+<title>Aggro PvP — Smoke Over UI (Menu Above All)</title>
 <style>
   :root{
+    --red:#ff2b2b;
     --surge-ms:2600;
     --punch-ms:140;
-    --splat-opacity:0.62;
+    --splat-opacity:0.72;
     --splat-contrast:1.18;
-    --red: #ff2b2b;
   }
 
   /* Base */
   html,body{height:100%;margin:0;background:#000;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;overflow:hidden;-webkit-font-smoothing:antialiased}
   img{max-width:100%;display:block}
 
-  /* Z-index plan
-     2000 = Menu (topmost interactive)
-     1500 = Headline, Logo, CTAs (under the smoke)
-     1400 = Smoke (on top of most UI)
-     2100 = Popup/menu should still be above smoke (we keep menu at 2100)
+  /* Z-order summary
+     3000 = Anarchy menu / popup (top interactive)
+     2000 = Headline + Splats (must remain readable/visible)
+     1500 = Smoke (over logo/buttons)
+     1000 = Logo / CTAs (under smoke)
   */
 
-  /* Menu (always above smoke) */
-  .anarchyBtn{position:fixed;top:18px;right:18px;z-index:2100;background:transparent;border:0;padding:6px;cursor:pointer}
+  /* Anarchy menu (always above smoke) */
+  .anarchyBtn{position:fixed;top:18px;right:18px;z-index:3000;background:transparent;border:0;padding:6px;cursor:pointer}
   .anarchyBtn img{width:56px;height:56px;display:block;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.8))}
-  .anarchyMenu{position:fixed;top:86px;right:18px;z-index:2100;display:none;flex-direction:column;gap:8px;padding:10px;background:rgba(10,10,10,0.98);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.6);min-width:180px}
+  .anarchyMenu{position:fixed;top:86px;right:18px;z-index:3000;display:none;flex-direction:column;gap:8px;padding:10px;background:rgba(10,10,10,0.98);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.6);min-width:180px}
   .anarchyMenu.open{display:flex}
   .anarchyMenu a{color:#fff;text-decoration:none;padding:8px 10px;border-radius:6px;font-weight:700;font-size:14px}
   .anarchyMenu a:hover{background:rgba(255,255,255,0.03)}
 
-  /* Headline / Logo / CTAs (under smoke visually) */
-  .headline{position:fixed;inset:0;z-index:1500;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:6vh 4vw}
+  /* Headline + Splats (visible above the smoke) */
+  .headline{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:6vh 4vw}
   #headlineText{
     margin:0;color:#fff;font-weight:900;letter-spacing:6px;text-align:center;
     -webkit-text-stroke:2px rgba(0,0,0,0.95);
-    text-shadow:0 2px 6px rgba(0,0,0,0.9),0 0 14px rgba(255,40,40,0.06);
-    font-size:clamp(28px,9.2vw,86px);opacity:0;white-space:nowrap;padding:6px 10px;will-change:opacity,transform;
+    text-shadow:0 6px 24px rgba(0,0,0,0.9),0 0 20px rgba(255,40,40,0.08);
+    font-size:clamp(28px,9.2vw,96px);opacity:0;white-space:nowrap;padding:6px 10px;will-change:opacity,transform;
   }
   @keyframes headlinePop{0%{opacity:0;transform:translateY(18px) scale(.985)}8%{opacity:1;transform:translateY(0) scale(1.06)}70%{opacity:1}100%{opacity:0;transform:translateY(-8px) scale(.985)}}
   .show-headline #headlineText{animation: headlinePop var(--surge-ms) cubic-bezier(.2,.9,.3,1) forwards;opacity:1}
 
-  #logo{position:fixed;top:9vh;left:50%;transform:translateX(-50%);z-index:1500}
-  #logo img{width:min(360px,40vw);filter:drop-shadow(0 18px 40px rgba(0,0,0,0.75));display:block}
-  .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:36px;z-index:1500;display:flex;flex-direction:column;gap:12px;align-items:center}
-  .cta{padding:12px 24px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800}
-  .primary{background:var(--red)}.secondary{background:#5865F2}
+  /* Smoke: sits above logo/buttons but below headline/menu */
+  #smoke-overlay{position:fixed;inset:0;z-index:1500;pointer-events:none}
+  #smokeVideo{
+    width:100%;height:100%;object-fit:cover;opacity:0.86;
+    /* keep natural rendering so readable text remains clear; slight blur for style */
+    filter:blur(2.5px) saturate(1) contrast(1);transition:filter 180ms linear,transform 160ms linear;will-change:filter,transform;
+  }
+  /* optional small shake during surge */
+  #smokeVideo.glitchShift{transform:translateX(-6px) rotate(-0.2deg);}
 
-  /* Smoke: single authoritative layer on top of UI (but menu/popup above it) */
-  #smoke-overlay{position:fixed;inset:0;z-index:1400;pointer-events:none}
-  /* Use normal rendering (no heavy blend modes) so smoke looks natural */
-  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:0.92;filter:blur(2.8px) saturate(1) contrast(1);transition:filter 180ms linear,transform 160ms linear;will-change:filter,transform}
-  /* micro-shift for optional punch */
-  #smokeVideo.glitchShift{transform:translateX(-4px) rotate(-0.18deg);}
-
-  /* Splats / blood (under smoke visually) */
-  #surge{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 120ms linear}
+  /* Splats (blood) must be ABOVE smoke so they are visible to the user */
+  #surge{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 120ms linear}
   #surge.show{opacity:1}
   .splat{position:absolute;pointer-events:none;will-change:transform,opacity,filter;mix-blend-mode:multiply;opacity:var(--splat-opacity)}
-  .splat img{display:block;width:100%;height:auto;filter:contrast(var(--splat-contrast)) saturate(1.08)}
-  .splat.left{top:6%;left:4%;width:420px;transform:rotate(-22deg)}
-  .splat.right{bottom:6%;right:4%;width:420px;transform:rotate(12deg)}
+  .splat img{display:block;width:100%;height:auto;filter:contrast(var(--splat-contrast)) saturate(1.1)}
+  .splat.left{top:6%;left:4%;width:460px;transform:rotate(-22deg)}
+  .splat.right{bottom:6%;right:6%;width:420px;transform:rotate(12deg)}
   #surge.show .splat{animation:splatIn 560ms cubic-bezier(.2,.9,.3,1) forwards,drip 1400ms linear 420ms both}
   @keyframes splatIn{0%{transform:scale(.68) rotate(-8deg);opacity:0;filter:blur(1.2px)}60%{transform:scale(1.22) rotate(6deg);opacity:1;filter:blur(.2px)}100%{transform:scale(1) rotate(0);opacity:var(--splat-opacity)}}
   @keyframes drip{0%{transform:translateY(0)}30%{transform:translateY(6px)}100%{transform:translateY(26px);opacity:.86}}
+  .splat.flash{animation:splatFlash 420ms ease-out both}
+  @keyframes splatFlash{0%{filter:brightness(1) sepia(0) saturate(1)}40%{filter:brightness(1.26) sepia(0.08) saturate(1.5)}100%{filter:brightness(1) sepia(0) saturate(1)}}
+
+  /* Logo and buttons are below smoke visually (so smoke overlays them) */
+  #logo{position:fixed;top:9vh;left:50%;transform:translateX(-50%);z-index:1000}
+  .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:36px;z-index:1000;display:flex;flex-direction:column;gap:12px;align-items:center}
+  .cta{padding:12px 24px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800;background:rgba(0,0,0,0.45)}
+  .primary{background:var(--red)}.secondary{background:#5865F2}
 
   @media(max-width:520px){
     #headlineText{font-size:clamp(20px,12vw,72px);-webkit-text-stroke:1.4px}
-    .splat.left{width:300px;top:4%;left:2%}
-    .splat.right{width:280px;right:2%;bottom:4%}
+    .splat.left{width:320px;top:4%;left:2%}
+    .splat.right{width:300px;right:2%;bottom:4%}
     .anarchyBtn img{width:48px;height:48px}
   }
 </style>
 </head>
 <body>
 
-  <!-- Anarchy menu (keeps highest z-index so it's above smoke and clickable) -->
+  <!-- Anarchy menu (remains topmost above smoke) -->
   <button id="anarchyBtn" class="anarchyBtn" aria-expanded="false" aria-controls="anarchyMenu" title="Menu">
     <img src="anarchy.png" alt="Menu">
   </button>
@@ -89,28 +94,28 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- Headline, Logo, CTAs are under the smoke visually -->
+  <!-- Headline and splats MUST be visible above the smoke -->
   <div class="headline" id="headlineWrap" aria-hidden="true">
     <h1 id="headlineText" data-text="JOIN THE FIGHT">JOIN THE FIGHT</h1>
   </div>
 
+  <div id="surge" aria-hidden="true">
+    <div class="splat left" id="splatLeft" aria-hidden="true"><img src="blood.png" alt=""></div>
+    <div class="splat right" id="splatRight" aria-hidden="true"><img src="blood1.png" alt=""></div>
+  </div>
+
+  <!-- Logo and CTAs (under the smoke) -->
   <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
   <div class="widget-bar">
     <a class="cta primary" href="steam://connect/103.193.80.64:3436">Connect to Server</a>
     <a class="cta secondary" href="https://discord.gg/gSwkVzJyMT" target="_blank" rel="noopener">Join the Community</a>
   </div>
 
-  <!-- Smoke sits above most UI (pointer-events:none so it won't block clicks) -->
+  <!-- Smoke sits above logo/buttons (but below headline & menu) -->
   <div id="smoke-overlay" aria-hidden="true">
     <video id="smokeVideo" autoplay muted playsinline loop preload="auto" crossorigin="anonymous">
       <source src="Smoke.mp4?v=1" type="video/mp4">
     </video>
-  </div>
-
-  <!-- Splats / blood are rendered under smoke visually -->
-  <div id="surge" aria-hidden="true">
-    <div class="splat left" id="splatLeft" aria-hidden="true"><img src="blood.png" alt=""></div>
-    <div class="splat right" id="splatRight" aria-hidden="true"><img src="blood1.png" alt=""></div>
   </div>
 
 <script>
@@ -128,47 +133,52 @@
   const PUNCH_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--punch-ms')) || 140;
   const TRIGGER_BEFORE_END = 1.0;
 
-  // Ensure only one smoke video exists
+  // remove accidental duplicate videos
   (function removeExtraVideos(){
     const vids = Array.from(document.querySelectorAll('video#smokeVideo'));
     if(vids.length>1) vids.slice(1).forEach(v=>v.remove());
   })();
 
-  // Attempt to autoplay
+  // try autoplay
   video.play().catch(()=>{});
 
-  // Keep headline visibility tied to manual trigger (no red tint)
-  function runSurgeNoRed(){
-    // show headline (it sits under smoke visually)
+  // run surge: headline + splats visible above smoke; smoke remains over logo/buttons
+  function runSurge(){
+    // show headline (stays above smoke because z-index 2000)
     headlineWrap.classList.add('show-headline');
     headlineWrap.setAttribute('aria-hidden','false');
 
-    // optional micro-shift of smoke for impact
+    // small smoke micro shift
     video.classList.add('glitchShift');
 
-    // show splats (they animate but are visually under smoke)
+    // show splats (above smoke)
     surge.classList.remove('show'); void surge.offsetWidth; surge.classList.add('show');
     surge.setAttribute('aria-hidden','false');
     splatLeft.classList.add('flash'); splatRight.classList.add('flash');
     setTimeout(()=>{ splatLeft.classList.remove('flash'); splatRight.classList.remove('flash'); }, 520);
 
-    // small screen punch
+    // subtle body punch
     document.body.style.transition = 'transform 160ms cubic-bezier(.2,.9,.3,1)';
     document.body.style.transform = 'translateY(-6px) rotate(-0.35deg)';
     setTimeout(()=>{ document.body.style.transform = ''; }, PUNCH_MS);
 
-    // clear micro-shift + visuals after SURGE_MS
+    // clear micro static quickly
+    setTimeout(()=>{ /* nothing persistent to remove here */ }, PUNCH_MS + 10);
+
+    // clear after SURGE_MS
     setTimeout(()=>{
       video.classList.remove('glitchShift');
       surge.classList.remove('show'); surge.setAttribute('aria-hidden','true');
       headlineWrap.classList.remove('show-headline'); headlineWrap.setAttribute('aria-hidden','true');
+      // tiny buffer to allow retrigger
+      setTimeout(()=>{ video._surgeTriggered = false; }, 200);
     }, SURGE_MS);
   }
 
-  // Expose for testing: run in console triggerSurge()
-  window.triggerSurge = runSurgeNoRed;
+  // expose manual trigger
+  window.triggerSurge = runSurge;
 
-  // Menu toggle
+  // menu toggle
   function openMenu(open){
     if(open){
       anarchyMenu.classList.add('open'); anarchyMenu.setAttribute('aria-hidden','false'); anarchyBtn.setAttribute('aria-expanded','true');
@@ -181,8 +191,11 @@
   document.addEventListener('click', (e)=>{ if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) openMenu(false); });
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') openMenu(false); });
 
-  // Click anywhere to attempt unlocking autoplay if blocked
+  // try unlock autoplay on click
   document.addEventListener('click', ()=>{ if(video.paused) video.play().catch(()=>{}); });
+
+  // ensure only single smoke exists after load (sanity)
+  window.addEventListener('load', ()=>{ const vids = document.querySelectorAll('video#smokeVideo'); if(vids.length>1) vids.forEach((v,i)=>{ if(i>0) v.remove(); }); });
 })();
 </script>
 </body>
