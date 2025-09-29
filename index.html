@@ -14,13 +14,14 @@
       overflow: hidden;
     }
 
+    /* Smoke overlay */
     #smoke-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: 0;
+      z-index: 9999;
       pointer-events: none;
     }
 
@@ -39,6 +40,7 @@
       to { opacity: 0.6; }
     }
 
+    /* Logo */
     #logo {
       position: relative;
       z-index: 1;
@@ -52,12 +54,13 @@
       filter: drop-shadow(0 18px 40px rgba(0,0,0,0.75));
     }
 
+    /* Bottom buttons */
     .widget-bar {
       position: fixed;
       bottom: 40px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 2;
+      z-index: 10000;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -81,6 +84,56 @@
     .actionBtn:hover {
       background: #ff5b5b;
     }
+
+    /* Anarchy menu button */
+    .anarchyBtn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10001;
+      font-size: 24px;
+      font-weight: bold;
+      color: #ff3b3b;
+      background: rgba(0,0,0,0.6);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    /* Popup menu */
+    .anarchyMenu {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 10001;
+      background: rgba(10,10,10,0.95);
+      padding: 12px;
+      border-radius: 10px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .anarchyMenu.open {
+      display: flex;
+    }
+
+    .anarchyMenu a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .anarchyMenu a:hover {
+      background: rgba(255,255,255,0.08);
+    }
   </style>
 </head>
 <body>
@@ -97,19 +150,46 @@
     </video>
   </div>
 
-  <!-- Widget bar -->
+  <!-- Bottom buttons -->
   <div class="widget-bar">
     <a href="steam://connect/103.193.80.64:3436" class="actionBtn">🎮 Connect to DayZ Server</a>
     <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="actionBtn">💬 Join Our Discord</a>
   </div>
 
+  <!-- Anarchy menu button -->
+  <button class="anarchyBtn" id="anarchyBtn">A</button>
+
+  <!-- Popup menu -->
+  <nav class="anarchyMenu" id="anarchyMenu" aria-hidden="true">
+    <a href="rules.html">Rules</a>
+    <a href="support.html">Support</a>
+    <a href="donate.html">Donate</a>
+    <a href="killfeed.html">Kill Feed</a>
+    <a href="leaderboard.html">Leaderboard</a>
+  </nav>
+
   <script>
-    // Fallback if video fails
+    // Smoke fallback
     const smokeVideo = document.getElementById('smokeVideo');
     const smokeOverlay = document.getElementById('smoke-overlay');
     smokeVideo.addEventListener('error', () => {
       console.warn('Smoke video failed to load');
       smokeOverlay.style.display = 'none';
+    });
+
+    // Anarchy menu toggle
+    const anarchyBtn = document.getElementById('anarchyBtn');
+    const anarchyMenu = document.getElementById('anarchyMenu');
+    anarchyBtn.addEventListener('click', () => {
+      const open = anarchyMenu.classList.toggle('open');
+      anarchyMenu.setAttribute('aria-hidden', (!open).toString());
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) {
+        anarchyMenu.classList.remove('open');
+        anarchyMenu.setAttribute('aria-hidden', 'true');
+      }
     });
   </script>
 
