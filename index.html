@@ -21,7 +21,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: 9999;
+      z-index: 10000;
       pointer-events: none;
     }
 
@@ -60,7 +60,7 @@
       bottom: 40px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 10000;
+      z-index: 9999;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -90,17 +90,17 @@
       position: fixed;
       top: 20px;
       right: 20px;
-      z-index: 10001;
-      font-size: 24px;
-      font-weight: bold;
-      color: #ff3b3b;
-      background: rgba(0,0,0,0.6);
-      border: 2px solid rgba(255,255,255,0.1);
-      border-radius: 50%;
+      z-index: 9999;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .anarchyBtn img {
       width: 48px;
       height: 48px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      filter: drop-shadow(0 0 8px rgba(255,0,0,0.6));
     }
 
     /* Popup menu */
@@ -108,7 +108,7 @@
       position: fixed;
       top: 80px;
       right: 20px;
-      z-index: 10001;
+      z-index: 9999;
       background: rgba(10,10,10,0.95);
       padding: 12px;
       border-radius: 10px;
@@ -143,13 +143,6 @@
     <img src="Aggro-logo.PNG" alt="Aggro PvP Logo">
   </div>
 
-  <!-- Smoke overlay -->
-  <div id="smoke-overlay" aria-hidden="true">
-    <video autoplay loop muted playsinline preload="auto" id="smokeVideo">
-      <source src="Smoke.mp4?v=1" type="video/mp4">
-    </video>
-  </div>
-
   <!-- Bottom buttons -->
   <div class="widget-bar">
     <a href="steam://connect/103.193.80.64:3436" class="actionBtn">🎮 Connect to DayZ Server</a>
@@ -157,7 +150,9 @@
   </div>
 
   <!-- Anarchy menu button -->
-  <button class="anarchyBtn" id="anarchyBtn">A</button>
+  <button class="anarchyBtn" id="anarchyBtn">
+    <img src="anarchy.png" alt="Anarchy Menu">
+  </button>
 
   <!-- Popup menu -->
   <nav class="anarchyMenu" id="anarchyMenu" aria-hidden="true">
@@ -167,6 +162,13 @@
     <a href="killfeed.html">Kill Feed</a>
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
+
+  <!-- Smoke overlay -->
+  <div id="smoke-overlay" aria-hidden="true">
+    <video autoplay loop muted playsinline preload="auto" id="smokeVideo">
+      <source src="Smoke.mp4?v=1" type="video/mp4">
+    </video>
+  </div>
 
   <script>
     // Smoke fallback
