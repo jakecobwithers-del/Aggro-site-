@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Aggro PvP — Full Smoke Overlay</title>
+  <title>Aggro PvP — Join the Fight</title>
   <style>
     html, body {
       margin: 0;
@@ -31,7 +31,7 @@
       opacity: 0.6;
       mix-blend-mode: screen;
       filter: blur(6px) saturate(1.05);
-      animation: fadeInSmoke 2s ease-in-out forwards;
+      animation: fadeInSmoke 3s ease-in-out forwards;
     }
 
     @keyframes fadeInSmoke {
@@ -54,7 +54,7 @@
 
     .widget-bar {
       position: fixed;
-      bottom: 30px;
+      bottom: 40px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 2;
@@ -64,26 +64,22 @@
       gap: 20px;
     }
 
-    .connectBtn {
+    .actionBtn {
       display: inline-block;
-      padding: 12px 20px;
+      padding: 14px 24px;
       background: #ff3b3b;
       color: #fff;
       font-weight: bold;
-      border-radius: 8px;
+      font-size: 16px;
+      border-radius: 10px;
       text-decoration: none;
       border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      transition: background 0.3s ease;
     }
 
-    .connectBtn:hover {
+    .actionBtn:hover {
       background: #ff5b5b;
-    }
-
-    .discordWidget {
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
   </style>
 </head>
@@ -103,17 +99,8 @@
 
   <!-- Widget bar -->
   <div class="widget-bar">
-    <a href="steam://connect/103.193.80.64:3436" class="connectBtn">🎮 Join Aggro PvP Server</a>
-    <div class="discordWidget">
-      <iframe
-        src="https://discord.com/widget?id=gSwkVzJyMT&theme=dark"
-        width="350"
-        height="500"
-        allowtransparency="true"
-        frameborder="0"
-        sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
-      </iframe>
-    </div>
+    <a href="steam://connect/103.193.80.64:3436" class="actionBtn">🎮 Connect to DayZ Server</a>
+    <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="actionBtn">💬 Join Our Discord</a>
   </div>
 
   <script>
