@@ -59,12 +59,21 @@
 
     .bloodSplatter {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(1.6) rotate(-5deg);
-      width: 500px;
+      width: 300px;
       opacity: 0.95;
       pointer-events: none;
+    }
+
+    .bloodTopLeft {
+      top: 10%;
+      left: 5%;
+      transform: rotate(-30deg);
+    }
+
+    .bloodBottomRight {
+      bottom: 10%;
+      right: 5%;
+      transform: rotate(15deg);
     }
 
     #surgeOverlay h1 {
@@ -75,7 +84,6 @@
       color: #ff0000;
       font-size: 9vw;
       letter-spacing: 6px;
-      text-align: center;
       font-weight: bold;
       animation: fadeOutText 2.5s forwards;
     }
@@ -231,9 +239,10 @@
     </video>
   </div>
 
-  <!-- Red surge + blood splatter + text -->
+  <!-- Surge overlay -->
   <div id="surgeOverlay">
-    <img src="blood.png" class="bloodSplatter" alt="">
+    <img src="blood.png" class="bloodSplatter bloodTopLeft" alt="">
+    <img src="blood1.png" class="bloodSplatter bloodBottomRight" alt="">
     <h1>JOIN THE FIGHT</h1>
   </div>
 
@@ -243,10 +252,17 @@
     const anarchyBtn = document.getElementById('anarchyBtn');
     const anarchyMenu = document.getElementById('anarchyMenu');
 
-    smokeVideo.addEventListener('ended', () => {
+    smokeVideo.addEventListener('timeupdate', () => {
+      if (smokeVideo.duration - smokeVideo.currentTime < 0.5 && !smokeVideo.triggered) {
+        smokeVideo.triggered = true;
+        triggerSurge();
+      }
+    });
+
+        smokeVideo.addEventListener('ended', () => {
+      smokeVideo.triggered = false;
       smokeVideo.currentTime = 0;
       smokeVideo.play();
-      triggerSurge();
     });
 
     const triggerSurge = () => {
@@ -259,11 +275,13 @@
       }, 2500);
     };
 
-      anarchyBtn.addEventListener('click', () => {
+    // Anarchy menu toggle
+    anarchyBtn.addEventListener('click', () => {
       const open = anarchyMenu.classList.toggle('open');
       anarchyMenu.setAttribute('aria-hidden', (!open).toString());
     });
 
+    // Close menu on outside click
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) {
         anarchyMenu.classList.remove('open');
