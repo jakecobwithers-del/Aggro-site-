@@ -37,12 +37,6 @@
       opacity: 0.6;
       mix-blend-mode: screen;
       filter: blur(6px) saturate(1.05);
-      animation: fadeInSmoke 3s ease-in-out forwards;
-    }
-
-    @keyframes fadeInSmoke {
-      from { opacity: 0; }
-      to { opacity: 0.6; }
     }
 
     /* Logo */
@@ -250,9 +244,9 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- Smoke overlay -->
+    <!-- Smoke overlay -->
   <div id="smoke-overlay" aria-hidden="true">
-    <video autoplay loop muted playsinline preload="auto" id="smokeVideo">
+    <video autoplay muted playsinline preload="auto" id="smokeVideo">
       <source src="Smoke.mp4?v=1" type="video/mp4">
     </video>
   </div>
@@ -276,6 +270,12 @@
       smokeOverlay.style.display = 'none';
     });
 
+    smokeVideo.addEventListener('ended', () => {
+      smokeVideo.currentTime = 0;
+      smokeVideo.play();
+      triggerGlitch();
+    });
+
     const triggerGlitch = () => {
       document.body.classList.add('glitching');
       logo.classList.add('glitching');
@@ -293,14 +293,6 @@
         glitchOverlay.classList.remove('show');
       }, 2200);
     };
-
-    smokeVideo.addEventListener('timeupdate', () => {
-      if (smokeVideo.duration - smokeVideo.currentTime < 0.5) {
-        if (!document.body.classList.contains('glitching')) {
-          triggerGlitch();
-        }
-      }
-    });
 
     const anarchyBtnEl = document.getElementById('anarchyBtn');
     const anarchyMenuEl = document.getElementById('anarchyMenu');
