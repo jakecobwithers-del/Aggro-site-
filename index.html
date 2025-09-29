@@ -77,7 +77,6 @@
       flex-direction: column;
       align-items: center;
       gap: 20px;
-      transition: opacity 0.3s ease;
     }
 
     .redBtn, .blueBtn {
@@ -102,20 +101,6 @@
     .blueBtn {
       background: #5865F2;
       box-shadow: 0 6px 12px rgba(0,0,0,0.6), 0 0 8px rgba(88,101,242,0.3);
-    }
-
-    .widget-bar.glitching .redBtn {
-      background: #ff0000;
-      box-shadow: 0 0 20px rgba(255,0,0,0.8), 0 0 40px rgba(255,0,0,0.5);
-    }
-
-    .widget-bar.glitching .blueBtn {
-      background: #00f0ff;
-      box-shadow: 0 0 20px rgba(0,255,255,0.8), 0 0 40px rgba(0,255,255,0.5);
-    }
-
-    .widget-bar.hide-text a {
-      visibility: hidden;
     }
 
     /* Anarchy icon */
@@ -250,7 +235,7 @@
   </div>
 
   <div class="widget-bar" id="widgetBar">
-        <a href="steam://connect/103.193.80.64:3436" class="redBtn">Connect to Server</a>
+    <a href="steam://connect/103.193.80.64:3436" class="redBtn">Connect to Server</a>
     <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="blueBtn">Join the Community</a>
   </div>
 
@@ -258,7 +243,7 @@
     <img src="anarchy.png" alt="Anarchy Menu">
   </button>
 
-  <nav class="anarchyMenu" id="anarchyMenu" aria-hidden="true">
+   <nav class="anarchyMenu" id="anarchyMenu" aria-hidden="true">
     <a href="rules.html">Rules</a>
     <a href="support.html">Support</a>
     <a href="donate.html">Donate</a>
@@ -295,7 +280,7 @@
     const triggerGlitch = () => {
       document.body.classList.add('glitching');
       logo.classList.add('glitching');
-      widgetBar.classList.add('glitching', 'hide-text');
+      widgetBar.classList.add('glitching');
       anarchyBtn.classList.add('glitching');
       anarchyMenu.classList.add('glitching');
       smokeOverlay.classList.add('glitching');
@@ -309,7 +294,6 @@
         anarchyMenu.classList.remove('glitching');
         smokeOverlay.classList.remove('glitching');
         glitchOverlay.classList.remove('show');
-        widgetBar.classList.remove('hide-text');
       }, 2200);
     };
 
