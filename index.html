@@ -3,66 +3,71 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — Loop Twice then Red Glitch Surge</title>
+<title>Aggro PvP — Fixed Red Glitch Surge</title>
 <style>
   :root{
-    --smoke-duration-loops:2;   /* how many times to play the smoke before glitch */
-    --surge-ms:2000;            /* how long the red glitch + headline + splats remain (ms) */
-    --glitch-ms:480;            /* main micro-glitch length inside the surge (ms) */
-    --smoke-opacity:0.56;       /* base smoke opacity so UI beneath remains visible */
-    --red-strength:0.30;        /* red wash strength */
+    --surge-ms:2000;       /* how long headline + splats remain (ms) */
+    --glitch-ms:480;       /* primary glitch visual length (ms) */
+    --smoke-opacity:0.56;  /* smoke transparency */
+    --red-strength:0.30;   /* red wash strength */
     --splat-opacity:0.82;
   }
 
+  /* Basic reset */
   html,body{height:100%;margin:0;background:#000;color:#fff;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;overflow:hidden;-webkit-font-smoothing:antialiased}
   img{display:block;max-width:100%}
   button{background:transparent;border:0;color:inherit;font:inherit;cursor:pointer}
 
-  /* Z stack: menu (5000) > headline+splat (4000) > glitch paint (3000) > smoke (2500) > UI under smoke (1000) */
-  .anarchyBtn{position:fixed;top:18px;right:18px;z-index:5000;padding:6px}
+  /* Z-order: menu (4000) > headline/splats (3500) > glitch paint (2400) > video (2000) > UI under video (1000) */
+  .anarchyBtn{position:fixed;top:18px;right:18px;z-index:4000;padding:6px}
   .anarchyBtn img{width:56px;height:56px;display:block}
-  .anarchyMenu{position:fixed;top:86px;right:18px;z-index:5000;display:none;flex-direction:column;gap:8px;padding:10px;background:rgba(8,8,8,0.98);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,0.6)}
+  .anarchyMenu{position:fixed;top:86px;right:18px;z-index:4000;display:none;flex-direction:column;gap:8px;padding:10px;background:rgba(8,8,8,0.98);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,0.6)}
   .anarchyMenu.open{display:flex}
   .anarchyMenu a{color:#fff;text-decoration:none;padding:8px 10px;border-radius:6px;font-weight:700;font-size:14px}
 
-  .headline{position:fixed;inset:0;z-index:4000;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:6vh 4vw}
+  /* Headline (ensure very high z so always visible) */
+  .headline{position:fixed;inset:0;z-index:3500;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:6vh 4vw}
   #headlineText{
     margin:0;color:#fff;font-weight:900;letter-spacing:6px;text-align:center;
     -webkit-text-stroke:1.6px rgba(0,0,0,0.95);
     text-shadow:0 10px 30px rgba(0,0,0,0.9),0 0 22px rgba(255,24,24,0.08);
     font-size:clamp(28px,9vw,92px);
     opacity:0;transform:translateY(26px) scale(.98);
-    transition:opacity 180ms linear,transform 260ms cubic-bezier(.2,.9,.3,1);
+    transition:opacity 220ms linear,transform 260ms cubic-bezier(.2,.9,.3,1);
     will-change:opacity,transform;
   }
   .headline.show #headlineText{opacity:1;transform:translateY(0) scale(1.04)}
 
-  #surge{position:fixed;inset:0;z-index:4000;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 160ms linear}
+  /* Splats (same high z) */
+  #surge{position:fixed;inset:0;z-index:3500;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 160ms linear}
   #surge.show{opacity:1}
   .splat{position:absolute;pointer-events:none;mix-blend-mode:multiply;opacity:0;transform-origin:center;transition:opacity 260ms linear,transform 360ms cubic-bezier(.2,.9,.3,1)}
   .splat.left{top:6%;left:3.5%;width:460px;transform:translateY(26px) rotate(-18deg) scale(.9)}
   .splat.right{bottom:6%;right:3.5%;width:420px;transform:translateY(26px) rotate(10deg) scale(.9)}
   .splat.show{opacity:var(--splat-opacity);transform:translateY(0) scale(1)}
 
-  .glitch-paint{position:fixed;inset:0;z-index:3000;pointer-events:none;opacity:0;transition:opacity 120ms linear}
+  /* Glitch paint composite over video (lower than headline/splats so they read clearly) */
+  .glitch-paint{position:fixed;inset:0;z-index:2400;pointer-events:none;opacity:0;transition:opacity 120ms linear}
   .glitch-paint.show{opacity:1}
   .rgb-slice{position:absolute;inset:0;background-repeat:no-repeat;background-size:cover;background-position:center;mix-blend-mode:screen;opacity:0.96;will-change:transform,opacity}
   .rgb-slice.r{filter:hue-rotate(-6deg) saturate(1.22);transform:translateX(-6px)}
   .rgb-slice.b{filter:hue-rotate(28deg) saturate(1.05);transform:translateX(6px)}
   .red-wash{position:absolute;inset:0;background:rgba(255,24,24,var(--red-strength));mix-blend-mode:overlay;pointer-events:none;opacity:1}
 
-  /* Smoke sits above UI but is semi-transparent so logo/buttons remain visible */
-  #smoke-wrap{position:fixed;inset:0;z-index:2500;pointer-events:none}
-  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(1.6px) saturate(1) contrast(1);transform-origin:center center;animation:smokeBob 8.4s ease-in-out infinite;will-change:transform,filter,opacity}
+  /* Single looping smoke video (the only video element) */
+  #smoke-wrap{position:fixed;inset:0;z-index:2000;pointer-events:none}
+  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(1.8px) saturate(1) contrast(1);transform-origin:center center;animation:smokeBob 8.4s ease-in-out infinite;will-change:transform,filter,opacity}
   @keyframes smokeBob{0%{transform:translateY(0)}25%{transform:translateY(-6px)}50%{transform:translateY(0)}75%{transform:translateY(6px)}100%{transform:translateY(0)}}
 
+  /* Temporary non-destructive transform on the playing video (does NOT pause or restart it) */
   #smokeVideo.glitch{
     transition:transform var(--glitch-ms) cubic-bezier(.22,.9,.3,1),filter var(--glitch-ms) linear,opacity var(--glitch-ms) linear;
-    transform:translateY(-6px) scale(1.02) rotateX(2.2deg);
-    filter:blur(3.0px) contrast(1.06) saturate(1.12);
+    transform:translateY(-6px) scale(1.02) rotateX(2.5deg);
+    filter:blur(3.2px) contrast(1.06) saturate(1.12);
     opacity:0.96;
   }
 
+  /* UI under the smoke */
   #logo{position:fixed;top:9vh;left:50%;transform:translateX(-50%);z-index:1000}
   .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:36px;z-index:1000;display:flex;flex-direction:column;gap:12px;align-items:center}
   .cta{padding:12px 20px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800;background:rgba(0,0,0,0.45)}
@@ -78,7 +83,7 @@
 </head>
 <body>
 
-  <!-- Menu -->
+  <!-- Menu (always top & clickable) -->
   <button id="anarchyBtn" class="anarchyBtn" aria-expanded="false" aria-controls="anarchyMenu" title="Menu">
     <img src="anarchy.png" alt="Menu">
   </button>
@@ -101,16 +106,16 @@
     <div class="splat right" id="splatRight"><img src="blood1.png" alt="blood splat"></div>
   </div>
 
-  <!-- Glitch paint -->
+  <!-- Glitch paint (RGB slices + red wash) -->
   <div id="glitchPaint" class="glitch-paint" aria-hidden="true">
     <div class="rgb-slice r" id="rgbR"></div>
     <div class="rgb-slice b" id="rgbB"></div>
     <div class="red-wash" id="redWash"></div>
   </div>
 
-  <!-- Smoke video (single element). Note: keep this file at repo root as Smoke.mp4 -->
+  <!-- Single looping smoke video (the only video element) -->
   <div id="smoke-wrap" aria-hidden="true">
-    <video id="smokeVideo" autoplay muted playsinline preload="auto" crossorigin="anonymous">
+    <video id="smokeVideo" autoplay muted playsinline loop preload="auto" crossorigin="anonymous">
       <source src="Smoke.mp4?v=1" type="video/mp4">
     </video>
   </div>
@@ -135,22 +140,16 @@
   const anarchyBtn = document.getElementById('anarchyBtn');
   const anarchyMenu = document.getElementById('anarchyMenu');
 
-  const LOOPS_BEFORE_GLITCH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--smoke-duration-loops')) || 2;
   const SURGE_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--surge-ms')) || 2000;
   const GLITCH_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--glitch-ms')) || 480;
+  const TRIGGER_BEFORE_END = 0.6; // seconds before loop end to trigger glitch (safer margin)
 
-  let loopCount = 0;
-  let loading = true;
-  let awaitingRestart = false;
-
-  // Make sure we manage playback ourselves so we can count exact loops.
-  smoke.loop = false;
-  smoke.addEventListener('loadedmetadata', ()=>{ loading = false; });
-
-  // Ensure only one video element exists (safety)
+  // keep single video and looping
+  smoke.loop = true;
   (function removeDupes(){ const v = document.querySelectorAll('video#smokeVideo'); if(v.length>1) v.forEach((el,i)=>{ if(i>0) el.remove(); }); })();
 
-  // Try snapshot for natural RGB slices; fallback to gradients on CORS failure
+  // snapshot current frame for RGB slices to make split match smoke.
+  // If CORS blocks canvas, fallback to subtle gradients.
   function snapshotForRGB(){
     try {
       const c = document.createElement('canvas');
@@ -169,6 +168,7 @@
     }
   }
 
+  // show/hide headline + splats
   function showVisuals(){
     headlineWrap.classList.add('show'); headlineWrap.setAttribute('aria-hidden','false');
     surge.classList.add('show'); surge.setAttribute('aria-hidden','false');
@@ -180,95 +180,71 @@
     splatL.classList.remove('show'); splatR.classList.remove('show');
   }
 
+  // run red glitch: non-destructive overlay. Does NOT pause or restart the video.
   async function runRedGlitch(){
     if (smoke._glitchRunning) return;
     smoke._glitchRunning = true;
 
     snapshotForRGB();
+
+    // reveal glitch paint
     glitchPaint.classList.add('show');
 
-    // strong initial tear
+    // initial strong RGB tear
     rgbR.style.transform = 'translateX(-22px) translateY(-8px) scale(1.03)';
     rgbB.style.transform = 'translateX(22px) translateY(8px) scale(1.03)';
     rgbR.style.transition = rgbB.style.transition = 'transform 120ms linear';
 
-    // subtle non-destructive transform on the playing video for punch
+    // non-destructive micro-transform on video for punch (keeps playing)
     smoke.classList.add('glitch');
 
-    // reveal text & splats
+    // show headline and splats
     showVisuals();
 
-    // micro-settle for shake effect
+    // tiny delayed settle for micro-shake feel
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       rgbR.style.transform = 'translateX(-10px) translateY(-4px) scale(1.01)';
       rgbB.style.transform = 'translateX(10px) translateY(4px) scale(1.01)';
     }));
 
-    // keep core glitch for GLITCH_MS, but the headline/splats will remain for SURGE_MS
+    // hold the core glitch then allow headline to remain for SURGE_MS total
     await new Promise(r => setTimeout(r, GLITCH_MS));
 
-    // settle transform
+    // micro-settle
     rgbR.style.transform = 'translateX(-6px) translateY(-2px) scale(1.005)';
     rgbB.style.transform = 'translateX(6px) translateY(2px) scale(1.005)';
 
     // wait remaining headline time
     await new Promise(r => setTimeout(r, Math.max(0, SURGE_MS - GLITCH_MS)));
 
-    // cleanup (important: do NOT pause the video)
+    // cleanup visuals, keep video playing
     hideVisuals();
     smoke.classList.remove('glitch');
     glitchPaint.classList.remove('show');
+
+    // reset transforms
     rgbR.style.transform = rgbB.style.transform = '';
 
-    smoke._glitchRunning = false;
+    // small cooldown
+    setTimeout(()=>{ smoke._glitchRunning = false; }, 220);
   }
 
-  // Handle 'ended' to count loops and trigger glitch after N loops
-  smoke.addEventListener('ended', async ()=>{
-    // If already awaiting restart to resume after glitch, ignore extra ended events
-    if (awaitingRestart) return;
-
-    loopCount++;
-
-    if (loopCount < LOOPS_BEFORE_GLITCH){
-      // play next loop immediately
-      try { await smoke.play(); } catch(e){}
-      return;
+  // Trigger when near end of loop — safe margin used so very short videos still trigger.
+  function onTimeUpdate(){
+    if (smoke._glitchRunning) return;
+    if (!smoke.duration || isNaN(smoke.duration)) return;
+    const remaining = smoke.duration - smoke.currentTime;
+    if (remaining <= TRIGGER_BEFORE_END){
+      // fire glitch without interrupting playback
+      runRedGlitch().catch(()=>{ smoke._glitchRunning = false; });
     }
+  }
+  smoke.addEventListener('timeupdate', onTimeUpdate);
 
-    // loopCount reached LOOPS_BEFORE_GLITCH -> trigger the glitch sequence
-    awaitingRestart = true;
+  // manual test helper
+  window.triggerRedGlitch = function(){ runRedGlitch().catch(()=>{ smoke._glitchRunning = false; }); };
 
-    // start the glitch but keep video playing. If the video ended, immediately restart it so smoke continues
-    try { await smoke.play(); } catch(e){}
-    runRedGlitch().catch(()=>{ smoke._glitchRunning = false; });
-
-    // ensure the red/glitch remains visible for SURGE_MS, then reset loop count and continue looping behavior
-    setTimeout(()=>{
-      loopCount = 0;
-      awaitingRestart = false;
-      // restart smoke so the two-loop cycle begins again
-      try { smoke.currentTime = 0; smoke.play().catch(()=>{}); } catch(e){ smoke.play().catch(()=>{}); }
-    }, SURGE_MS + 40); // small buffer
-  });
-
-  // Safety: if metadata is ready and the video is already playing, start the first loop count correctly.
-  // We'll detect natural 'ended' events for reliable counting.
-  smoke.addEventListener('play', ()=>{
-    // if user reloads page mid-sequence, ensure counters are sane
-    if (!awaitingRestart && loopCount === 0 && !smoke.paused && !smoke.ended){
-      // nothing to do here; counting waits on ended events
-    }
-  });
-
-  // Expose manual trigger for dev testing
-  window.triggerRedGlitch = function(){
-    // if video currently ended, play it so the glitch overlays a playing smoke
-    try { smoke.play().catch(()=>{}); } catch(e){}
-    runRedGlitch().catch(()=>{ smoke._glitchRunning = false; });
-  };
-
-  // Menu toggle logic
+  // menu toggle logic
   function openMenu(open){
     if(open){ anarchyMenu.classList.add('open'); anarchyMenu.setAttribute('aria-hidden','false'); anarchyBtn.setAttribute('aria-expanded','true'); const f = anarchyMenu.querySelector('a'); if(f) f.focus(); }
     else { anarchyMenu.classList.remove('open'); anarchyMenu.setAttribute('aria-hidden','true'); anarchyBtn.setAttribute('aria-expanded','false'); }
@@ -281,11 +257,8 @@
   // unlock autoplay on first interaction
   document.addEventListener('click', ()=>{ if(smoke.paused) smoke.play().catch(()=>{}); });
 
-  // Start playback: ensure we're at 0 and play once so 'ended' events will count
-  (async function initPlay(){
-    try { smoke.currentTime = 0; await smoke.play(); } catch(e){}
-  })();
-
+  // ensure initial playback
+  smoke.play().catch(()=>{});
 })();
 </script>
 </body>
