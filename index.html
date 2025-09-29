@@ -91,6 +91,37 @@
     .menu a:hover {
       background: rgba(255,255,255,0.08);
     }
+
+    /* Social Buttons */
+    .social-buttons {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .social-buttons a {
+      padding: 12px 20px;
+      font-weight: bold;
+      border-radius: 8px;
+      text-decoration: none;
+      border: 1px solid #fff;
+      font-family: sans-serif;
+    }
+
+    .discord-btn {
+      background: #5865F2;
+      color: #fff;
+    }
+
+    .steam-btn {
+      background: #171a21;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
@@ -113,6 +144,12 @@
 
   <!-- Smoke overlay -->
   <div id="smoke-overlay"></div>
+
+  <!-- Social Join Buttons -->
+  <div class="social-buttons">
+    <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="discord-btn">💬 Join Aggro PvP Discord</a>
+    <a href="steam://connect/193.193.80.64:3436" class="steam-btn">🎮 Connect via Steam</a>
+  </div>
 
   <script>
     // Inject smoke video from local GitHub repo
