@@ -4,16 +4,89 @@
   <meta charset="UTF-8">
   <title>Aggro PvP — Full Smoke Overlay</title>
   <style>
-    html, body { margin:0; padding:0; height:100%; width:100%; background:#000; font-family:sans-serif; overflow:hidden; }
-    #smoke-overlay { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:9999; pointer-events:none; }
-    #smoke-overlay video { width:100%; height:100%; object-fit:cover; opacity:0.6; mix-blend-mode:screen; filter:blur(6px) saturate(1.05); }
-    #logo { position:relative; z-index:1; width:100vw; text-align:center; top:30vh; }
-    #logo img { width:300px; filter:drop-shadow(0 18px 40px rgba(0,0,0,0.75)); }
-    .menuBtn { position:fixed; top:20px; left:20px; z-index:2; padding:10px 14px; background:rgba(0,0,0,0.5); color:#ff3b3b; font-weight:bold; border-radius:8px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; }
-    .menu { position:fixed; top:60px; left:20px; z-index:2; background:rgba(10,10,10,0.95); padding:12px; border-radius:10px; display:none; flex-direction:column; gap:10px; box-shadow:0 10px 30px rgba(0,0,0,0.6); }
-    .menu.open { display:flex; }
-    .menu a { color:#fff; text-decoration:none; font-weight:bold; padding:8px 12px; border-radius:6px; border:1px solid rgba(255,255,255,0.05); }
-    .menu a:hover { background:rgba(255,255,255,0.08); }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: #000;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+    #smoke-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      pointer-events: none;
+      background: url('smoke-fallback.jpg') center center / cover no-repeat;
+    }
+    #smoke-overlay video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.6;
+      mix-blend-mode: screen;
+      filter: blur(6px) saturate(1.05);
+      animation: fadeInSmoke 2s ease-in-out forwards;
+    }
+    @keyframes fadeInSmoke {
+      from { opacity: 0; }
+      to { opacity: 0.6; }
+    }
+    #logo {
+      position: relative;
+      z-index: 1;
+      width: 100vw;
+      text-align: center;
+      top: 30vh;
+    }
+    #logo img {
+      width: min(300px, 40vw);
+      filter: drop-shadow(0 18px 40px rgba(0,0,0,0.75));
+    }
+    .menuBtn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 2;
+      padding: 10px 14px;
+      background: rgba(0,0,0,0.5);
+      color: #ff3b3b;
+      font-weight: bold;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+    }
+    .menu {
+      position: fixed;
+      top: 60px;
+      left: 20px;
+      z-index: 2;
+      background: rgba(10,10,10,0.95);
+      padding: 12px;
+      border-radius: 10px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .menu.open {
+      display: flex;
+    }
+    .menu a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .menu a:hover {
+      background: rgba(255,255,255,0.08);
+    }
   </style>
 </head>
 <body>
@@ -34,44 +107,45 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- Smoke overlay injected by JS -->
+  <!-- Smoke overlay -->
   <div id="smoke-overlay" aria-hidden="true"></div>
 
   <script>
-    // Configuration
-    const VIDEO_POLL_INTERVAL_MS = 60000; // how often to check for updates (60s)
     const VIDEO_BASE_MP4 = 'smoke.mp4';
-    const VIDEO_BASE_WEBM = 'smoke.webm'; // optional fallback
+    const VIDEO_BASE_WEBM = 'smoke.webm';
+    const VIDEO_POLL_INTERVAL_MS = 60000;
 
-    // Build video element
     const smokeOverlay = document.getElementById('smoke-overlay');
     const smokeVideo = document.createElement('video');
     smokeVideo.id = 'smokeVideo';
     smokeVideo.autoplay = true;
     smokeVideo.loop = true;
-    smokeVideo.muted = true;           // required for autoplay on many browsers
+    smokeVideo.muted = true;
     smokeVideo.playsInline = true;
     smokeVideo.setAttribute('preload', 'auto');
     smokeVideo.setAttribute('aria-hidden', 'true');
 
-    // Add sources with data-src (base path) so we can append cache-busting query params
+    const t = Date.now();
     const sourceWebm = document.createElement('source');
     sourceWebm.setAttribute('data-src', VIDEO_BASE_WEBM);
     sourceWebm.type = 'video/webm';
-    sourceWebm.src = VIDEO_BASE_WEBM;
+    sourceWebm.src = VIDEO_BASE_WEBM + '?v=' + t;
     smokeVideo.appendChild(sourceWebm);
 
     const sourceMp4 = document.createElement('source');
     sourceMp4.setAttribute('data-src', VIDEO_BASE_MP4);
     sourceMp4.type = 'video/mp4';
-    sourceMp4.src = VIDEO_BASE_MP4;
+    sourceMp4.src = VIDEO_BASE_MP4 + '?v=' + t;
     smokeVideo.appendChild(sourceMp4);
+
+    smokeOverlay.appendChild(smokeVideo);
+    smokeVideo.load();
+    smokeVideo.play().catch(console.warn);
 
     let currentEtag = null;
     let currentLastModified = null;
     let checking = false;
 
-    // Try HEAD, fallback to GET Range (0-0) if HEAD not allowed
     async function fetchHeaders(url) {
       try {
         const res = await fetch(url, { method: 'HEAD', cache: 'no-cache' });
@@ -92,13 +166,11 @@
     async function checkForUpdate() {
       if (checking) return;
       checking = true;
-      const url = VIDEO_BASE_MP4;
-      const headers = await fetchHeaders(url);
+      const headers = await fetchHeaders(VIDEO_BASE_MP4);
       if (headers) {
         const { etag, lastModified } = headers;
         const changed = (etag && etag !== currentEtag) || (lastModified && lastModified !== currentLastModified);
         if (currentEtag === null && currentLastModified === null) {
-          // Initial capture
           currentEtag = etag;
           currentLastModified = lastModified;
         } else if (changed) {
@@ -109,7 +181,6 @@
             const base = s.getAttribute('data-src') || s.src.split('?')[0];
             s.src = base + '?v=' + t;
           });
-          // Reload and attempt to play
           smokeVideo.load();
           smokeVideo.play().catch(()=>{});
           console.log('Smoke video updated and reloaded at', new Date().toISOString());
@@ -118,20 +189,13 @@
       checking = false;
     }
 
-    // Initialize: append video and start polling
-    smokeOverlay.appendChild(smokeVideo);
-    (async () => {
-      await checkForUpdate();                // capture initial headers
-      setInterval(checkForUpdate, VIDEO_POLL_INTERVAL_MS);
-    })();
+    setInterval(checkForUpdate, VIDEO_POLL_INTERVAL_MS);
 
-    // If the video errors (not found / blocked), hide overlay so UI doesn't look broken
     smokeVideo.addEventListener('error', (e) => {
       console.warn('Smoke video error:', e);
       smokeOverlay.style.display = 'none';
     });
 
-    // Menu toggle
     const menuBtn = document.getElementById('menuBtn');
     const menu = document.getElementById('menu');
     menuBtn.addEventListener('click', () => {
