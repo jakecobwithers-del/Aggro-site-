@@ -7,8 +7,6 @@
     @font-face {
       font-family: 'DayZFont';
       src: url('28 Days Later.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
     }
 
     html, body {
@@ -92,40 +90,27 @@
       border: none;
       color: #fff;
       font-family: 'DayZFont', sans-serif;
-      transform: perspective(1px) translateZ(0);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .redBtn {
       background: #ff3b3b;
-      box-shadow:
-        inset 0 -4px 0 rgba(0,0,0,0.3),
-        0 6px 12px rgba(0,0,0,0.6),
-        0 0 8px rgba(255,0,0,0.3);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.6), 0 0 8px rgba(255,0,0,0.3);
     }
 
     .redBtn:hover {
       transform: translateY(-2px);
-      box-shadow:
-        inset 0 -4px 0 rgba(0,0,0,0.3),
-        0 8px 16px rgba(0,0,0,0.8),
-        0 0 12px rgba(255,0,0,0.5);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.8), 0 0 12px rgba(255,0,0,0.5);
     }
 
     .blueBtn {
       background: #5865F2;
-      box-shadow:
-        inset 0 -4px 0 rgba(0,0,0,0.3),
-        0 6px 12px rgba(0,0,0,0.6),
-        0 0 8px rgba(88,101,242,0.3);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.6), 0 0 8px rgba(88,101,242,0.3);
     }
 
     .blueBtn:hover {
       transform: translateY(-2px);
-      box-shadow:
-        inset 0 -4px 0 rgba(0,0,0,0.3),
-        0 8px 16px rgba(0,0,0,0.8),
-        0 0 12px rgba(88,101,242,0.5);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.8), 0 0 12px rgba(88,101,242,0.5);
     }
 
     /* Anarchy icon */
@@ -143,12 +128,7 @@
     .anarchyBtn img {
       width: 72px;
       height: 72px;
-      background-color: transparent !important;
-      mix-blend-mode: normal !important;
-      filter:
-        drop-shadow(0 0 12px rgba(255,0,0,0.9))
-        drop-shadow(0 0 24px rgba(255,0,0,0.6))
-        drop-shadow(0 0 36px rgba(255,0,0,0.4));
+      filter: drop-shadow(0 0 12px rgba(255,0,0,0.9));
     }
 
     /* Popup menu */
@@ -182,7 +162,6 @@
       border-radius: 6px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: background 0.2s ease;
     }
 
     .anarchyMenu a:hover {
@@ -191,11 +170,12 @@
 
     /* Glitch effect */
     @keyframes screenGlitch {
-      0% { transform: none; filter: none; }
-      20% { transform: scale(1.02) rotate(1deg); filter: hue-rotate(45deg) contrast(1.5); }
-      40% { transform: scale(0.98) rotate(-1deg); filter: invert(1) grayscale(1); }
-      60% { transform: scale(1.05); filter: brightness(1.3); }
-      80% { transform: scale(1); filter: none; }
+      0%   { transform: none; filter: none; }
+      10%  { transform: scale(1.03) rotate(1deg); filter: hue-rotate(60deg) contrast(1.8); }
+      25%  { transform: scale(0.97) rotate(-2deg); filter: invert(1) grayscale(1); }
+      40%  { transform: scale(1.06); filter: brightness(1.4) saturate(1.2); }
+      55%  { transform: scale(0.95) rotate(1deg); filter: hue-rotate(-45deg) contrast(2); }
+      70%  { transform: scale(1.02); filter: none; }
       100% { transform: none; filter: none; }
     }
 
@@ -205,7 +185,7 @@
     .anarchyBtn.glitching img,
     .anarchyMenu.glitching,
     #smoke-overlay.glitching video {
-      animation: screenGlitch 0.6s ease-in-out;
+      animation: screenGlitch 0.8s ease-in-out;
     }
 
     /* Red static overlay with bold top text */
@@ -217,10 +197,10 @@
       height: 100vh;
       background: repeating-linear-gradient(
         0deg,
-        rgba(255, 0, 0, 0.05),
-        rgba(255, 0, 0, 0.05) 2px,
-        rgba(0, 0, 0, 0.05) 2px,
-        rgba(0, 0, 0, 0.05) 4px
+        rgba(255, 0, 0, 0.08),
+        rgba(255, 0, 0, 0.08) 2px,
+        rgba(0, 0, 0, 0.08) 2px,
+        rgba(0, 0, 0, 0.08) 4px
       );
       mix-blend-mode: screen;
       z-index: 1000003;
@@ -241,38 +221,29 @@
       color: #ff0000;
       font-family: 'DayZFont', sans-serif;
       font-size: 9vw;
-      letter-spacing: 3px;
+      letter-spacing: 6px;
       text-align: center;
-      text-shadow:
-        0 0 10px #ff0000,
-        0 0 20px #ff0000,
-        0 0 40px #ff0000;
+      font-weight: bold;
     }
-
   </style>
 </head>
 <body>
 
-  <!-- Logo -->
   <div id="logo">
     <img src="Aggro-logo.PNG" alt="Aggro PvP Logo">
   </div>
 
-  <!-- Bottom buttons -->
   <div class="widget-bar">
     <a href="steam://connect/103.193.80.64:3436" class="redBtn">Connect to Server</a>
     <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="blueBtn">Join the Community</a>
   </div>
 
-  <!-- Anarchy menu button -->
   <button class="anarchyBtn" id="anarchyBtn">
     <img src="anarchy.png" alt="Anarchy Menu">
   </button>
 
-  <!-- Popup menu -->
   <nav class="anarchyMenu" id="anarchyMenu" aria-hidden="true">
-    <a href="rules.html">Rules</a>
-    <a href="support.html">Support</a>
+        <a href="support.html">Support</a>
     <a href="donate.html">Donate</a>
     <a href="killfeed.html">Kill Feed</a>
     <a href="leaderboard.html">Leaderboard</a>
@@ -320,11 +291,11 @@
         anarchyBtn.classList.remove('glitching');
         anarchyMenu.classList.remove('glitching');
         smokeOverlay.classList.remove('glitching');
-      }, 600);
+      }, 800); // glitch animation duration
 
       setTimeout(() => {
         glitchOverlay.classList.remove('show');
-      }, 2200);
+      }, 2200); // extended text visibility
     };
 
     smokeVideo.addEventListener('timeupdate', () => {
@@ -352,4 +323,3 @@
 
 </body>
 </html>
-
