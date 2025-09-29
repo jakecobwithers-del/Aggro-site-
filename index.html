@@ -208,23 +208,29 @@
       animation: screenGlitch 0.6s ease-in-out;
     }
 
-    /* Red static overlay with flickering text */
+    /* Red static overlay with bold top text */
     #glitchOverlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(255, 0, 0, 0.15);
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(255, 0, 0, 0.05),
+        rgba(255, 0, 0, 0.05) 2px,
+        rgba(0, 0, 0, 0.05) 2px,
+        rgba(0, 0, 0, 0.05) 4px
+      );
       mix-blend-mode: screen;
       z-index: 1000003;
       display: flex;
-      align-items: flex-end;
+      align-items: flex-start;
       justify-content: center;
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.3s ease;
-      padding-bottom: 15vh;
+      padding-top: 10vh;
     }
 
     #glitchOverlay.show {
@@ -234,21 +240,13 @@
     #glitchOverlay h1 {
       color: #ff0000;
       font-family: 'DayZFont', sans-serif;
-      font-size: 8vw;
+      font-size: 9vw;
       letter-spacing: 3px;
       text-align: center;
       text-shadow:
         0 0 10px #ff0000,
         0 0 20px #ff0000,
         0 0 40px #ff0000;
-      animation: flickerText 1.2s linear infinite;
-    }
-
-    @keyframes flickerText {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      25% { opacity: 0.7; transform: scale(1.05); }
-      50% { opacity: 0.3;      transform: scale(0.95); }
-      75% { opacity: 0.9; transform: scale(1.02); }
     }
 
   </style>
@@ -287,7 +285,7 @@
     </video>
   </div>
 
-  <!-- Red static overlay with flickering text -->
+  <!-- Red static overlay with bold top text -->
   <div id="glitchOverlay" aria-hidden="true">
     <h1>JOIN THE FIGHT</h1>
   </div>
@@ -322,11 +320,11 @@
         anarchyBtn.classList.remove('glitching');
         anarchyMenu.classList.remove('glitching');
         smokeOverlay.classList.remove('glitching');
-      }, 600); // glitch animation duration
+      }, 600);
 
       setTimeout(() => {
         glitchOverlay.classList.remove('show');
-      }, 1800); // extended text visibility
+      }, 2200);
     };
 
     smokeVideo.addEventListener('timeupdate', () => {
