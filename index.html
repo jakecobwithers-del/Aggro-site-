@@ -3,28 +3,29 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — Smoke Over UI (Menu Above All)</title>
+<title>Aggro PvP — Glitch Flip Smoke + JOIN THE FIGHT</title>
 <style>
   :root{
-    --red:#ff2b2b;
     --surge-ms:2600;
-    --punch-ms:140;
+    --flip-ms:700;      /* duration of the flip/glitch animation */
+    --smoke-opacity:0.55;
     --splat-opacity:0.72;
     --splat-contrast:1.18;
+    --punch-ms:140;
   }
 
-  /* Base */
+  /* Reset / base */
   html,body{height:100%;margin:0;background:#000;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;overflow:hidden;-webkit-font-smoothing:antialiased}
   img{max-width:100%;display:block}
 
-  /* Z-order summary
-     3000 = Anarchy menu / popup (top interactive)
-     2000 = Headline + Splats (must remain readable/visible)
-     1500 = Smoke (over logo/buttons)
-     1000 = Logo / CTAs (under smoke)
+  /* Z-order
+     3000 menu/popup (top interactive)
+     2200 headline + splats (must be visible / pop)
+     2000 smoke (bobbing background, may be flipped during glitch)
+     1000 logo/CTAs (under smoke)
   */
 
-  /* Anarchy menu (always above smoke) */
+  /* Menu (always above smoke) */
   .anarchyBtn{position:fixed;top:18px;right:18px;z-index:3000;background:transparent;border:0;padding:6px;cursor:pointer}
   .anarchyBtn img{width:56px;height:56px;display:block;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.8))}
   .anarchyMenu{position:fixed;top:86px;right:18px;z-index:3000;display:none;flex-direction:column;gap:8px;padding:10px;background:rgba(10,10,10,0.98);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.6);min-width:180px}
@@ -33,28 +34,54 @@
   .anarchyMenu a:hover{background:rgba(255,255,255,0.03)}
 
   /* Headline + Splats (visible above smoke) */
-  .headline{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:6vh 4vw}
+  .headline{position:fixed;inset:0;z-index:2200;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:6vh 4vw}
   #headlineText{
     margin:0;color:#fff;font-weight:900;letter-spacing:6px;text-align:center;
     -webkit-text-stroke:2px rgba(0,0,0,0.95);
     text-shadow:0 6px 24px rgba(0,0,0,0.9),0 0 20px rgba(255,40,40,0.08);
     font-size:clamp(28px,9.2vw,96px);opacity:0;white-space:nowrap;padding:6px 10px;will-change:opacity,transform;
+    transform-origin:center;
   }
-  @keyframes headlinePop{0%{opacity:0;transform:translateY(18px) scale(.985)}8%{opacity:1;transform:translateY(0) scale(1.06)}70%{opacity:1}100%{opacity:0;transform:translateY(-8px) scale(.985)}}
-  .show-headline #headlineText{animation: headlinePop var(--surge-ms) cubic-bezier(.2,.9,.3,1) forwards;opacity:1}
+  @keyframes headlinePopAnim{
+    0%{opacity:0;transform:translateY(28px) scale(.98)}
+    12%{opacity:1;transform:translateY(0) scale(1.06)}
+    80%{opacity:1;transform:translateY(0) scale(1)}
+    100%{opacity:0;transform:translateY(-14px) scale(.98)}
+  }
+  .show-headline #headlineText{animation: headlinePopAnim var(--surge-ms) cubic-bezier(.2,.9,.3,1) forwards;opacity:1}
 
-  /* Smoke: sits above logo/buttons but below headline/menu */
-  #smoke-overlay{position:fixed;inset:0;z-index:1500;pointer-events:none}
+  /* Smoke overlay (bobbing, single authoritative video) */
+  #smoke-overlay{position:fixed;inset:0;z-index:2000;pointer-events:none}
   #smokeVideo{
-    width:100%;height:100%;object-fit:cover;opacity:0.86;
-    /* keep natural rendering so readable text remains clear; slight blur for style */
-    filter:blur(2.5px) saturate(1) contrast(1);transition:filter 180ms linear,transform 160ms linear;will-change:filter,transform;
+    width:100%;height:100%;object-fit:cover;opacity:var(--smoke-opacity);
+    filter:blur(2.4px) saturate(1) contrast(1);
+    transform-origin:center center;
+    transition:transform 220ms linear, opacity 220ms linear, filter 220ms linear;
+    will-change:transform,opacity,filter;
+    animation:smokeBob 6.6s ease-in-out infinite;
   }
-  /* optional small shake during surge */
-  #smokeVideo.glitchShift{transform:translateX(-6px) rotate(-0.2deg);}
+  @keyframes smokeBob{
+    0%{transform:translateY(0) scale(1)}
+    25%{transform:translateY(-6px) scale(1.005)}
+    50%{transform:translateY(0) scale(1)}
+    75%{transform:translateY(6px) scale(0.995)}
+    100%{transform:translateY(0) scale(1)}
+  }
 
-  /* Splats (blood) must be ABOVE smoke so they are visible to the user */
-  #surge{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 120ms linear}
+  /* Glitch flip class: rotate & flip upside-down with jitter */
+  #smokeVideo.glitchFlip{
+    animation:none; /* stop bob while flipping */
+    transition:transform var(--flip-ms) cubic-bezier(.22,.9,.3,1), filter 160ms linear;
+    transform:scaleY(-1) rotate(180deg) translateY(2px) scale(1.02);
+    filter:blur(3.6px) saturate(1.08) contrast(1.02);
+  }
+  /* brief jitter overlay during flip using pseudo-element on container */
+  #smoke-overlay.glitching::after{
+    content:"";position:absolute;inset:0;z-index:2010;pointer-events:none;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);mix-blend-mode:screen;opacity:0.18;filter:blur(1.2px);
+  }
+
+  /* Splats / blood above smoke */
+  #surge{position:fixed;inset:0;z-index:2200;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 120ms linear}
   #surge.show{opacity:1}
   .splat{position:absolute;pointer-events:none;will-change:transform,opacity,filter;mix-blend-mode:multiply;opacity:var(--splat-opacity)}
   .splat img{display:block;width:100%;height:auto;filter:contrast(var(--splat-contrast)) saturate(1.1)}
@@ -66,7 +93,7 @@
   .splat.flash{animation:splatFlash 420ms ease-out both}
   @keyframes splatFlash{0%{filter:brightness(1) sepia(0) saturate(1)}40%{filter:brightness(1.26) sepia(0.08) saturate(1.5)}100%{filter:brightness(1) sepia(0) saturate(1)}}
 
-  /* Logo and buttons are below smoke visually (so smoke overlays them) */
+  /* Logo and CTAs (under smoke visually) */
   #logo{position:fixed;top:9vh;left:50%;transform:translateX(-50%);z-index:1000}
   .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:36px;z-index:1000;display:flex;flex-direction:column;gap:12px;align-items:center}
   .cta{padding:12px 24px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800;background:rgba(0,0,0,0.45)}
@@ -82,7 +109,7 @@
 </head>
 <body>
 
-  <!-- Anarchy menu (remains topmost above smoke) -->
+  <!-- Menu (always above) -->
   <button id="anarchyBtn" class="anarchyBtn" aria-expanded="false" aria-controls="anarchyMenu" title="Menu">
     <img src="anarchy.png" alt="Menu">
   </button>
@@ -94,7 +121,7 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- Headline and splats MUST be visible above the smoke -->
+  <!-- Headline + Splats -->
   <div class="headline" id="headlineWrap" aria-hidden="true">
     <h1 id="headlineText" data-text="JOIN THE FIGHT">JOIN THE FIGHT</h1>
   </div>
@@ -104,14 +131,14 @@
     <div class="splat right" id="splatRight" aria-hidden="true"><img src="blood1.png" alt=""></div>
   </div>
 
-  <!-- Logo and CTAs (under the smoke) -->
+  <!-- Logo / CTAs under smoke -->
   <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
   <div class="widget-bar">
     <a class="cta primary" href="steam://connect/103.193.80.64:3436">Connect to Server</a>
     <a class="cta secondary" href="https://discord.gg/gSwkVzJyMT" target="_blank" rel="noopener">Join the Community</a>
   </div>
 
-  <!-- Smoke sits above logo/buttons (but below headline & menu) -->
+  <!-- Smoke overlay (single authoritative video) -->
   <div id="smoke-overlay" aria-hidden="true">
     <video id="smokeVideo" autoplay muted playsinline loop preload="auto" crossorigin="anonymous">
       <source src="Smoke.mp4?v=1" type="video/mp4">
@@ -121,64 +148,109 @@
 <script>
 (function(){
   const video = document.getElementById('smokeVideo');
+  const overlay = document.getElementById('smoke-overlay');
+  const headlineWrap = document.getElementById('headlineWrap');
   const surge = document.getElementById('surge');
   const splatLeft = document.getElementById('splatLeft');
   const splatRight = document.getElementById('splatRight');
-  const headlineWrap = document.getElementById('headlineWrap');
-  const headlineText = document.getElementById('headlineText');
   const anarchyBtn = document.getElementById('anarchyBtn');
   const anarchyMenu = document.getElementById('anarchyMenu');
 
   const SURGE_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--surge-ms')) || 2600;
-  const PUNCH_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--punch-ms')) || 140;
-  const TRIGGER_BEFORE_END = 1.0;
+  const FLIP_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--flip-ms')) || 700;
+  const TRIGGER_BEFORE_END = 0.12; // seconds before end to trigger the planned flip+swap
+  const NEXT_SMOKE_SRC = 'Smoke2.mp4?v=2'; // replace with your second video filename
 
-  // remove accidental duplicate videos
-  (function removeExtraVideos(){
-    const vids = Array.from(document.querySelectorAll('video#smokeVideo'));
-    if(vids.length>1) vids.slice(1).forEach(v=>v.remove());
-  })();
+  // Sanity: remove accidental duplicate smoke videos
+  (function removeExtraVideos(){ const vids = Array.from(document.querySelectorAll('video#smokeVideo')); if(vids.length>1) vids.slice(1).forEach(v=>v.remove()); })();
 
-  // try autoplay
+  // Try autoplay
   video.play().catch(()=>{});
 
-  // run surge: headline + splats visible above smoke; smoke remains over logo/buttons
-  function runSurge(){
-    // show headline (stays above smoke because z-index 2000)
+  // Utility: show headline + splats
+  function showHeadlineAndSplats(){
     headlineWrap.classList.add('show-headline');
     headlineWrap.setAttribute('aria-hidden','false');
-
-    // small smoke micro shift
-    video.classList.add('glitchShift');
-
-    // show splats (above smoke)
     surge.classList.remove('show'); void surge.offsetWidth; surge.classList.add('show');
     surge.setAttribute('aria-hidden','false');
     splatLeft.classList.add('flash'); splatRight.classList.add('flash');
     setTimeout(()=>{ splatLeft.classList.remove('flash'); splatRight.classList.remove('flash'); }, 520);
-
-    // subtle body punch
-    document.body.style.transition = 'transform 160ms cubic-bezier(.2,.9,.3,1)';
-    document.body.style.transform = 'translateY(-6px) rotate(-0.35deg)';
-    setTimeout(()=>{ document.body.style.transform = ''; }, PUNCH_MS);
-
-    // clear micro static quickly
-    setTimeout(()=>{ /* nothing persistent to remove here */ }, PUNCH_MS + 10);
-
-    // clear after SURGE_MS
-    setTimeout(()=>{
-      video.classList.remove('glitchShift');
-      surge.classList.remove('show'); surge.setAttribute('aria-hidden','true');
-      headlineWrap.classList.remove('show-headline'); headlineWrap.setAttribute('aria-hidden','true');
-      // tiny buffer to allow retrigger
-      setTimeout(()=>{ video._surgeTriggered = false; }, 200);
-    }, SURGE_MS);
+  }
+  function hideHeadlineAndSplats(){
+    surge.classList.remove('show'); surge.setAttribute('aria-hidden','true');
+    headlineWrap.classList.remove('show-headline'); headlineWrap.setAttribute('aria-hidden','true');
   }
 
-  // expose manual trigger
-  window.triggerSurge = runSurge;
+  // Flip glitch sequence:
+  // 1) briefly 'glitch' the smoke: stop bob, add overlay class
+  // 2) apply .glitchFlip (flips video upside-down visually)
+  // 3) after flip, swap source to NEXT_SMOKE_SRC and play normal orientation
+  async function runFlipSwapSequence(){
+    if (video._flipRunning) return;
+    video._flipRunning = true;
 
-  // menu toggle
+    // Stop bob (we add overlay.glitching to show static sheen) and ensure playback ready
+    overlay.classList.add('glitching');
+
+    // Freeze frame for a split (improves perceived glitch); then apply flip transform
+    // We'll do a tiny pause-snap for effect if allowed
+    try { video.pause(); } catch(e){ /* ignore */ }
+
+    // Apply flipped transform (will animate via CSS transition)
+    video.classList.add('glitchFlip');
+
+    // short jitter using CSS overlay stays while flipped
+    await new Promise(res => setTimeout(res, FLIP_MS));
+
+    // Swap source to new smoke video (baked or differently graded)
+    const srcEl = video.querySelector('source');
+    if (srcEl && NEXT_SMOKE_SRC){
+      srcEl.setAttribute('src', NEXT_SMOKE_SRC);
+      // Reload and attempt to play: use promises to avoid race conditions
+      video.load();
+      try {
+        await video.play();
+      } catch(e){
+        // autoplay blocked; leave paused — user interaction will resume
+      }
+    }
+
+    // Remove flipping transform and sheen; resume bobbing after a tiny delay
+    video.classList.remove('glitchFlip');
+    overlay.classList.remove('glitching');
+
+    // Ensure bobbing animation restarts (force reflow)
+    video.style.animation = 'none';
+    void video.offsetWidth;
+    video.style.animation = '';
+
+    // show headline/splats while video stabilizes (optional)
+    showHeadlineAndSplats();
+
+    // hold headline for SURGE_MS then hide
+    setTimeout(()=>{ hideHeadlineAndSplats(); video._flipRunning = false; }, SURGE_MS);
+  }
+
+  // Option: trigger sequence automatically near video end (so flip happens between loops)
+  // Listen for timeupdate and trigger when remaining is small
+  function onTimeUpdate(){
+    if(video._flipRunning) return;
+    if(!video.duration || isNaN(video.duration)) return;
+    const remaining = video.duration - video.currentTime;
+    if(remaining <= TRIGGER_BEFORE_END){
+      // Run the flip/swap sequence
+      runFlipSwapSequence().catch(()=>{ video._flipRunning = false; });
+    }
+  }
+
+  video.addEventListener('timeupdate', onTimeUpdate);
+
+  // Also expose manual trigger for console/testing
+  window.triggerSmokeFlip = function(){
+    runFlipSwapSequence().catch(()=>{ video._flipRunning = false; });
+  };
+
+  // Menu toggle logic (menu remains above smoke)
   function openMenu(open){
     if(open){
       anarchyMenu.classList.add('open'); anarchyMenu.setAttribute('aria-hidden','false'); anarchyBtn.setAttribute('aria-expanded','true');
@@ -191,11 +263,11 @@
   document.addEventListener('click', (e)=>{ if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) openMenu(false); });
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') openMenu(false); });
 
-  // try unlock autoplay on click
+  // Try to unlock autoplay on first interaction
   document.addEventListener('click', ()=>{ if(video.paused) video.play().catch(()=>{}); });
 
-  // ensure only single smoke exists after load (sanity)
-  window.addEventListener('load', ()=>{ const vids = document.querySelectorAll('video#smokeVideo'); if(vids.length>1) vids.forEach((v,i)=>{ if(i>0) v.remove(); }); });
+  // Small safeguard: if NEXT_SMOKE_SRC not available, we still show headline/splats on flip and resume video
+  // This is handled by the catch/flow above.
 })();
 </script>
 </body>
