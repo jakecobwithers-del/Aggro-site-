@@ -3,64 +3,69 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — Join the Fight (Polished + Menu)</title>
+<title>Aggro PvP — Join the Fight (Fixed)</title>
 <style>
   :root{
     --red:#ff2b2b;
-    --splat-opacity:0.66;
-    --surge-ms:2600;
+    --splat-opacity:0.62; /* see-through splats */
+    --surge-ms:2600;      /* how long surge visuals hold */
     --punch-ms:140;
-    --panel-alpha:0.30;
+    --panel-alpha:0.30;   /* headline panel darkness */
   }
 
-  /* Font */
+  /* FONT */
   @font-face{
     font-family:'DayZFont';
     src: url('28 Days Later.ttf') format('truetype');
     font-display:swap;
   }
-  html,body{height:100%;margin:0;background:#000;color:#fff;font-family:'DayZFont',system-ui,Segoe UI,Roboto,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
 
-  /* Background video */
-  #smoke-overlay{position:fixed;inset:0;z-index:10;pointer-events:none}
+  html,body{
+    height:100%;margin:0;background:#000;color:#fff;
+    font-family:'DayZFont', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing:antialiased;overflow:hidden;
+  }
+
+  /* BACKGROUND VIDEO (lowest) */
+  #smoke-overlay{position:fixed;inset:0;z-index:5;pointer-events:none}
   #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:0.62;mix-blend-mode:screen;filter:blur(5px) saturate(1.05);transition:filter 160ms linear}
   #smokeVideo.redHue{filter: blur(5px) saturate(1.45) hue-rotate(-42deg) contrast(1.06)}
 
-  /* Logo / CTAs */
+  /* LOGO + CTAS (above video) */
   #logo{position:fixed;top:9vh;left:50%;transform:translateX(-50%);z-index:60}
-  #logo img{width:min(360px,40vw);filter:drop-shadow(0 18px 40px rgba(0,0,0,0.75))}
+  #logo img{width:min(360px,40vw);filter:drop-shadow(0 18px 40px rgba(0,0,0,0.75));display:block}
   .widget-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:36px;z-index:60;display:flex;flex-direction:column;gap:12px;align-items:center}
   .cta{padding:12px 24px;border-radius:10px;color:#fff;text-decoration:none;font-weight:800}
   .primary{background:var(--red)}.secondary{background:#5865F2}
 
-  /* Anarchy menu button + menu */
+  /* ANARCHY MENU (topmost UI) */
   .anarchyBtn{
-    position:fixed;top:18px;right:18px;z-index:1200;background:transparent;border:0;padding:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter: blur(2px);
+    position:fixed;top:18px;right:18px;z-index:1300;background:transparent;border:0;padding:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter: blur(2px);
   }
-  .anarchyBtn img{width:56px;height:56px;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.8))}
+  .anarchyBtn img{width:56px;height:56px;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.8));display:block}
   .anarchyMenu{
-    position:fixed;top:86px;right:18px;z-index:1200;display:none;flex-direction:column;gap:8px;padding:10px;background: rgba(10,10,10,0.95);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.6);min-width:180px;
+    position:fixed;top:86px;right:18px;z-index:1300;display:none;flex-direction:column;gap:8px;padding:10px;background: rgba(10,10,10,0.98);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.6);min-width:180px;
   }
   .anarchyMenu.open{display:flex}
   .anarchyMenu a{color:#fff;text-decoration:none;padding:8px 10px;border-radius:6px;font-weight:700;font-size:14px}
-  .anarchyMenu a:hover{background:rgba(255,255,255,0.03);transform:translateX(4px);transition:transform 140ms ease}
+  .anarchyMenu a:hover{background:rgba(255,255,255,0.03);transform:translateX(6px);transition:transform 140ms ease}
 
-  /* Screen effects */
-  .effects{position:fixed;inset:0;pointer-events:none;z-index:420}
+  /* SCREEN EFFECTS (mid layers) */
+  .effects{position:fixed;inset:0;pointer-events:none;z-index:110}
   .grain{position:absolute;inset:0;opacity:0.11;background-image:
      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-     linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);background-size:3px 3px,3px 3px;mix-blend-mode:overlay;animation:grain 6s steps(8) infinite}
+     linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+     background-size:3px 3px,3px 3px;mix-blend-mode:overlay;animation:grain 6s steps(8) infinite}
   @keyframes grain{0%{transform:translate(0,0)}50%{transform:translate(1px,-1px)}100%{transform:translate(0,0)}}
   .vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 28%, rgba(0,0,0,0.68) 100%);mix-blend-mode:multiply}
   .rgb-split{position:absolute;inset:0;opacity:0;mix-blend-mode:screen;transition:opacity 80ms linear;filter:contrast(1.02)}
   .rgb-split.show{opacity:1}
 
-  /* Red static */
-  #redStatic{position:fixed;inset:0;z-index:600;pointer-events:none;background:linear-gradient(180deg, rgba(255,24,24,0.08), rgba(255,16,16,0.04));opacity:0;transition:opacity 80ms linear;mix-blend-mode:screen}
+  #redStatic{position:fixed;inset:0;z-index:160;pointer-events:none;background:linear-gradient(180deg, rgba(255,24,24,0.08), rgba(255,16,16,0.04));opacity:0;transition:opacity 80ms linear;mix-blend-mode:screen}
   #redStatic.show{opacity:1}
 
-  /* Surge layer (PNG splats + headline panel) */
-  #surge{position:fixed;inset:0;z-index:700;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 120ms linear}
+  /* SURGE LAYER (splats + visuals) - sits above effects but below headline & menu */
+  #surge{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 120ms linear}
   #surge.show{opacity:1}
   .splat{position:absolute;pointer-events:none;will-change:transform,opacity,filter;mix-blend-mode:multiply;opacity:var(--splat-opacity);filter:contrast(1.05) saturate(1.08) drop-shadow(0 12px 28px rgba(0,0,0,0.7))}
   .splat.left{top:6%;left:4%;width:420px;transform:rotate(-26deg)}
@@ -72,8 +77,8 @@
     radial-gradient(circle at 24% 26%, rgba(255,255,255,0.16), transparent 16%),
     radial-gradient(circle at 74% 74%, rgba(255,255,255,0.06), transparent 24%);border-radius:6px}
 
-  /* Headline panel */
-  .headline-wrap{position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:8vh 6vw}
+  /* HEADLINE PANEL (top of surge; menu z-index 1300 keeps it above) */
+  .headline-wrap{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:8vh 6vw}
   .headline-panel{
     display:inline-flex;align-items:center;justify-content:center;gap:14px;background:linear-gradient(180deg, rgba(0,0,0,var(--panel-alpha)), rgba(0,0,0,calc(var(--panel-alpha) + 0.02)));backdrop-filter: blur(6px) saturate(0.9);padding:20px 32px;border-radius:10px;box-shadow:0 18px 60px rgba(0,0,0,0.7);
   }
@@ -84,7 +89,7 @@
   @keyframes headPop{0%{opacity:0;transform:translateY(18px) scale(0.98)}8%{opacity:1;transform:translateY(0) scale(1.06)}70%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-8px) scale(0.98)}}
   @keyframes accentPop{0%{opacity:0;transform:translateY(6px) scaleY(0.85)}60%{opacity:1;transform:translateY(0) scaleY(1)}100%{opacity:1;transform:translateY(0) scaleY(1)}}
 
-  /* responsive */
+  /* small screen */
   @media(max-width:520px){
     #headline{font-size:15vw;letter-spacing:3px;-webkit-text-stroke:1.6px;white-space:normal}
     .splat.left{width:260px;top:4%;left:2%}
@@ -97,7 +102,7 @@
 </head>
 <body>
 
-  <!-- Anarchy menu button + menu -->
+  <!-- Anarchy menu button + menu (topmost) -->
   <button id="anarchyBtn" class="anarchyBtn" aria-expanded="false" aria-controls="anarchyMenu" title="Menu">
     <img src="anarchy.png" alt="Menu">
   </button>
@@ -116,24 +121,24 @@
     <a class="cta secondary" href="https://discord.gg/gSwkVzJyMT" target="_blank">Join the Community</a>
   </div>
 
-  <!-- Smoke video -->
+  <!-- Smoke background -->
   <div id="smoke-overlay" aria-hidden="true">
     <video id="smokeVideo" autoplay muted playsinline preload="auto">
       <source src="Smoke.mp4?v=1" type="video/mp4">
     </video>
   </div>
 
-  <!-- Screen effects -->
+  <!-- Effects -->
   <div class="effects" aria-hidden="true">
     <div class="grain"></div>
     <div class="vignette"></div>
     <div class="rgb-split" id="rgbSplit"></div>
   </div>
 
-  <!-- Red static -->
+  <!-- red static -->
   <div id="redStatic" aria-hidden="true"></div>
 
-  <!-- Surge overlays using your PNGs -->
+  <!-- Surge overlay (PNG splats) -->
   <div id="surge" aria-hidden="true">
     <div class="splat left" id="splatLeft" aria-hidden="true">
       <img src="blood.png" alt="" style="width:100%;height:auto;display:block">
@@ -145,7 +150,7 @@
     </div>
   </div>
 
-  <!-- Polished headline panel -->
+  <!-- Headline panel (above surge) -->
   <div class="headline-wrap">
     <div class="headline-panel" id="headlinePanel" aria-hidden="true">
       <div class="accent" id="accentBar" aria-hidden="true"></div>
@@ -172,13 +177,13 @@
   const SURGE_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--surge-ms')) || 2600;
   const PUNCH_MS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--punch-ms')) || 140;
 
-  /* Ensure video metadata */
+  /* Ensure video metadata available */
   function ensureMeta(cb){
     if (video.duration && !isNaN(video.duration)) return cb();
     video.addEventListener('loadedmetadata', cb, { once:true });
   }
 
-  /* Try autoplay if blocked */
+  /* Try autoplay */
   if (video.paused) video.play().catch(()=>{});
 
   /* Trigger surge before video ends */
@@ -193,44 +198,45 @@
     });
   });
 
-  /* Manual loop reset */
+  /* Loop safety */
   video.addEventListener('ended', ()=>{
     video._surgeTriggered = false;
     video.currentTime = 0;
     video.play().catch(()=>{});
   });
 
-  /* Run surge and keep headline panel visible for SURGE_MS */
+  /* Surge function: keeps headline panel visible until SURGE_MS completes */
   function runSurgeKeepPanel(){
+    // tint video
     video.classList.add('redHue');
+
+    // quick rgb + red flash
     rgbSplit.classList.add('show');
     redStatic.classList.add('show');
 
+    // show splats
     surge.classList.remove('show');
     void surge.offsetWidth;
     surge.classList.add('show');
     surge.setAttribute('aria-hidden','false');
+    splatLeft.style.opacity = ''; splatRight.style.opacity = '';
 
-    // ensure splat opacity present
-    splatLeft.style.opacity = '';
-    splatRight.style.opacity = '';
-
-    // headline panel animations
+    // show headline panel and run animations
     headlinePanel.setAttribute('aria-hidden','false');
     headlinePanel.classList.add('show-panel');
     void headlinePanel.offsetWidth;
     headline.style.animation = `headPop ${SURGE_MS}ms cubic-bezier(.2,.9,.3,1) forwards`;
     accent.style.animation = `accentPop 420ms cubic-bezier(.2,.9,.3,1) forwards`;
 
-    // short screen shake
+    // quick screen shake
     document.body.style.transition = 'transform 160ms cubic-bezier(.2,.9,.3,1)';
     document.body.style.transform = 'translateY(-6px) rotate(-0.35deg)';
     setTimeout(()=>{ document.body.style.transform = ''; }, PUNCH_MS);
 
-    // clear punch overlays quick
+    // clear punch overlays fast
     setTimeout(()=>{ redStatic.classList.remove('show'); rgbSplit.classList.remove('show'); }, PUNCH_MS + 10);
 
-    // clear visuals after SURGE_MS
+    // keep everything until SURGE_MS finishes
     setTimeout(()=>{
       video.classList.remove('redHue');
       surge.classList.remove('show');
@@ -241,11 +247,12 @@
       headline.style.animation = '';
       accent.style.animation = '';
 
+      // tiny buffer then allow next trigger
       setTimeout(()=>{ video._surgeTriggered = false; }, 200);
     }, SURGE_MS);
   }
 
-  /* Expose manual trigger for console */
+  /* Expose manual triggers for console */
   window.triggerSurge = runSurgeKeepPanel;
   window.showPolishedHeadline = (ms=SURGE_MS) => {
     headlinePanel.setAttribute('aria-hidden','false');
@@ -261,7 +268,7 @@
     }, ms+40);
   };
 
-  /* Anarchy menu behavior */
+  /* Anarchy menu: toggle, close outside, escape key */
   function openMenu(open){
     if(open){
       anarchyMenu.classList.add('open');
@@ -279,7 +286,7 @@
   document.addEventListener('click', (e)=>{ if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) openMenu(false); });
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') openMenu(false); });
 
-  /* click to un-block autoplay */
+  /* click to allow autoplay if blocked */
   document.addEventListener('click', ()=>{ if(video.paused) video.play().catch(()=>{}); });
 })();
 </script>
