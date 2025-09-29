@@ -39,6 +39,23 @@
       filter: blur(6px) saturate(1.05);
     }
 
+    /* Red tint layer */
+    #smoke-overlay::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255, 0, 0, 0.25);
+      mix-blend-mode: screen;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      z-index: 999998;
+    }
+
+    #smoke-overlay.redSurge::after {
+      opacity: 1;
+    }
+
     /* Logo */
     #logo {
       position: relative;
@@ -60,7 +77,7 @@
       animation: pulseLogo 2.5s ease-in-out infinite;
     }
 
-    /* Bottom buttons */
+    /* Buttons */
     .widget-bar {
       position: fixed;
       bottom: 40px;
@@ -152,63 +169,25 @@
       background: rgba(255, 0, 0, 0.2);
     }
 
-    /* Glitch effect */
-    @keyframes screenGlitch {
-      0%   { transform: none; filter: none; }
-      10%  { transform: scale(1.08) rotate(2deg); filter: hue-rotate(120deg) contrast(2.5); }
-      25%  { transform: scale(0.92) rotate(-3deg); filter: invert(1) grayscale(1); }
-      40%  { transform: scale(1.12); filter: brightness(1.8) saturate(1.4); }
-      55%  { transform: scale(0.90) rotate(2deg); filter: hue-rotate(-90deg) contrast(3); }
-      70%  { transform: scale(1.05); filter: sepia(1); }
-      85%  { transform: scale(1.02); filter: none; }
-      100% { transform: none; filter: none; }
-    }
-
-    body.glitching,
-    #logo.glitching img,
-    .anarchyBtn.glitching img,
-    .anarchyMenu.glitching,
-    #smoke-overlay.glitching video {
-      animation: screenGlitch 0.8s ease-in-out;
-    }
-
-    /* Red static overlay with bold top text */
+    /* Glitch overlay with blood splatter */
     #glitchOverlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(255, 0, 0, 0.08),
-        rgba(255, 0, 0, 0.08) 2px,
-        rgba(0, 0, 0, 0.08) 2px,
-        rgba(0, 0, 0, 0.08) 4px
-      );
-      mix-blend-mode: screen;
-      z-index: 1000003;
       display: flex;
       align-items: flex-start;
       justify-content: center;
+      padding-top: 10vh;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 0.3s ease;
-      padding-top: 10vh;
+      transition: opacity 0.5s ease;
+      z-index: 1000000;
     }
 
     #glitchOverlay.show {
       opacity: 1;
-    }
-
-    #glitchOverlay.show h1 {
-      animation: fadeOutText 2.2s forwards;
-    }
-
-    @keyframes fadeOutText {
-      0% { opacity: 1; }
-      80% { opacity: 1; }
-      100% { opacity: 0; }
     }
 
     #glitchOverlay h1 {
@@ -218,6 +197,23 @@
       letter-spacing: 6px;
       text-align: center;
       font-weight: bold;
+      animation: fadeOutText 2.5s forwards;
+    }
+
+    @keyframes fadeOutText {
+      0% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .bloodSplatter {
+      position: absolute;
+      top: 5vh;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      opacity: 0.9;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -244,26 +240,25 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-    <!-- Smoke overlay -->
+  <!-- Smoke overlay -->
   <div id="smoke-overlay" aria-hidden="true">
-    <video autoplay muted playsinline preload="auto" id="smokeVideo">
+    <video autoplay muted loop playsinline preload="auto" id="smokeVideo">
       <source src="Smoke.mp4?v=1" type="video/mp4">
     </video>
   </div>
 
-  <!-- Red static overlay with bold top text -->
+  <!-- Red surge + blood splatter -->
   <div id="glitchOverlay" aria-hidden="true">
+    <img src="blood.png" alt="" class="bloodSplatter">
     <h1>JOIN THE FIGHT</h1>
   </div>
 
   <script>
     const smokeVideo = document.getElementById('smokeVideo');
     const smokeOverlay = document.getElementById('smoke-overlay');
-    const logo = document.getElementById('logo');
-    const widgetBar = document.getElementById('widgetBar');
-    const anarchyBtn = document.querySelector('.anarchyBtn');
-    const anarchyMenu = document.getElementById('anarchyMenu');
     const glitchOverlay = document.getElementById('glitchOverlay');
+    const anarchyBtn = document.getElementById('anarchyBtn');
+    const anarchyMenu = document.getElementById('anarchyMenu');
 
     // Handle smoke video errors
     smokeVideo.addEventListener('error', () => {
@@ -271,45 +266,34 @@
       smokeOverlay.style.display = 'none';
     });
 
-    // Trigger glitch when smoke video loops
+    // Trigger red surge + blood splatter when smoke loops
     smokeVideo.addEventListener('ended', () => {
       smokeVideo.currentTime = 0;
       smokeVideo.play();
-      triggerGlitch();
+      triggerSurge();
     });
 
-    // Glitch logic
-    const triggerGlitch = () => {
-      document.body.classList.add('glitching');
-      logo.classList.add('glitching');
-      anarchyBtn.classList.add('glitching');
-      anarchyMenu.classList.add('glitching');
-      smokeOverlay.classList.add('glitching');
+    const triggerSurge = () => {
+      smokeOverlay.classList.add('redSurge');
       glitchOverlay.classList.add('show');
 
       setTimeout(() => {
-        document.body.classList.remove('glitching');
-        logo.classList.remove('glitching');
-        anarchyBtn.classList.remove('glitching');
-        anarchyMenu.classList.remove('glitching');
-        smokeOverlay.classList.remove('glitching');
+        smokeOverlay.classList.remove('redSurge');
         glitchOverlay.classList.remove('show');
-      }, 2200);
+      }, 2500);
     };
 
     // Anarchy menu toggle
-    const anarchyBtnEl = document.getElementById('anarchyBtn');
-    const anarchyMenuEl = document.getElementById('anarchyMenu');
-    anarchyBtnEl.addEventListener('click', () => {
-      const open = anarchyMenuEl.classList.toggle('open');
-      anarchyMenuEl.setAttribute('aria-hidden', (!open).toString());
+    anarchyBtn.addEventListener('click', () => {
+      const open = anarchyMenu.classList.toggle('open');
+      anarchyMenu.setAttribute('aria-hidden', (!open).toString());
     });
 
     // Close menu on outside click
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) {
-        anarchyMenuEl.classList.remove('open');
-        anarchyMenuEl.setAttribute('aria-hidden', 'true');
+        anarchyMenu.classList.remove('open');
+        anarchyMenu.setAttribute('aria-hidden', 'true');
       }
     });
   </script>
