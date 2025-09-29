@@ -26,7 +26,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: 999999;
+      z-index: 900;
       pointer-events: none;
     }
 
@@ -48,18 +48,66 @@
       background: rgba(255, 0, 0, 0.25);
       mix-blend-mode: screen;
       opacity: 0;
-      transition: opacity 0.8s ease;
-      z-index: 999998;
+      transition: opacity 1s ease;
+      z-index: 901;
     }
 
     #smoke-overlay.redSurge::after {
       opacity: 1;
     }
 
+    /* Blood splatter overlay */
+    #surgeOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 950;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    #surgeOverlay.show {
+      opacity: 1;
+    }
+
+    .bloodSplatter {
+      position: absolute;
+      width: 300px;
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .blood1 { top: 20%; left: 30%; transform: rotate(-10deg); }
+    .blood2 { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1.2); }
+    .blood3 { bottom: 15%; right: 25%; transform: rotate(15deg); }
+
+    #surgeOverlay h1 {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ff0000;
+      font-family: 'DayZFont', sans-serif;
+      font-size: 9vw;
+      letter-spacing: 6px;
+      text-align: center;
+      font-weight: bold;
+      animation: fadeOutText 2.5s forwards;
+    }
+
+    @keyframes fadeOutText {
+      0% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
     /* Logo */
     #logo {
       position: relative;
-      z-index: 1000;
+      z-index: 100;
       width: 100vw;
       text-align: center;
       top: 30vh;
@@ -83,7 +131,7 @@
       bottom: 40px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 1000;
+      z-index: 100;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -113,108 +161,6 @@
       background: #5865F2;
       box-shadow: 0 6px 12px rgba(0,0,0,0.6), 0 0 8px rgba(88,101,242,0.3);
     }
-
-    /* Anarchy icon */
-    .anarchyBtn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000001;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-    }
-
-    .anarchyBtn img {
-      width: 72px;
-      height: 72px;
-      filter: drop-shadow(0 0 12px rgba(255,0,0,0.9));
-    }
-
-    /* Popup menu */
-    .anarchyMenu {
-      position: fixed;
-      top: 110px;
-      right: 20px;
-      z-index: 1000001;
-      background: rgba(0, 0, 0, 0.98);
-      padding: 16px;
-      border-radius: 12px;
-      display: none;
-      flex-direction: column;
-      gap: 14px;
-      box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
-      border: 1px solid rgba(255, 0, 0, 0.2);
-      font-family: 'DayZFont', sans-serif;
-      font-size: 18px;
-      letter-spacing: 1.5px;
-    }
-
-    .anarchyMenu.open {
-      display: flex;
-    }
-
-    .anarchyMenu a {
-      color: #f2f2f2;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 10px 14px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .anarchyMenu a:hover {
-      background: rgba(255, 0, 0, 0.2);
-    }
-
-    /* Glitch overlay with blood splatter */
-    #glitchOverlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding-top: 10vh;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      z-index: 1000000;
-    }
-
-    #glitchOverlay.show {
-      opacity: 1;
-    }
-
-    #glitchOverlay h1 {
-      color: #ff0000;
-      font-family: 'DayZFont', sans-serif;
-      font-size: 9vw;
-      letter-spacing: 6px;
-      text-align: center;
-      font-weight: bold;
-      animation: fadeOutText 2.5s forwards;
-    }
-
-    @keyframes fadeOutText {
-      0% { opacity: 1; }
-      80% { opacity: 1; }
-      100% { opacity: 0; }
-    }
-
-    .bloodSplatter {
-      position: absolute;
-      top: 5vh;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 300px;
-      opacity: 0.9;
-      pointer-events: none;
-    }
   </style>
 </head>
 <body>
@@ -223,50 +169,36 @@
     <img src="Aggro-logo.PNG" alt="Aggro PvP Logo">
   </div>
 
-  <div class="widget-bar" id="widgetBar">
+  <div class="widget-bar">
     <a href="steam://connect/103.193.80.64:3436" class="redBtn">Connect to Server</a>
     <a href="https://discord.gg/gSwkVzJyMT" target="_blank" class="blueBtn">Join the Community</a>
   </div>
 
-  <button class="anarchyBtn" id="anarchyBtn">
-    <img src="anarchy.png" alt="Anarchy Menu">
-  </button>
-
-  <nav class="anarchyMenu" id="anarchyMenu" aria-hidden="true">
-    <a href="rules.html">Rules</a>
-    <a href="support.html">Support</a>
-    <a href="donate.html">Donate</a>
-    <a href="killfeed.html">Kill Feed</a>
-    <a href="leaderboard.html">Leaderboard</a>
-  </nav>
-
   <!-- Smoke overlay -->
-  <div id="smoke-overlay" aria-hidden="true">
+  <div id="smoke-overlay">
     <video autoplay muted loop playsinline preload="auto" id="smokeVideo">
       <source src="Smoke.mp4?v=1" type="video/mp4">
     </video>
   </div>
 
-  <!-- Red surge + blood splatter -->
-  <div id="glitchOverlay" aria-hidden="true">
-    <img src="blood.png" alt="" class="bloodSplatter">
+  <!-- Red surge + blood splatter + text -->
+  <div id="surgeOverlay">
+    <img src="blood1.png" class="bloodSplatter blood1" alt="">
+    <img src="blood2.png" class="bloodSplatter blood2" alt="">
+    <img src="blood3.png" class="bloodSplatter blood3" alt="">
     <h1>JOIN THE FIGHT</h1>
   </div>
 
   <script>
     const smokeVideo = document.getElementById('smokeVideo');
     const smokeOverlay = document.getElementById('smoke-overlay');
-    const glitchOverlay = document.getElementById('glitchOverlay');
-    const anarchyBtn = document.getElementById('anarchyBtn');
-    const anarchyMenu = document.getElementById('anarchyMenu');
+    const surgeOverlay = document.getElementById('surgeOverlay');
 
-    // Handle smoke video errors
     smokeVideo.addEventListener('error', () => {
       console.warn('Smoke video failed to load');
       smokeOverlay.style.display = 'none';
     });
 
-    // Trigger red surge + blood splatter when smoke loops
     smokeVideo.addEventListener('ended', () => {
       smokeVideo.currentTime = 0;
       smokeVideo.play();
@@ -275,29 +207,14 @@
 
     const triggerSurge = () => {
       smokeOverlay.classList.add('redSurge');
-      glitchOverlay.classList.add('show');
+      surgeOverlay.classList.add('show');
 
       setTimeout(() => {
         smokeOverlay.classList.remove('redSurge');
-        glitchOverlay.classList.remove('show');
+        surgeOverlay.classList.remove('show');
       }, 2500);
     };
-
-    // Anarchy menu toggle
-    anarchyBtn.addEventListener('click', () => {
-      const open = anarchyMenu.classList.toggle('open');
-      anarchyMenu.setAttribute('aria-hidden', (!open).toString());
-    });
-
-    // Close menu on outside click
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) {
-        anarchyMenu.classList.remove('open');
-        anarchyMenu.setAttribute('aria-hidden', 'true');
-      }
-    });
   </script>
 
 </body>
 </html>
-
