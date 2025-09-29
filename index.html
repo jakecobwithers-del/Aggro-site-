@@ -108,3 +108,34 @@
 
   <!-- Smoke overlay -->
   <div id="smoke-overlay" aria-hidden="true">
+    <video autoplay loop muted playsinline preload="auto" id="smokeVideo">
+      <source src="smoke.mp4?v=1" type="video/mp4">
+    </video>
+  </div>
+
+  <script>
+    // Menu toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const menu = document.getElementById('menu');
+    menuBtn.addEventListener('click', () => {
+      const open = menu.classList.toggle('open');
+      menu.setAttribute('aria-hidden', (!open).toString());
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.menuBtn') && !e.target.closest('.menu')) {
+        menu.classList.remove('open');
+        menu.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    // Fallback if video fails
+    const smokeVideo = document.getElementById('smokeVideo');
+    const smokeOverlay = document.getElementById('smoke-overlay');
+    smokeVideo.addEventListener('error', () => {
+      console.warn('Smoke video failed to load');
+      smokeOverlay.style.display = 'none';
+    });
+  </script>
+
+</body>
+</html>
