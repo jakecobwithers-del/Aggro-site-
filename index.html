@@ -62,7 +62,8 @@
     position: fixed; top: 45%; left: 50%;
     transform: translate(-50%, -50%);
     font-size: clamp(28px, 9vw, 80px);
-    color: #fff; letter-spacing: 0.2em;
+    color: #fff; letter-spacing: 0.15em;
+    white-space: nowrap; /* keep phrase together */
     text-align: center;
     text-shadow: 0 0 15px rgba(255,0,0,0.6), 0 0 25px rgba(0,0,0,0.8);
     z-index: 2000;
@@ -80,16 +81,18 @@
   #bloodTop {
     top: 0; left: -100%;
     width: 100%; max-height: 160px;
+    transform: skewY(-3deg) scale(1.05);
   }
   #bloodBottom {
     bottom: 0; right: -100%;
     width: 100%; max-height: 160px;
+    transform: skewY(3deg) scale(1.05);
   }
   .bloodSweep.showTop {
-    animation: sweepTop 1.2s ease forwards;
+    animation: sweepTop 1.5s ease forwards;
   }
   .bloodSweep.showBottom {
-    animation: sweepBottom 1.2s ease forwards;
+    animation: sweepBottom 1.5s ease forwards;
   }
   @keyframes sweepTop {
     0%   { opacity: 0; left: -100%; }
@@ -106,7 +109,7 @@
   @media (max-width: 600px) {
     #logo { top: 3vh; }
     #logo img { max-width: 50vw; }
-    #joinText { font-size: clamp(20px, 8vw, 36px); letter-spacing: 0.12em; }
+    #joinText { font-size: clamp(20px, 8vw, 36px); letter-spacing: 0.1em; }
     #bloodTop, #bloodBottom { max-height: 100px; }
   }
 </style>
@@ -127,7 +130,7 @@
 <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
 
 <!-- Headline -->
-<div id="joinText">J O I N&nbsp;&nbsp;T H E&nbsp;&nbsp;F I G H T</div>
+<div id="joinText">JOIN THE FIGHT</div>
 
 <!-- Blood sweeps -->
 <img id="bloodTop" class="bloodSweep" src="blood1.png" alt="">
@@ -155,7 +158,7 @@
 
     // Trigger blood sweeps
     bloodTop.classList.add('showTop');
-    setTimeout(()=> bloodBottom.classList.add('showBottom'), 300);
+    setTimeout(()=> bloodBottom.classList.add('showBottom'), 400);
 
     // Reset after a few seconds
     setTimeout(()=>{
@@ -163,7 +166,7 @@
       smoke.classList.remove('effect');
       bloodTop.classList.remove('showTop');
       bloodBottom.classList.remove('showBottom');
-    }, 3000);
+    }, 3500);
   }
 
   // Trigger at end of smoke loop
