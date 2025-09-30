@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Aggro PvP — JOIN THE FIGHT</title>
   <style>
-    /* Variables */
     :root {
       --bg: #050505;
       --red: #ff1a1a;
@@ -16,15 +15,18 @@
       --z-head: 4500;
       --z-blood: 4700;
       --z-vfx: 4900;
+      --cycle: 3000ms;       /* full loop length */
     }
 
-    /* Reset & Base */
+    /* RESET & BASE */
     *, *::before, *::after { box-sizing: border-box }
     html, body {
       margin: 0; padding: 0;
       width: 100%; height: 100%;
-      background: var(--bg); overflow: hidden;
-      font-family: "28Days", sans-serif; color: #fff;
+      background: var(--bg);
+      overflow: hidden;
+      font-family: "28Days", sans-serif;
+      color: #fff;
     }
     @font-face {
       font-family: "28Days";
@@ -40,22 +42,21 @@
       z-index: var(--z-menu);
     }
     .anarchyBtn img {
-      width: 72px; height: 72px;
+      width: 68px; height: 68px;
       transition: transform .2s;
     }
     .anarchyBtn:hover img { transform: scale(1.1) }
     .anarchyMenu {
       position: fixed; top: 100px; right: 14px;
       display: none; flex-direction: column;
-      padding: 14px; background: var(--menu-bg);
+      padding: 12px; background: var(--menu-bg);
       border-radius: var(--radius);
-      border: 1px solid rgba(255,0,0,0.18);
       z-index: var(--z-menu);
     }
     .anarchyMenu.open { display: flex }
     .anarchyMenu a {
-      color: #ffdede; font-weight: 800; font-size: 18px;
-      padding: 12px 16px; text-decoration: none;
+      color: #ffdede; font-weight: 800; font-size: 16px;
+      padding: 10px 14px; text-decoration: none;
     }
 
     /* LOGO (center-top) */
@@ -66,7 +67,7 @@
     }
     #logo img { max-width: 30vw; height: auto }
 
-    /* SMOKE BACKGROUND (looping video) */
+    /* SMOKE BACKGROUND (looping) */
     #smoke-wrap {
       position: fixed; inset: 0;
       pointer-events: none;
@@ -78,7 +79,7 @@
     }
 
     /* RED SCREEN FLASH */
-    .red-overlay {
+    #redOverlay {
       position: fixed; inset: 0;
       background: var(--red);
       pointer-events: none;
@@ -87,34 +88,25 @@
       z-index: var(--z-vfx);
       animation-fill-mode: both;
     }
-    .redFlash {
-      animation: redFlashAnim 0.6s ease-out both;
-    }
-    @keyframes redFlashAnim {
+    @keyframes redFlash {
       0%   { opacity: 0 }
-      10%  { opacity: .5 }
-      40%  { opacity: 0 }
+      10%  { opacity: 0.6 }
+      30%  { opacity: 0 }
       100% { opacity: 0 }
     }
 
-    /* VFX OVERLAY (flicker/pulse) */
+    /* VFX FLICKER */
     .vfx {
       position: fixed; inset: 0;
-      z-index: var(--z-vfx); pointer-events: none;
-    }
-    .vfx .pulse {
-      position: absolute; inset: 0;
-      background: radial-gradient(circle at 50% 45%,
-        rgba(255,40,40,0.06), transparent 40%);
-      opacity: 0; mix-blend-mode: screen;
-      transition: opacity 220ms linear;
+      pointer-events: none;
+      z-index: var(--z-vfx);
     }
     .vfx .flicker {
       position: absolute; inset: 0;
       mix-blend-mode: screen; opacity: 0;
     }
 
-    /* HEADLINE TEXT */
+    /* HEADLINE */
     #headline {
       position: fixed; top: 42vh; left: 50%;
       transform: translateX(-50%);
@@ -124,31 +116,31 @@
     .headlineText {
       display: inline-block;
       font-size: clamp(48px,14vw,136px);
-      line-height: .95; letter-spacing: .12em;
+      line-height: 0.9; letter-spacing: .12em;
       color: #fff; opacity: 0;
-      will-change: transform, opacity, filter;
       position: relative;
+      will-change: transform, opacity;
+    }
+    @keyframes impact {
+      0%   { opacity: 0; transform: scale(0.8) }
+      30%  { opacity: 1; transform: scale(1.2) }
+      70%  { opacity: 1; transform: scale(1) }
+      100% { opacity: 0 }
+    }
+    @keyframes glitch {
+      0%,100% { clip: rect(0,9999px,0,0) }
+      20%     { clip: rect(20px,9999px,40px,0) }
+      40%     { clip: rect(50px,9999px,70px,0) }
+      60%     { clip: rect(10px,9999px,30px,0) }
+      80%     { clip: rect(60px,9999px,80px,0) }
     }
     .headlineText.impact {
-      animation: headlineImpact 0.8s ease-out both;
-    }
-    @keyframes headlineImpact {
-      0%   { opacity: 0; transform: scale(0.8) }
-      50%  { opacity: 1; transform: scale(1.05) }
-      100% { opacity: 1; transform: scale(1) }
+      animation: impact 1s ease-out both;
     }
     .headlineText.glitch,
     .headlineText.glitch::before,
     .headlineText.glitch::after {
-      animation: textGlitch 0.5s steps(2) both;
-    }
-    @keyframes textGlitch {
-      0%   { clip: rect(0,9999px,0,0) }
-      20%  { clip: rect(20px,9999px,40px,0) }
-      40%  { clip: rect(50px,9999px,70px,0) }
-      60%  { clip: rect(10px,9999px,30px,0) }
-      80%  { clip: rect(60px,9999px,80px,0) }
-      100% { clip: rect(0,9999px,0,0) }
+      animation: glitch 0.6s steps(2) both;
     }
     .headlineText.glitch::before,
     .headlineText.glitch::after {
@@ -160,42 +152,19 @@
     .headlineText.glitch::before { color: #ff4b4b; left: 2px }
     .headlineText.glitch::after  { color: #7fb7ff; left: -2px }
 
-    /* CIRCLE BLOOD EFFECT */
-    .bloodCircle {
+    /* BLOOD CIRCLE ONLY */
+    #bloodCircle {
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%,-50%) scale(0);
       opacity: 0; width: 200px; height: 200px;
-      z-index: var(--z-blood); pointer-events: none;
-      animation-fill-mode: both;
-    }
-    .bloodCircleIn {
-      animation: bloodCircleIn 1s ease-out both;
-    }
-    @keyframes bloodCircleIn {
-      0%   { transform: translate(-50%,-50%) scale(0); opacity: 0 }
-      40%  { transform: translate(-50%,-50%) scale(1); opacity: 1 }
-      100% { transform: translate(-50%,-50%) scale(1.3); opacity: 0 }
-    }
-
-    /* SPLASH BLOOD BACKGROUND */
-    .bloodSplash {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-      width: 120%; max-width: 1500px;
-      opacity: 0; mix-blend-mode: multiply;
-      filter: brightness(1.2) blur(1px);
-      z-index: calc(var(--z-blood) - 1);
+      z-index: var(--z-blood);
       pointer-events: none;
       animation-fill-mode: both;
     }
-    .bloodSplashIn {
-      animation: bloodSplashIn 1s ease-out both;
-    }
-    @keyframes bloodSplashIn {
-      0%   { opacity: 0 }
-      20%  { opacity: 1 }
-      80%  { opacity: 1 }
-      100% { opacity: 0 }
+    @keyframes circleIn {
+      0%   { transform: translate(-50%,-50%) scale(0); opacity: 0 }
+      40%  { transform: translate(-50%,-50%) scale(1); opacity: 1 }
+      100% { transform: translate(-50%,-50%) scale(1.3); opacity: 0 }
     }
 
     /* CTA */
@@ -206,37 +175,32 @@
       z-index: var(--z-logo);
     }
     .cta a {
-      font-size: 26px; padding: 14px 30px;
+      font-size: 24px; padding: 12px 28px;
       border-radius: var(--radius);
       background: linear-gradient(180deg,#151515 0%,#070707 60%);
       border: 2px solid rgba(255,0,0,0.18);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.7),
-                  inset 0 -6px 12px rgba(255,0,0,0.02);
       color: #fff; text-decoration: none;
-      position: relative; overflow: hidden;
-      transition: transform .18s, box-shadow .18s, background .18s;
+      transition: transform .2s, background .2s;
     }
     .cta a:hover {
-      transform: translateY(-4px);
+      transform: translateY(-3px);
       background: linear-gradient(180deg,var(--red) 0%,#990000 70%);
-      box-shadow: 0 18px 40px rgba(255,0,0,.35);
     }
 
-    /* Responsive */
     @media (max-width:600px) {
-      .anarchyBtn img { width: 60px; height: 60px }
-      .anarchyMenu { top: 90px; right: 8px; padding: 12px }
+      .anarchyBtn img { width: 56px; height: 56px }
+      .anarchyMenu { top: 90px; right: 8px; }
       .headlineText { font-size: clamp(28px,18vw,76px) }
-      .cta a { font-size: 18px; padding: 12px 22px }
-      .bloodCircle { width: 150px; height: 150px }
+      .cta a { font-size: 18px; padding: 10px 20px }
+      #bloodCircle { width: 140px; height: 140px }
     }
   </style>
 </head>
 <body>
-  <!-- MENU -->
+  <!-- menu -->
   <button id="anarchyBtn" class="anarchyBtn"
           aria-controls="anarchyMenu" aria-expanded="false">
-    <img src="anarchy.png" alt="Toggle menu"/>
+    <img src="anarchy.png" alt="Menu"/>
   </button>
   <nav id="anarchyMenu" class="anarchyMenu" role="menu">
     <a href="rules.html">Rules</a>
@@ -246,127 +210,107 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- LOGO -->
+  <!-- logo -->
   <div id="logo">
-    <img src="Aggro-logo.PNG" alt="Aggro PvP Logo"/>
+    <img src="Aggro-logo.PNG" alt="Aggro PvP"/>
   </div>
 
-  <!-- SMOKE BACKGROUND -->
+  <!-- continuous smoke -->
   <div id="smoke-wrap">
     <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
       <source src="Smoke.mp4" type="video/mp4"/>
     </video>
   </div>
 
-  <!-- RED SCREEN FLASH -->
-  <div id="redOverlay" class="red-overlay"></div>
+  <!-- red full-screen flash -->
+  <div id="redOverlay"></div>
 
-  <!-- VFX OVERLAY -->
+  <!-- vfx flicker -->
   <div class="vfx">
-    <div class="pulse" id="vfxPulse"></div>
-    <div class="flicker" id="vfxFlicker"></div>
+    <div id="vfxFlicker" class="flicker"></div>
   </div>
 
-  <!-- HEADLINE & BLOOD EFFECTS -->
+  <!-- headline & blood circle -->
   <div id="headline">
     <div id="headlineText" class="headlineText" data-text="JOIN THE FIGHT">
       <span class="line">JOIN</span>
       <span class="line">THE</span>
       <span class="line">FIGHT</span>
     </div>
-    <img id="bloodSplash" class="bloodSplash" src="blood.png" alt="Blood splash"/>
-    <img id="bloodCircle" class="bloodCircle" src="blood1.png" alt="Blood circle"/>
+    <img id="bloodCircle" src="blood1.png" alt="Blood circle"/>
   </div>
 
-  <!-- CTA -->
+  <!-- cta -->
   <div class="cta">
-    <a href="steam://connect/YOURSERVERIP" class="steam">JOIN SERVER</a>
-    <a href="https://discord.gg/YOURDISCORD" class="discord">JOIN THE COMMUNITY</a>
+    <a href="steam://connect/YOURSERVERIP">JOIN SERVER</a>
+    <a href="https://discord.gg/YOURDISCORD">JOIN COMMUNITY</a>
   </div>
 
   <script>
   (function(){
-    const anarchyBtn  = document.getElementById('anarchyBtn');
-    const anarchyMenu = document.getElementById('anarchyMenu');
-    const smokeVid    = document.getElementById('smokeVideo');
-    const redOvl      = document.getElementById('redOverlay');
-    const vfxPulse    = document.getElementById('vfxPulse');
-    const vfxFlicker  = document.getElementById('vfxFlicker');
-    const headline    = document.getElementById('headlineText');
-    const splash      = document.getElementById('bloodSplash');
-    const circle      = document.getElementById('bloodCircle');
+    const btn        = document.getElementById('anarchyBtn');
+    const menu       = document.getElementById('anarchyMenu');
+    const redOvl     = document.getElementById('redOverlay');
+    const flicker    = document.getElementById('vfxFlicker');
+    const headline   = document.getElementById('headlineText');
+    const circle     = document.getElementById('bloodCircle');
+    const cycle      = 3000; // ms
     let running = false;
 
     // menu toggle
-    anarchyBtn.addEventListener('click', e => {
+    btn.addEventListener('click', e => {
       e.stopPropagation();
-      const open = anarchyMenu.classList.toggle('open');
-      anarchyBtn.setAttribute('aria-expanded', open);
+      const open = menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open);
     });
     document.addEventListener('click', e => {
       if (!e.target.closest('.anarchyBtn') &&
           !e.target.closest('.anarchyMenu')) {
-        anarchyMenu.classList.remove('open');
-        anarchyBtn.setAttribute('aria-expanded', false);
+        menu.classList.remove('open');
+        btn.setAttribute('aria-expanded', false);
       }
     });
 
-    // restart CSS animation
-    function restart(el, cls) {
-      el.classList.remove(cls);
+    // helper to restart a CSS animation
+    function restart(el, animationName, duration){
+      el.style.animation = 'none';
       void el.offsetWidth;
-      el.classList.add(cls);
+      el.style.animation = `${animationName} ${duration}ms both`;
     }
 
-    // flicker effect
-    function triggerFlicker() {
-      const seq = [
-        { t:   0, o: 0.18 },
-        { t:  80, o: 0.06 },
-        { t: 160, o: 0.24 },
-        { t: 280, o: 0.08 },
-        { t: 420, o: 0.18 },
-        { t: 600, o: 0.00 }
-      ];
-      vfxFlicker.style.opacity = '1';
-      seq.forEach(s => setTimeout(() => {
-        vfxFlicker.style.background =
-          `linear-gradient(90deg, rgba(255,0,0,${s.o * 0.06}), transparent)`;
-      }, s.t));
-      setTimeout(() => vfxFlicker.style.opacity = '0', 900);
+    // flicker sequence
+    function triggerFlicker(){
+      flicker.style.opacity = '1';
+      flicker.style.background = 'linear-gradient(90deg, rgba(255,0,0,0.18), transparent)';
+      setTimeout(() => flicker.style.opacity = '0', 400);
     }
 
-    // main loop
-    function runSequence() {
-      if (running) return;
+    // run the entire sequence
+    function run(){
+      if(running) return;
       running = true;
 
-      // smoke is looping continuously behind—no filter jump
+      // red flash (duration 600ms)
+      restart(redOvl, 'redFlash', 600);
 
-      // red flash
-      restart(redOvl, 'redFlash');
+      // headline slam + glitch
+      restart(headline, 'impact', 800);
+      setTimeout(() => restart(headline, 'glitch', 600), 200);
 
-      // headline
-      restart(headline, 'impact');
-      setTimeout(() => restart(headline, 'glitch'), 200);
-
-      // VFX
-      vfxPulse.style.opacity = '1';
-      setTimeout(() => vfxPulse.style.opacity = '0', 400);
+      // VFX flicker
       triggerFlicker();
 
-      // blood circle & splash
-      restart(circle, 'bloodCircleIn');
-      setTimeout(() => restart(splash, 'bloodSplashIn'), 200);
+      // blood circle in (duration 1000ms)
+      restart(circle, 'circleIn', 1000);
 
-      // unlock
-      setTimeout(() => { running = false }, 1500);
+      // unlock after one cycle
+      setTimeout(()=> running = false, cycle - 200);
     }
 
-    // start and repeat
-    window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(runSequence, 400);
-      setInterval(runSequence, 3000);
+    // initial + loop
+    window.addEventListener('DOMContentLoaded', ()=>{
+      setTimeout(run, 400);
+      setInterval(run, cycle);
     });
   })();
   </script>
