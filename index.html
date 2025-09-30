@@ -117,7 +117,7 @@
     pointer-events: none;
     width: 130%;
     max-height: 130px;
-    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.6));
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.6)) brightness(1.2) saturate(2);
   }
   #bloodTop {
     top: -60px;
@@ -194,7 +194,7 @@
   const anarchyBtn = document.getElementById('anarchyBtn');
   const anarchyMenu = document.getElementById('anarchyMenu');
 
-  function restartAnimation(el, cls){
+    function restartAnimation(el, cls){
     el.classList.remove(cls);
     void el.offsetWidth;
     el.classList.add(cls);
@@ -202,12 +202,20 @@
 
   function runSequence(){
     smoke.classList.add('effect');
-        headline.classList.add('visible');
 
+    // Fade in headline
+    headline.classList.remove('visible');
+    void headline.offsetWidth;
+    headline.classList.add('visible');
+
+    // Blood sweeps
     restartAnimation(bloodTop, 'animateTop');
     setTimeout(() => restartAnimation(bloodBottom, 'animateBottom'), 450);
 
-    // Remove glitch effect after animation ends
+    // Fade out headline after blood finishes
+    setTimeout(() => headline.classList.remove('visible'), 2200);
+
+    // Remove glitch effect after pulse
     setTimeout(() => smoke.classList.remove('effect'), 1800);
   }
 
