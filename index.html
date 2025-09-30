@@ -15,277 +15,220 @@
 
     /* RESET / BASE */
     html, body {
-      height: 100%;
-      margin: 0;
-      background: #050505;
-      overflow: hidden;
-      font-family: "28Days", sans-serif;
-      color: #fff;
+      height:100%; margin:0; background:#050505;
+      overflow:hidden; font-family:"28Days",sans-serif; color:#fff;
     }
-    button, a { outline: none; }
+    button, a { outline:none; }
 
     /* SMOKE (continuous) */
-    #smoke-wrap {
-      position: fixed;
-      inset: 0;
-      z-index: 3000;
-      pointer-events: none;
-    }
+    #smoke-wrap { position:fixed; inset:0; z-index:3000; pointer-events:none }
     #smokeVideo {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.58;
-      transition: filter 240ms linear;
+      width:100%; height:100%; object-fit:cover;
+      opacity:0.58; transition:filter 240ms linear;
     }
     #smokeVideo.effect {
-      animation: smokeRedPulse 1.8s ease;
-      filter: none;
+      animation:smokeRedPulse 1.8s ease; filter:none;
     }
     @keyframes smokeRedPulse {
-      0%   { filter: brightness(0.7) saturate(0.9) contrast(0.95); }
-      40%  { filter: brightness(1.3) saturate(2.2) contrast(1.05); }
-      100% { filter: brightness(0.95) saturate(1.3) contrast(1); }
+      0%   { filter:brightness(0.7) saturate(0.9) contrast(0.95) }
+      40%  { filter:brightness(1.3) saturate(2.2) contrast(1.05) }
+      100% { filter:brightness(0.95) saturate(1.3) contrast(1) }
     }
 
-    /* LOGO */
+    /* MENU top-left, dark */
+    .anarchyBtn {
+      position:fixed; top:14px; left:14px; z-index:5000;
+      background:none; border:none; cursor:pointer;
+    }
+    .anarchyBtn img { width:80px; height:80px; transition:transform .2s }
+    .anarchyBtn:hover img { transform:scale(1.1) }
+    .anarchyMenu {
+      position:fixed; top:100px; left:14px; z-index:5000;
+      display:none; flex-direction:column;
+      padding:16px; background:rgba(10,10,10,0.95);
+      border-radius:12px; border:1px solid rgba(255,0,0,0.18);
+    }
+    .anarchyMenu.open { display:flex }
+    .anarchyMenu a {
+      font-family:"28Days"; font-weight:800; font-size:18px;
+      padding:14px 16px; color:#ffdede; text-decoration:none;
+    }
+
+    /* LOGO (center) */
     #logo {
-      position: fixed;
-      top: 6vh;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 2000;
+      position:fixed; top:6vh; left:50%;
+      transform:translateX(-50%); z-index:2000;
     }
-    #logo img { max-width: 30vw; height: auto; }
+    #logo img { max-width:30vw; height:auto }
 
-    /* CTA */
+    /* CTA (center bottom) */
     .cta {
-      position: fixed;
-      bottom: 8vh;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 20px;
-      z-index: 2000;
+      position:fixed; bottom:8vh; left:50%;
+      transform:translateX(-50%); display:flex; gap:20px;
+      z-index:2000;
     }
     .cta a {
-      display: inline-block;
-      font-family: "28Days";
-      font-size: 26px;
-      padding: 14px 30px;
-      border-radius: 12px;
-      color: #fff;
-      text-decoration: none;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.7);
-      background: linear-gradient(180deg,#151515 0%,#070707 60%);
-      border: 2px solid rgba(255,0,0,0.18);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.7), inset 0 -6px 12px rgba(255,0,0,0.02);
-      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
-      position: relative;
-      overflow: hidden;
+      display:inline-block; font-size:26px;
+      padding:14px 30px; border-radius:12px;
+      background:linear-gradient(180deg,#151515 0%,#070707 60%);
+      border:2px solid rgba(255,0,0,0.18);
+      box-shadow:0 10px 24px rgba(0,0,0,0.7),
+                 inset 0 -6px 12px rgba(255,0,0,0.02);
+      color:#fff; text-decoration:none;
+      transition:transform .18s,box-shadow .18s,background .18s;
+      position:relative; overflow:hidden;
     }
     .cta a:before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0));
-      mix-blend-mode: overlay;
-      pointer-events: none;
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);
+      mix-blend-mode:overlay; pointer-events:none;
     }
     .cta a:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 18px 40px rgba(255,0,0,0.35);
-      background: linear-gradient(180deg,#ff1a1a 0%,#990000 70%);
+      transform:translateY(-4px);
+      box-shadow:0 18px 40px rgba(255,0,0,0.35);
+      background:linear-gradient(180deg,#ff1a1a 0%,#990000 70%);
     }
-    .cta a.steam   { border-color: rgba(255,40,40,0.5); }
-    .cta a.discord { border-color: rgba(80,120,255,0.35); }
+    .cta a.steam   { border-color:rgba(255,40,40,0.5) }
+    .cta a.discord { border-color:rgba(80,120,255,0.35) }
 
-    /* MENU – larger */
-    .anarchyBtn img {
-      width: 80px;
-      height: 80px;
-      transition: transform .2s ease;
-    }
-    .anarchyBtn:hover img {
-      transform: scale(1.1);
-    }
-    .anarchyMenu {
-      position: fixed;
-      top: 100px;
-      right: 20px;
-      z-index: 5000;
-      display: none;
-      flex-direction: column;
-      padding: 16px;
-      background: rgba(10,10,10,0.95);
-      border-radius: 12px;
-      border: 1px solid rgba(255,0,0,0.18);
-    }
-    .anarchyMenu.open { display: flex; }
-    .anarchyMenu a {
-      font-family: "28Days";
-      font-weight: 800;
-      font-size: 18px;
-      padding: 14px 16px;
-      line-height: 1.3;
-      color: #ffdede;
-      text-decoration: none;
-    }
-
-    /* HEADLINE (centered) */
+    /* HEADLINE WRAP (center) */
     #headline {
-      position: fixed;
-      top: 42vh;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 1200px;
-      text-align: center;
-      pointer-events: none;
-      z-index: 4500;
+      position:fixed; top:42vh; left:50%;
+      transform:translateX(-50%); text-align:center;
+      pointer-events:none; z-index:4500;
     }
+    /* static blood splatter behind text */
+    .splatter {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%) scale(0.8) rotate(-15deg);
+      width:140%; max-width:1600px; opacity:0;
+      pointer-events:none; z-index:4600;
+    }
+    /* blood sweep elements */
+    .bloodSweep {
+      position:absolute; left:50%;
+      transform:translateX(-50%); opacity:0;
+      width:120%; max-width:1500px;
+      filter:drop-shadow(0 10px 30px rgba(0,0,0,0.8))
+             brightness(1.4) saturate(2.2) blur(1px);
+      pointer-events:none; z-index:4700;
+      animation-fill-mode:forwards;
+      animation-timing-function:ease-in-out;
+    }
+
     .headlineText {
-      display: inline-block;
-      color: #fff;
-      opacity: 0;
-      will-change: transform, opacity, filter;
-      position: relative;
+      display:inline-block; color:#fff; opacity:0;
+      will-change:transform,opacity,filter;
+      position:relative;
     }
     .headlineText .line {
-      font-size: clamp(48px,14vw,136px);
-      line-height: 0.95;
-      letter-spacing: 0.12em;
-      white-space: nowrap;
-      margin: 0;
-      padding: 0;
-      display: block;
+      font-size:clamp(48px,14vw,136px);
+      line-height:.95; letter-spacing:.12em;
+      white-space:nowrap; margin:0; display:block;
     }
 
     /* IMPACT */
     @keyframes headlineImpact {
-      0%   { transform: scale(0.9); opacity:0; filter: drop-shadow(0 0 0 transparent) saturate(0.9); }
-      8%   { transform: scale(1.12) skewX(-0.8deg); opacity:1; filter: drop-shadow(0 0 40px rgba(255,0,0,0.9)) saturate(1.6); }
-      20%  { transform: scale(1) skewX(0); filter: drop-shadow(0 0 26px rgba(255,22,22,0.9)) saturate(1.8); }
-      40%  { transform: scale(1.02); filter: drop-shadow(0 0 18px rgba(255,18,18,0.65)) saturate(1.4); }
-      65%  { transform: scale(1); opacity:0.95; filter: drop-shadow(0 0 12px rgba(255,8,8,0.45)) saturate(1.2); }
-      100% { transform: scale(0.98); opacity:0; filter: blur(1px) brightness(0.8); }
+      0%   { transform:scale(.9); opacity:0; filter:drop-shadow(0 0 0 transparent) saturate(.9) }
+      8%   { transform:scale(1.12) skewX(-.8deg); opacity:1;
+             filter:drop-shadow(0 0 40px rgba(255,0,0,.9)) saturate(1.6) }
+      20%  { transform:scale(1); skewX(0);
+             filter:drop-shadow(0 0 26px rgba(255,22,22,.9)) saturate(1.8) }
+      40%  { transform:scale(1.02);
+             filter:drop-shadow(0 0 18px rgba(255,18,18,.65)) saturate(1.4) }
+      65%  { transform:scale(1); opacity:.95;
+             filter:drop-shadow(0 0 12px rgba(255,8,8,.45)) saturate(1.2) }
+      100% { transform:scale(.98); opacity:0; filter:blur(1px) brightness(.8) }
     }
     .headlineText.impact {
-      animation: headlineImpact 2.6s cubic-bezier(.2,.9,.2,1) forwards;
+      animation:headlineImpact 2.6s cubic-bezier(.2,.9,.2,1) forwards
     }
 
-    /* GLITCH – height cuts + color offsets */
+    /* GLITCH – cuts + color */
     @keyframes textGlitch {
-      0%   { clip: rect(24px,9999px,56px,0); transform: skew(0.5deg); }
-      10%  { clip: rect(64px,9999px,70px,0); transform: skew(-0.5deg); }
-      20%  { clip: rect(12px,9999px,36px,0); transform: skew(0.5deg); }
-      30%  { clip: rect(88px,9999px,96px,0); transform: skew(-0.5deg); }
-      40%  { clip: rect(44px,9999px,58px,0); transform: skew(0.5deg); }
-      50%  { clip: rect(0px,9999px,20px,0); transform: skew(-0.5deg); }
-      60%,100% { clip: rect(0,9999px,0,0); transform: none; }
+      0%   { clip:rect(24px,9999px,56px,0);   transform:skew(.5deg) }
+      10%  { clip:rect(64px,9999px,70px,0);   transform:skew(-.5deg) }
+      20%  { clip:rect(12px,9999px,36px,0);   transform:skew(.5deg) }
+      30%  { clip:rect(88px,9999px,96px,0);   transform:skew(-.5deg) }
+      40%  { clip:rect(44px,9999px,58px,0);   transform:skew(.5deg) }
+      50%  { clip:rect(0px,9999px,20px,0);    transform:skew(-.5deg) }
+      60%,100% { clip:rect(0,9999px,0,0);     transform:none }
     }
     .headlineText.glitch,
     .headlineText.glitch::before,
     .headlineText.glitch::after {
-      animation: textGlitch 1s infinite steps(2);
+      animation:textGlitch 1s infinite steps(2)
     }
     .headlineText.glitch::before,
     .headlineText.glitch::after {
-      content: attr(data-text);
-      position: absolute; inset:0; opacity:0;
-      pointer-events: none;
+      content:attr(data-text);
+      position:absolute; inset:0; opacity:0; pointer-events:none
     }
     .headlineText.glitch::before {
-      color: #ff4b4b;
-      mix-blend-mode: screen;
-      left: 2px;
-      text-shadow: -2px 0 red;
+      color:#ff4b4b; mix-blend-mode:screen;
+      left:2px; text-shadow:-2px 0 red
     }
     .headlineText.glitch::after {
-      color: #7fb7ff;
-      mix-blend-mode: screen;
-      left: -2px;
-      text-shadow: -2px 0 cyan;
+      color:#7fb7ff; mix-blend-mode:screen;
+      left:-2px; text-shadow:-2px 0 cyan
     }
 
-    /* BLOOD SWEEP – realistic */
-    .bloodSweep {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      opacity: 0;
-      z-index: 4700;
-      pointer-events: none;
-      width: 120%;
-      max-width: 1500px;
-      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.8))
-              brightness(1.4) saturate(2.2)
-              blur(1px);
-      animation-fill-mode: forwards;
-      animation-timing-function: ease-in-out;
-    }
+    /* BLOOD SWEEP KEYFRAMES */
     @keyframes bloodIn {
-      0%   { opacity:0;   transform: translateX(-120%) rotate(-15deg) scale(1.2); }
-      30%  { opacity:1;   transform: translateX(10%)   rotate(2deg)   scale(1);   }
-      70%  { opacity:1;   transform: translateX(90%)   rotate(8deg)   scale(0.9); }
-      100% { opacity:0;   transform: translateX(120%)  rotate(12deg)  scale(0.8); }
+      0%   { opacity:0;   transform:translateX(-120%) rotate(-15deg) scale(1.2) }
+      30%  { opacity:1;   transform:translateX(10%)   rotate(2deg)   scale(1)   }
+      70%  { opacity:1;   transform:translateX(90%)   rotate(8deg)   scale(.9)  }
+      100% { opacity:0;   transform:translateX(120%)  rotate(12deg)  scale(.8)  }
     }
     @keyframes bloodInBottom {
-      0%   { opacity:0;   transform: translateX(-120%) rotate(15deg)  scale(1.2); }
-      30%  { opacity:1;   transform: translateX(10%)   rotate(-2deg)  scale(1);   }
-      70%  { opacity:1;   transform: translateX(90%)   rotate(-8deg)  scale(0.9); }
-      100% { opacity:0;   transform: translateX(120%)  rotate(-12deg) scale(0.8); }
+      0%   { opacity:0;   transform:translateX(-120%) rotate(15deg)  scale(1.2) }
+      30%  { opacity:1;   transform:translateX(10%)   rotate(-2deg)  scale(1)   }
+      70%  { opacity:1;   transform:translateX(90%)   rotate(-8deg)  scale(.9)  }
+      100% { opacity:0;   transform:translateX(120%)  rotate(-12deg) scale(.8)  }
     }
 
     /* VFX OVERLAY */
     .vfx {
-      position: fixed;
-      inset: 0;
-      z-index: 4900;
-      pointer-events: none;
-      mix-blend-mode: normal;
+      position:fixed; inset:0; z-index:4900;
+      pointer-events:none; mix-blend-mode:normal;
     }
     .vfx .vignette {
-      position: absolute; inset:0;
-      background: radial-gradient(ellipse at center,
-        rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 95%);
-      opacity: .75;
+      position:absolute; inset:0;
+      background:radial-gradient(ellipse at center,
+        rgba(0,0,0,0) 45%, rgba(0,0,0,.55) 95%);
+      opacity:.75;
     }
     .vfx .scan {
-      position: absolute; inset:0;
-      background-image: linear-gradient(
-        rgba(255,255,255,0.02) 0, rgba(255,255,255,0) 2%);
-      background-size: 100% 4px;
-      mix-blend-mode: overlay;
-      opacity: 0.18;
+      position:absolute; inset:0;
+      background-image:linear-gradient(
+        rgba(255,255,255,.02) 0, rgba(255,255,255,0) 2%);
+      background-size:100% 4px;
+      mix-blend-mode:overlay; opacity:.18;
     }
     .vfx .grain {
-      position: absolute; inset:0;
-      background-image:
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"
-             width="100" height="100"><filter id="g">
-             <feTurbulence baseFrequency="0.9" numOctaves="2"
-              stitchTiles="stitch"/>
-             <feColorMatrix type="saturate" values="0"/>
-             </filter><rect width="100%" height="100%"
-               filter="url(%23g)" fill="white"/></svg>');
-      opacity: .06;
-      mix-blend-mode: overlay;
+      position:absolute; inset:0;
+      background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="g"><feTurbulence baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(%23g)" fill="white"/></svg>');
+      opacity:.06; mix-blend-mode:overlay;
     }
     .vfx .pulse {
-      position: absolute; inset:0;
-      background: radial-gradient(circle at 50% 45%,
-        rgba(255,40,40,0.06), rgba(0,0,0,0) 40%);
-      opacity: 0;
-      transition: opacity 220ms linear;
-      mix-blend-mode: screen;
+      position:absolute; inset:0;
+      background:radial-gradient(circle at 50% 45%,
+        rgba(255,40,40,.06), rgba(0,0,0,0) 40%);
+      opacity:0; transition:opacity 220ms linear;
+      mix-blend-mode:screen;
     }
     .vfx .flicker {
-      position: absolute; inset:0;
-      background: transparent;
-      opacity: 0;
-      mix-blend-mode: screen;
-      pointer-events: none;
+      position:absolute; inset:0; background:transparent;
+      opacity:0; mix-blend-mode:screen; pointer-events:none;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:600px) {
+      .anarchyBtn img { width:60px; height:60px }
+      .anarchyMenu { top:90px; left:8px; padding:12px }
+      .anarchyMenu a { font-size:16px; padding:10px 12px }
+      .headlineText .line { font-size:clamp(28px,18vw,76px) }
+      .cta a { font-size:18px; padding:12px 22px }
     }
   </style>
 </head>
@@ -307,8 +250,9 @@
     <img src="Aggro-logo.PNG" alt="Aggro PvP Logo">
   </div>
 
-  <!-- Headline -->
+  <!-- Headline + splatter -->
   <div id="headline">
+    <img src="blood_splatter.png" class="splatter" alt="">
     <div class="headlineText" id="headlineText" data-text="JOIN THE FIGHT">
       <span class="line">JOIN</span>
       <span class="line">THE</span>
@@ -343,116 +287,114 @@
     const smoke        = document.getElementById('smokeVideo');
     const headlineWrap = document.getElementById('headline');
     const headlineText = document.getElementById('headlineText');
+    const splatter     = headlineWrap.querySelector('.splatter');
     const vfxPulse     = document.getElementById('vfxPulse');
     const vfxFlicker   = document.getElementById('vfxFlicker');
     const anarchyBtn   = document.getElementById('anarchyBtn');
     const anarchyMenu  = document.getElementById('anarchyMenu');
 
-    let bloodTopEl, bloodBottomEl, sequenceRunning = false;
+    let bloodTop, bloodBottom, running=false;
 
-    function createBloodElements(){
-      bloodTopEl = document.createElement('img');
-      bloodTopEl.id        = 'bloodTop';
-      bloodTopEl.className = 'bloodSweep';
-      bloodTopEl.src       = 'blood1.png';
-      bloodTopEl.alt       = '';
-      bloodTopEl.style.top = 'calc(50% - 1.25em - 72px)';
-      bloodTopEl.style.opacity = '0';
+    function createBlood(){
+      bloodTop = document.createElement('img');
+      bloodTop.className ='bloodSweep';
+      bloodTop.src       ='blood1.png';
+      bloodTop.alt       ='';
+      bloodTop.style.top ='calc(50% - 1.25em - 72px)';
 
-      bloodBottomEl = bloodTopEl.cloneNode();
-      bloodBottomEl.id        = 'bloodBottom';
-      bloodBottomEl.style.top = 'calc(50% + 1.25em + 6px)';
+      bloodBottom = bloodTop.cloneNode();
+      bloodBottom.className='bloodSweep';
+      bloodBottom.style.top='calc(50% + 1.25em + 6px)';
     }
 
-    function restartAnimation(el, cls){
+    function restart(el, cls){
       el.classList.remove(cls);
       void el.offsetWidth;
       el.classList.add(cls);
     }
 
     function triggerFlicker(){
-      const seq = [
-        {t:  0, o:0.18}, {t:80, o:0.06},
-        {t:160,o:0.24}, {t:280,o:0.08},
-        {t:420,o:0.18}, {t:600,o:0.0}
-      ];
-      vfxFlicker.style.opacity = '1';
-      seq.forEach(s => {
-        setTimeout(() => {
-          vfxFlicker.style.background =
-            `linear-gradient(90deg, rgba(255,0,0,${s.o*0.06}), transparent)`;
-        }, s.t);
-      });
-      setTimeout(() => vfxFlicker.style.opacity = '0', 900);
+      const seq=[{t:0,o:.18},{t:80,o:.06},{t:160,o:.24},{t:280,o:.08},{t:420,o:.18},{t:600,o:0}];
+      vfxFlicker.style.opacity='1';
+      seq.forEach(s => setTimeout(()=>{
+        vfxFlicker.style.background=
+          `linear-gradient(90deg, rgba(255,0,0,${s.o*0.06}), transparent)`;
+      },s.t));
+      setTimeout(()=> vfxFlicker.style.opacity='0', 900);
     }
 
-    function insertBloods(){
-      if (!bloodTopEl) createBloodElements();
-      headlineWrap.appendChild(bloodTopEl);
-      headlineWrap.appendChild(bloodBottomEl);
-    }
-
-    function removeBloods(){
-      bloodTopEl?.remove();
-      bloodBottomEl?.remove();
-    }
-
-    function runSequence(){
-      if (sequenceRunning) return;
-      sequenceRunning = true;
+    function run(){
+      if(running) return;
+      running=true;
 
       smoke.classList.add('effect');
-      insertBloods();
+      restart(headlineText,'impact');
+      restart(headlineText,'glitch');
+      restart(splatter,'anim');         // splatter CSS animation must use .anim
 
-      // headline impact + glitch + shake
-      restartAnimation(headlineText, 'impact');
-      headlineText.classList.add('glitch');
-
-      // VFX pulse + flicker
-      vfxPulse.style.opacity = '1';
+      vfxPulse.style.opacity='1';
       triggerFlicker();
 
       // blood sweep
-      setTimeout(() => {
-        restartAnimation(bloodTopEl,    'bloodIn');
-        restartAnimation(bloodBottomEl, 'bloodInBottom');
-      }, 460);
+      createBlood();
+      headlineWrap.append(bloodTop,bloodBottom);
+      setTimeout(()=>{
+        restart(bloodTop,'bloodIn');
+        restart(bloodBottom,'bloodInBottom');
+      },460);
 
       // cleanup
-      setTimeout(() => vfxPulse.style.opacity = '0',  900);
-      setTimeout(() => headlineText.classList.remove('glitch'), 1200);
-      setTimeout(() => smoke.classList.remove('effect'), 1800);
-      setTimeout(() => {
-        removeBloods();
-        sequenceRunning = false;
-      }, 2600);
+      setTimeout(()=> vfxPulse.style.opacity='0',900);
+      setTimeout(()=> smoke.classList.remove('effect'),1800);
+      setTimeout(()=>{
+        headlineText.classList.remove('glitch');
+        headlineWrap.removeChild(bloodTop);
+        headlineWrap.removeChild(bloodBottom);
+        running=false;
+      },2600);
     }
 
-    // loop detection
-    let prevTime = 0, cooldown = false;
-    smoke.addEventListener('timeupdate', () => {
-      const t = smoke.currentTime;
-      if (prevTime - t > 0.25 && !cooldown) {
-        runSequence();
-        cooldown = true;
-        setTimeout(() => cooldown = false, 3500);
+    // detect smoke loop
+    let prev=0,cool=false;
+    smoke.addEventListener('timeupdate', ()=>{
+      let t=smoke.currentTime;
+      if(prev - t > 0.25 && !cool){
+        run();
+        cool=true;
+        setTimeout(()=> cool=false,3500);
       }
-      prevTime = t;
+      prev=t;
     });
 
     // menu toggle
-    anarchyBtn.addEventListener('click', e => {
+    anarchyBtn.addEventListener('click', e=>{
       e.stopPropagation();
       anarchyMenu.classList.toggle('open');
     });
-    document.addEventListener('click', e => {
-      if (!e.target.closest('.anarchyBtn') &&
-          !e.target.closest('.anarchyMenu')) {
+    document.addEventListener('click', e=>{
+      if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
         anarchyMenu.classList.remove('open');
       }
     });
 
-    createBloodElements();
+    // prepare splatter CSS class
+    splatter.style.animation='none';
+    splatter.addEventListener('animationend', ()=> splatter.style.opacity=0);
+
+    // define splatter keyframes + .anim class
+    const styleSheet=document.styleSheets[0];
+    styleSheet.insertRule(`
+      @keyframes splatterAnim {
+        0%   { opacity:0;   transform:translate(-50%,-50%) scale(.8) rotate(-15deg); }
+        10%  { opacity:1;   transform:translate(-50%,-50%) scale(1)   rotate(0); }
+        80%  { opacity:1; }
+        100% { opacity:0; }
+      }
+    `, styleSheet.cssRules.length);
+    styleSheet.insertRule(`
+      .splatter.anim { animation:splatterAnim 2s ease-out forwards; }
+    `, styleSheet.cssRules.length);
+
   })();
   </script>
 </body>
