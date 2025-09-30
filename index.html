@@ -79,21 +79,27 @@
   }
   #bloodTop {
     top: 0; left: -100%;
-    width: 100%; height: auto;
-    max-height: 180px;
+    width: 100%; max-height: 160px;
   }
   #bloodBottom {
     bottom: 0; right: -100%;
-    width: 100%; height: auto;
-    max-height: 180px;
+    width: 100%; max-height: 160px;
   }
-  .bloodSweep.show {
-    animation: sweepIn 1.2s ease forwards;
+  .bloodSweep.showTop {
+    animation: sweepTop 1.2s ease forwards;
   }
-  @keyframes sweepIn {
-    0%   { opacity: 0; transform: translateX(0); }
+  .bloodSweep.showBottom {
+    animation: sweepBottom 1.2s ease forwards;
+  }
+  @keyframes sweepTop {
+    0%   { opacity: 0; left: -100%; }
     20%  { opacity: 1; }
-    100% { opacity: 1; transform: translateX(100%); }
+    100% { opacity: 1; left: 0; }
+  }
+  @keyframes sweepBottom {
+    0%   { opacity: 0; right: -100%; }
+    20%  { opacity: 1; }
+    100% { opacity: 1; right: 0; }
   }
 
   /* Mobile tweaks */
@@ -148,15 +154,15 @@
     joinText.classList.add('visible');
 
     // Trigger blood sweeps
-    bloodTop.classList.add('show');
-    setTimeout(()=> bloodBottom.classList.add('show'), 300);
+    bloodTop.classList.add('showTop');
+    setTimeout(()=> bloodBottom.classList.add('showBottom'), 300);
 
     // Reset after a few seconds
     setTimeout(()=>{
       joinText.classList.remove('visible');
       smoke.classList.remove('effect');
-      bloodTop.classList.remove('show');
-      bloodBottom.classList.remove('show');
+      bloodTop.classList.remove('showTop');
+      bloodBottom.classList.remove('showBottom');
     }, 3000);
   }
 
