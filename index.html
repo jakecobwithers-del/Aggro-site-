@@ -5,16 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Aggro PvP — JOIN THE FIGHT</title>
 
-  <!-- preload font -->
+  <!-- preload font (adjust path) -->
   <link rel="preload" href="28%20Days%20Later.ttf" as="font" type="font/ttf" crossorigin>
 
   <style>
     :root{
       --bg:#050505;
       --red:#ff1a1a;
-      --phase-duration:3000; /* ms for each half-phase (normal / red) */
-      --cycle:6000;          /* full cycle = 2 * phase-duration */
-      --text-pop-dur:420;
+      --phase:3000; /* ms per phase */
+      --cycle:6000;
     }
 
     *,*::before,*::after{box-sizing:border-box}
@@ -22,72 +21,50 @@
     @font-face{font-family:"28Days";src:url("28%20Days%20Later.ttf") format("truetype");font-display:swap}
     button,a{background:none;border:0;cursor:pointer;color:inherit;text-decoration:none;padding:0;font-family:inherit}
 
-    /* --- smoke: two synced videos crossfading to avoid jumps --- */
+    /* layout */
     #smoke-wrap{position:fixed;inset:0;pointer-events:none;z-index:2000;overflow:hidden}
-    .smokeLayer{
-      position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-      transform-origin:center center;
-      will-change:opacity,transform;
-      backface-visibility:hidden;
-      -webkit-backface-visibility:hidden;
-    }
-    /* baseline gentle motion (slight scale/translate to avoid frame-aligned jump) */
-    .smokeLayer { transition:opacity .6s linear, transform 6s linear; }
-    .smokeLayer.a { opacity:1; transform:scale(1) translateY(0); }
-    .smokeLayer.b { opacity:0; transform:scale(1.02) translateY(-1%); mix-blend-mode:screen; }
+    .smokeLayer{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .8s linear,transform 6s linear}
+    .smokeLayer.a{opacity:1;transform:scale(1) translateY(0);mix-blend-mode:normal}
+    .smokeLayer.b{opacity:0;transform:scale(1.02) translateY(-1%);mix-blend-mode:screen}
 
-    /* when in red-phase, swap opacity smoothly and tint */
-    .red-phase .smokeLayer.a { opacity:0; transform:scale(1.02) translateY(-1%); }
-    .red-phase .smokeLayer.b { opacity:1; transform:scale(1) translateY(0); }
-
-    /* color overlay for the red tint during red-phase */
+    /* overlay and flash */
     #colorOverlay{position:fixed;inset:0;pointer-events:none;background:var(--red);mix-blend-mode:color;opacity:0;transition:opacity .35s linear;z-index:2500}
-    .red-phase #colorOverlay{opacity:.28}
+    #redFlash{position:fixed;inset:0;pointer-events:none;background:var(--red);mix-blend-mode:screen;opacity:0;transition:opacity .08s linear;z-index:2600}
 
-    /* red flash (shorter pop flash) */
-    #redFlash{position:fixed;inset:0;pointer-events:none;background:var(--red);mix-blend-mode:screen;opacity:0;z-index:2600;transition:opacity .12s linear}
-    .red-flash-on #redFlash{opacity:.42;transition:opacity .06s linear}
+    /* header / logo / menu / CTA always visible in normal phase */
+    #logo{position:fixed;top:6vh;left:50%;transform:translateX(-50%);z-index:6000;pointer-events:auto}
+    #logo img{max-width:28vw;height:auto;max-height:84px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.8))}
 
-    /* --- header / headline / blood --- */
-    #headline{position:fixed;top:42vh;left:50%;transform:translateX(-50%);text-align:center;z-index:3000;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:18px}
-    #headlineText{font-size:clamp(48px,14vw,136px);line-height:.9;letter-spacing:.12em;color:#fff;opacity:0;transform-origin:center;transition:opacity .18s linear,transform .18s cubic-bezier(.2,.9,.2,1);will-change:opacity,transform}
-    #bloodCircle{width:clamp(200px,40vw,420px);opacity:0;transition:opacity .18s linear,transform .18s cubic-bezier(.2,.9,.2,1);will-change:opacity,transform;pointer-events:none}
-
-    /* visible state used during red-phase pulse window */
-    .red-visible #headlineText{opacity:1; transform:scale(1.0)}
-    .red-pop #headlineText{transform:scale(1.14)}
-    .red-visible #bloodCircle{opacity:.6; transform:scale(1)}
-
-    /* ensure baseline headline hidden when not in red-phase */
-    .normal-phase #headlineText{opacity:0; transform:scale(.96)}
-    .normal-phase #bloodCircle{opacity:0; transform:scale(.96)}
-
-    /* slight glitch accent (kept short) */
-    .glitch,.glitch::before,.glitch::after{animation:none}
-    .glitch::before,.glitch::after{display:none} /* avoid accidental overlap; removed to reduce visual clutter */
-
-    /* --- CTA / menu / logo --- */
     .anarchyBtn{position:fixed;top:14px;right:14px;z-index:6000;pointer-events:auto;background:transparent;width:64px;height:64px}
     .anarchyBtn img{width:64px;height:64px;display:block}
     .anarchyMenu{position:fixed;top:90px;right:14px;display:none;flex-direction:column;padding:12px;background:rgba(10,10,10,0.95);border-radius:12px;z-index:6000;pointer-events:auto}
     .anarchyMenu.open{display:flex}
     .anarchyMenu a{color:#ffdede;font-size:16px;font-weight:800;padding:10px 14px;border-radius:8px;margin:6px 0}
 
-    #logo{position:fixed;top:6vh;left:50%;transform:translateX(-50%);z-index:1000;pointer-events:auto}
-    #logo img{max-width:28vw;height:auto;max-height:84px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.8))}
-
-    .cta{position:fixed;bottom:6vh;left:50%;transform:translateX(-50%);display:flex;gap:16px;z-index:1000;pointer-events:auto;align-items:center}
+    .cta{position:fixed;bottom:6vh;left:50%;transform:translateX(-50%);display:flex;gap:16px;z-index:6000;pointer-events:auto;align-items:center}
     .cta a{position:relative;display:inline-block;font-size:18px;padding:12px 22px;border-radius:12px;background:linear-gradient(180deg,#151515,#070707);color:#fff;font-weight:800;transition:transform .12s,box-shadow .12s;will-change:transform,box-shadow}
     .cta a.steam{--ar:255;--ag:26;--ab:26}
     .cta a.discord{--ar:114;--ag:137;--ab:218}
 
-    /* pop classes applied during red-phase pop window */
+    /* UI pop classes applied during red-phase pop window */
     .pop-ui .anarchyBtn img{transform:scale(1.12);filter:drop-shadow(0 8px 26px rgba(255,26,26,.35));transition:transform .12s}
-    .pop-ui .cta a{transform:scale(1.12);box-shadow:0 28px 60px rgba(255,26,26,.2);transition:transform .12s,box-shadow .12s}
-    .pulse-once{animation:none} /* we trigger via class toggles below */
+    .pop-ui .cta a{transform:scale(1.12);box-shadow:0 28px 60px rgba(255,26,26,.22);transition:transform .12s,box-shadow .12s}
 
-    /* responsive tweaks */
-    @media (max-width:900px){#logo img{max-width:38vw;max-height:72px}}
+    /* headline + blood: hidden by default, shown only in red-phase pop window */
+    #headline{position:fixed;top:42vh;left:50%;transform:translateX(-50%);text-align:center;z-index:6500;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:18px}
+    #headlineText{font-size:clamp(48px,14vw,136px);line-height:.9;letter-spacing:.12em;color:#fff;opacity:0;transform:scale(.96);transition:opacity .18s linear,transform .18s cubic-bezier(.2,.9,.2,1);will-change:opacity,transform}
+    #bloodCircle{width:clamp(200px,40vw,420px);opacity:0;transform:scale(.96);transition:opacity .18s linear,transform .18s cubic-bezier(.2,.9,.2,1);will-change:opacity,transform;pointer-events:none}
+
+    /* visible states (applied/removed by JS) */
+    .red-phase .smokeLayer.a{opacity:0;transform:scale(1.02) translateY(-1%)}
+    .red-phase .smokeLayer.b{opacity:1;transform:scale(1) translateY(0)}
+    .red-phase #colorOverlay{opacity:.28}
+    .pop-visible #headlineText{opacity:1;transform:scale(1)}
+    .pop-visible #bloodCircle{opacity:.6;transform:scale(1)}
+    .pop-ui .cta a{ /* ensure CTA visual while pop-ui present */ }
+
+    /* responsive */
+    @media (max-width:900px){#logo img{max-width:38vw;max-height:72px}; .anarchyMenu{right:10px;top:86px}}
     @media (max-width:600px){
       #headline{top:36vh}
       #headlineText{font-size:clamp(34px,10vw,72px)}
@@ -118,14 +95,14 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- logo + CTA -->
-  <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro Logo" /></div>
+  <!-- logo and CTAs (always visible) -->
+  <div id="logo" aria-hidden="true"><img src="Aggro-logo.PNG" alt="Aggro Logo" /></div>
   <div class="cta" role="navigation" aria-label="Primary actions">
     <a class="steam" href="steam://connect/YOURSERVERIP" aria-label="Join the server">JOIN SERVER</a>
     <a class="discord" href="https://discord.gg/YOURDISCORD" target="_blank" rel="noopener" aria-label="Join Discord">JOIN COMMUNITY</a>
   </div>
 
-  <!-- smoke layers (two videos crossfade) -->
+  <!-- smoke crossfade layers -->
   <div id="smoke-wrap" aria-hidden="true">
     <video id="smokeA" class="smokeLayer a" muted autoplay loop playsinline preload="auto" crossorigin="anonymous">
       <source src="Smoke.mp4" type="video/mp4">
@@ -139,138 +116,130 @@
   <div id="colorOverlay" aria-hidden="true"></div>
   <div id="redFlash" aria-hidden="true"></div>
 
-  <!-- headline and blood -->
-  <div id="headline">
+  <!-- headline & blood (shown only during red pop) -->
+  <div id="headline" aria-hidden="true">
     <div id="headlineText" data-text="JOIN THE FIGHT">JOIN THE FIGHT</div>
-    <img id="bloodCircle" src="blood1.png" alt="blood splat">
+    <img id="bloodCircle" src="blood1.png" alt="blood splat" />
   </div>
 
   <script>
     (function(){
-      const phase = Number(getComputedStyle(document.documentElement).getPropertyValue('--phase-duration')) || 3000;
-      const fullCycle = phase * 2;
+      const PHASE = Number(getComputedStyle(document.documentElement).getPropertyValue('--phase')) || 3000;
       const root = document.documentElement;
       const smokeA = document.getElementById('smokeA');
       const smokeB = document.getElementById('smokeB');
-      const headline = document.getElementById('headlineText');
+      const headlineText = document.getElementById('headlineText');
       const blood = document.getElementById('bloodCircle');
-      const colorOverlay = document.getElementById('colorOverlay');
       const redFlash = document.getElementById('redFlash');
-      const cta = document.querySelector('.cta');
+      const ctaSteam = document.querySelector('.cta a.steam');
+      const ctaDisc = document.querySelector('.cta a.discord');
       const menuImg = document.querySelector('.anarchyBtn img');
 
-      let toggle = false; // false = normal-phase, true = red-phase
-      let cycleTimer = null;
-      let popTimer = null;
+      let isRed = false;
+      let intervalId = null;
+      let popTimeout = null;
+      let flashTimeout = null;
 
-      // Make sure videos are playing and slightly out-of-phase for smoother feel.
-      // Attempt to nudge playback rates if some devices pause autoplay: keep gentle.
+      // ensure videos try to play and offset second video slightly
       function startVideos(){
-        [smokeA, smokeB].forEach((v, i) => {
+        [smokeA, smokeB].forEach((v, i)=>{
           if(!v) return;
-          v.play().catch(()=>{ /* autoplay might be blocked; user interaction will resume */ });
-          // offset second video by a few frames to avoid locked-frame jump on loop
-          if(i === 1){
-            v.currentTime = 0.25;
+          v.play().catch(()=>{ /* autoplay may be blocked; user interaction will resume */ });
+          if(i===1) {
+            try{ v.currentTime = 0.25; }catch(e){}
           }
         });
       }
 
-      // Execute one phase switch: normal -> red -> normal -> ...
-      function beginCycle(){
-        // start in normal-phase
-        setPhase(false);
-        cycleTimer = setInterval(()=> setPhase(!toggle), phase); // flip every phase ms
+      // show normal: ensure smokeA visible, smokeB hidden, UI present
+      function enterNormal(){
+        isRed = false;
+        root.classList.remove('red-phase');
+        root.classList.remove('pop-visible');
+        root.classList.remove('pop-ui');
+        redFlash.classList.remove('on');
       }
 
-      // apply phase: red=true triggers red-phase visuals
-      function setPhase(isRed){
-        toggle = isRed;
-        if(isRed){
-          // enter red-phase
-          root.classList.add('red-phase');
-          root.classList.remove('normal-phase');
-          // swap which smoke layer is visible via CSS (smoke a -> b)
-          root.classList.add('red-visible'); // used for headline/blood visibility
-          // short red flash for pop timing
-          root.classList.add('pop-ui'); // makes UI pop
-          redFlash.classList.add('red-flash-on');
-          colorOverlay.style.opacity = ''; // handled via CSS
-          // show headline + blood with a strong pop after a tiny delay
-          setTimeout(()=> {
-            root.classList.add('red-pop'); // scales headline
-            root.classList.add('red-visible');
-            // also add pulse class to CTAs quickly (stagger)
-            const steam = document.querySelector('.cta a.steam');
-            const disc = document.querySelector('.cta a.discord');
-            if(steam){ steam.classList.remove('pulse-once'); void steam.offsetWidth; steam.classList.add('pulse-once'); }
-            if(disc){ setTimeout(()=> { disc.classList.remove('pulse-once'); void disc.offsetWidth; disc.classList.add('pulse-once'); }, 80); }
-          }, 80);
+      // enter red-phase: crossfade smoke, tint, short pop window for headline+blood+ui
+      function enterRed(){
+        isRed = true;
+        root.classList.add('red-phase'); // switches smoke and colorOverlay via CSS
 
-          // remove flash & pop classes after the pop window (~phase/2)
-          if(popTimer) clearTimeout(popTimer);
-          popTimer = setTimeout(()=> {
-            root.classList.remove('red-pop');
-            redFlash.classList.remove('red-flash-on');
-            root.classList.remove('pop-ui');
-          }, phase - 140); // keep pop shorter than whole red-phase for rhythm
+        // short flash right at start for punch
+        redFlash.style.opacity = '0.42';
+        if(flashTimeout) clearTimeout(flashTimeout);
+        flashTimeout = setTimeout(()=> { redFlash.style.opacity = '0'; }, 120);
 
-        } else {
-          // normal-phase: revert visuals
-          root.classList.remove('red-phase','red-visible','red-pop','pop-ui');
-          redFlash.classList.remove('red-flash-on');
-          colorOverlay.style.opacity = '0';
-        }
+        // show headline and blood and pop UI shortly after flash starts
+        if(popTimeout) clearTimeout(popTimeout);
+        setTimeout(()=> {
+          root.classList.add('pop-visible'); // shows headlineText and blood
+          // quick strong pop on UI
+          root.classList.add('pop-ui');
+          // CTA pulses (stagger)
+          if(ctaSteam){ ctaSteam.classList.remove('pulse-once'); void ctaSteam.offsetWidth; ctaSteam.classList.add('pulse-once'); }
+          if(ctaDisc){ setTimeout(()=>{ ctaDisc.classList.remove('pulse-once'); void ctaDisc.offsetWidth; ctaDisc.classList.add('pulse-once'); }, 90); }
+          // remove pop-ui a bit before red-phase ends so it relaxes back
+          setTimeout(()=> { root.classList.remove('pop-ui'); }, PHASE - 300);
+        }, 60);
+
+        // hide headline/blood before red-phase ends so it fades early
+        popTimeout = setTimeout(()=> {
+          root.classList.remove('pop-visible');
+        }, PHASE - 200);
       }
 
-      // Initialize: ensure headline and blood hidden until red-phase
-      function initVisibility(){
-        root.classList.add('normal-phase');
-        headline.style.opacity = 0;
-        blood.style.opacity = 0;
-        // remove any accidental inline transform
-        headline.style.transform = '';
-        blood.style.transform = '';
+      function togglePhase(){
+        if(isRed) enterNormal();
+        else enterRed();
       }
 
-      // on DOM ready
-      window.addEventListener('DOMContentLoaded', function(){
-        startVideos();
-        initVisibility();
-
-        // small safety delay then start cycle to allow videos to settle
-        setTimeout(beginCycle, 180);
-
-        // keep videos playing if page becomes visible again
-        document.addEventListener('visibilitychange', () => {
-          if(!document.hidden) startVideos();
+      // menu toggle (simple)
+      const btn = document.getElementById('anarchyBtn');
+      const menu = document.getElementById('anarchyMenu');
+      if(btn && menu){
+        btn.addEventListener('click', e=>{
+          e.stopPropagation();
+          const open = menu.classList.toggle('open');
+          menu.setAttribute('aria-hidden', String(!open));
+          btn.setAttribute('aria-expanded', String(open));
         });
+        document.addEventListener('click', e=>{
+          if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
+            menu.classList.remove('open');
+            menu.setAttribute('aria-hidden','true');
+            btn.setAttribute('aria-expanded','false');
+          }
+        });
+      }
 
-        // simple menu toggle
-        const btn = document.getElementById('anarchyBtn');
-        const menu = document.getElementById('anarchyMenu');
-        if(btn && menu){
-          btn.addEventListener('click', e=> {
-            e.stopPropagation();
-            const open = menu.classList.toggle('open');
-            menu.setAttribute('aria-hidden', String(!open));
-            btn.setAttribute('aria-expanded', String(open));
-          });
-          document.addEventListener('click', e=>{
-            if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
-              menu.classList.remove('open');
-              menu.setAttribute('aria-hidden', 'true');
-              btn.setAttribute('aria-expanded', 'false');
-            }
-          });
-        }
+      // init
+      window.addEventListener('DOMContentLoaded', ()=>{
+        startVideos();
+        enterNormal();
+        // start cycle after a small delay to let videos warm
+        setTimeout(()=> {
+          // first half is normal (PHASE ms), then flip every PHASE
+          intervalId = setInterval(togglePhase, PHASE);
+          // ensure first flip happens after PHASE so initial state is normal for PHASE
+        }, 140);
+        // resume video on visibility change
+        document.addEventListener('visibilitychange', ()=> { if(!document.hidden) startVideos(); });
       });
 
-      // Clean up on unload
+      // cleanup
       window.addEventListener('beforeunload', ()=> {
-        clearInterval(cycleTimer);
-        clearTimeout(popTimer);
+        clearInterval(intervalId);
+        clearTimeout(popTimeout);
+        clearTimeout(flashTimeout);
       });
+
+      // accessibility: respect reduced-motion by disabling transitions and quick cycles
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+      if(prefersReduced.matches){
+        // shorten or disable dramatic transitions
+        document.documentElement.style.setProperty('--phase', '1500');
+      }
     })();
   </script>
 </body>
