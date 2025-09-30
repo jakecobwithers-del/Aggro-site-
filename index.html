@@ -1,142 +1,318 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — JOIN THE FIGHT</title>
-<style>
-  /* FONT */
-  @font-face{
-    font-family:"28Days";
-    src: url("28%20Days%20Later.ttf") format("truetype"),
-         url("28 Days Later.ttf") format("truetype");
-    font-display: swap;
-  }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aggro PvP — JOIN THE FIGHT</title>
+  <style>
+    /* FONT */
+    @font-face{
+      font-family:"28Days";
+      src: url("28%20Days%20Later.ttf") format("truetype"),
+           url("28 Days Later.ttf")   format("truetype");
+      font-display: swap;
+    }
 
-  /* RESET / BASE */
-  html,body{height:100%;margin:0;background:#050505;overflow:hidden;font-family:"28Days",sans-serif;color:#fff}
-  button, a{outline:none}
+    /* RESET / BASE */
+    html,body {
+      height:100%;
+      margin:0;
+      background:#050505;
+      overflow:hidden;
+      font-family:"28Days",sans-serif;
+      color:#fff;
+    }
+    button, a { outline:none; }
 
-  /* SMOKE (continuous) */
-  #smoke-wrap{position:fixed;inset:0;z-index:3000;pointer-events:none}
-  #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:0.58;transition:filter 240ms linear}
-  #smokeVideo.effect{animation:smokeRedPulse 1.8s ease;filter:none}
-  @keyframes smokeRedPulse{
-    0%{filter:brightness(0.7) saturate(0.9) contrast(0.95)}
-    40%{filter:brightness(1.3) saturate(2.2) contrast(1.05)}
-    100%{filter:brightness(0.95) saturate(1.3) contrast(1)}
-  }
+    /* SMOKE (continuous) */
+    #smoke-wrap {
+      position:fixed;
+      inset:0;
+      z-index:3000;
+      pointer-events:none;
+    }
+    #smokeVideo {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      opacity:0.58;
+      transition:filter 240ms linear;
+    }
+    #smokeVideo.effect {
+      animation:smokeRedPulse 1.8s ease;
+      filter:none;
+    }
+    @keyframes smokeRedPulse {
+      0%   { filter:brightness(0.7) saturate(0.9) contrast(0.95); }
+      40%  { filter:brightness(1.3) saturate(2.2) contrast(1.05); }
+      100% { filter:brightness(0.95) saturate(1.3) contrast(1); }
+    }
 
-  /* TOP LAYERS */
-  #logo{position:fixed;top:6vh;left:50%;transform:translateX(-50%);z-index:2000}
-  #logo img{max-width:30vw;height:auto}
+    /* TOP LAYERS */
+    #logo {
+      position:fixed;
+      top:6vh;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:2000;
+    }
+    #logo img { max-width:30vw; height:auto; }
 
-  /* CTA */
-  .cta{position:fixed;bottom:8vh;left:50%;transform:translateX(-50%);display:flex;gap:20px;z-index:2000}
-  .cta a{
-    display:inline-block;
-    font-family:"28Days";font-size:26px;padding:14px 30px;border-radius:12px;color:#fff;
-    text-decoration:none;text-shadow:0 2px 4px rgba(0,0,0,0.7);
-    background:linear-gradient(180deg,#151515 0%,#070707 60%);
-    border:2px solid rgba(255,0,0,0.18);
-    box-shadow:0 10px 24px rgba(0,0,0,0.7), inset 0 -6px 12px rgba(255,0,0,0.02);
-    transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
-    position:relative;overflow:hidden;
-  }
-  .cta a:before{
-    content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.00));
-    mix-blend-mode:overlay;pointer-events:none;
-  }
-  .cta a:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(255,0,0,0.35);background:linear-gradient(180deg,#ff1a1a 0%,#990000 70%)}
-  .cta a.steam{border-color:rgba(255,40,40,0.5)}
-  .cta a.discord{border-color:rgba(80,120,255,0.35)}
+    /* CTA */
+    .cta {
+      position:fixed;
+      bottom:8vh;
+      left:50%;
+      transform:translateX(-50%);
+      display:flex;
+      gap:20px;
+      z-index:2000;
+    }
+    .cta a {
+      display:inline-block;
+      font-family:"28Days";
+      font-size:26px;
+      padding:14px 30px;
+      border-radius:12px;
+      color:#fff;
+      text-decoration:none;
+      text-shadow:0 2px 4px rgba(0,0,0,0.7);
+      background:linear-gradient(180deg,#151515 0%,#070707 60%);
+      border:2px solid rgba(255,0,0,0.18);
+      box-shadow:0 10px 24px rgba(0,0,0,0.7), inset 0 -6px 12px rgba(255,0,0,0.02);
+      transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .cta a:before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0));
+      mix-blend-mode:overlay;
+      pointer-events:none;
+    }
+    .cta a:hover {
+      transform:translateY(-4px);
+      box-shadow:0 18px 40px rgba(255,0,0,0.35);
+      background:linear-gradient(180deg,#ff1a1a 0%,#990000 70%);
+    }
+    .cta a.steam   { border-color:rgba(255,40,40,0.5); }
+    .cta a.discord { border-color:rgba(80,120,255,0.35); }
 
-  /* MENU */
-  .anarchyBtn{position:fixed;top:14px;right:14px;z-index:5000;background:none;border:none;cursor:pointer}
-  .anarchyBtn img{width:52px;height:52px}
-  .anarchyMenu{position:fixed;top:76px;right:14px;z-index:5000;display:none;flex-direction:column;padding:10px;background:rgba(10,10,10,0.95);border-radius:10px;border:1px solid rgba(255,0,0,0.18)}
-  .anarchyMenu.open{display:flex}
-  .anarchyMenu a{font-family:"28Days";font-weight:800;color:#ffdede;padding:10px 12px;text-decoration:none}
+    /* MENU */
+    .anarchyBtn {
+      position:fixed;
+      top:14px;
+      right:14px;
+      z-index:5000;
+      background:none;
+      border:none;
+      cursor:pointer;
+    }
+    .anarchyBtn img { width:52px; height:52px; }
+    .anarchyMenu {
+      position:fixed;
+      top:76px;
+      right:14px;
+      z-index:5000;
+      display:none;
+      flex-direction:column;
+      padding:10px;
+      background:rgba(10,10,10,0.95);
+      border-radius:10px;
+      border:1px solid rgba(255,0,0,0.18);
+    }
+    .anarchyMenu.open { display:flex; }
+    .anarchyMenu a {
+      font-family:"28Days";
+      font-weight:800;
+      color:#ffdede;
+      padding:10px 12px;
+      text-decoration:none;
+    }
 
-  /* HEADLINE WRAP */
-  #headline{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:4500;pointer-events:none;width:100%;max-width:1200px}
-  .headlineText{display:inline-block;color:#fff;text-align:center;opacity:0;will-change:transform,opacity,filter}
-  .headlineText .line{font-size:clamp(48px,14vw,136px);line-height:0.95;letter-spacing:0.12em;white-space:nowrap;margin:0;padding:0;display:block}
+    /* HEADLINE WRAP (repositioned) */
+    #headline {
+      position:fixed;
+      top:40vh;
+      left:50%;
+      transform:translateX(-50%);
+      width:100%;
+      max-width:1200px;
+      pointer-events:none;
+      z-index:4500;
+    }
+    .headlineText {
+      display:inline-block;
+      color:#fff;
+      text-align:center;
+      opacity:0;
+      will-change:transform,opacity,filter;
+    }
+    .headlineText .line {
+      font-size:clamp(48px,14vw,136px);
+      line-height:0.95;
+      letter-spacing:0.12em;
+      white-space:nowrap;
+      margin:0;
+      padding:0;
+      display:block;
+    }
 
-  /* headline cinematic effect (scale + flicker + chroma + burn) */
-  @keyframes headlineImpact {
-    0%   { transform:scale(0.9); opacity:0; filter:drop-shadow(0 0 0 transparent) saturate(0.9) }
-    8%  { transform:scale(1.12) skewX(-0.8deg); opacity:1; filter:drop-shadow(0 0 40px rgba(255,0,0,0.9)) saturate(1.6) }
-    20%  { transform:scale(1) skewX(0deg); filter:drop-shadow(0 0 26px rgba(255,22,22,0.9)) saturate(1.8) }
-    40%  { transform:scale(1.02); filter:drop-shadow(0 0 18px rgba(255,18,18,0.65)) saturate(1.4) }
-    65%  { transform:scale(1); opacity:0.95; filter:drop-shadow(0 0 12px rgba(255,8,8,0.45)) saturate(1.2) }
-    100% { transform:scale(0.98); opacity:0; filter:blur(1px) brightness(0.8) }
-  }
-  .headlineText.impact{animation:headlineImpact 2.6s cubic-bezier(.2,.9,.2,1) forwards}
+    /* HEADLINE IMPACT */
+    @keyframes headlineImpact {
+      0%   { transform:scale(0.9); opacity:0; filter:drop-shadow(0 0 0 transparent) saturate(0.9); }
+      8%   { transform:scale(1.12) skewX(-0.8deg); opacity:1;
+             filter:drop-shadow(0 0 40px rgba(255,0,0,0.9)) saturate(1.6); }
+      20%  { transform:scale(1) skewX(0deg);
+             filter:drop-shadow(0 0 26px rgba(255,22,22,0.9)) saturate(1.8); }
+      40%  { transform:scale(1.02);
+             filter:drop-shadow(0 0 18px rgba(255,18,18,0.65)) saturate(1.4); }
+      65%  { transform:scale(1); opacity:0.95;
+             filter:drop-shadow(0 0 12px rgba(255,8,8,0.45)) saturate(1.2); }
+      100% { transform:scale(0.98); opacity:0;
+             filter:blur(1px) brightness(0.8); }
+    }
+    .headlineText.impact {
+      animation:headlineImpact 2.6s cubic-bezier(.2,.9,.2,1) forwards;
+    }
 
-  /* subtle chromatic split for a few frames */
-  .headlineText.glitch{
-    position:relative;
-  }
-  .headlineText.glitch::before,
-  .headlineText.glitch::after{
-    content:attr(data-text);
-    position:absolute;left:0;top:0;right:0;bottom:0;opacity:0;pointer-events:none;
-  }
-  .headlineText.glitch::before{color:#ff4b4b;mix-blend-mode:screen;transform:translateX(-6px);opacity:.0}
-  .headlineText.glitch::after{color:#7fb7ff;mix-blend-mode:screen;transform:translateX(6px);opacity:.0}
+    /* GLITCH SPLIT */
+    .headlineText.glitch {
+      position:relative;
+    }
+    .headlineText.glitch::before,
+    .headlineText.glitch::after {
+      content:attr(data-text);
+      position:absolute;
+      left:0; top:0; right:0; bottom:0;
+      opacity:0;
+      pointer-events:none;
+    }
+    .headlineText.glitch::before {
+      color:#ff4b4b;
+      mix-blend-mode:screen;
+      transform:translateX(-6px);
+    }
+    .headlineText.glitch::after {
+      color:#7fb7ff;
+      mix-blend-mode:screen;
+      transform:translateX(6px);
+    }
 
-  /* BLOOD placeholders (not inserted in DOM initially) */
-  .bloodSweep{position:absolute;left:50%;transform:translateX(-50%);opacity:0;z-index:4700;pointer-events:none;width:120%;max-width:1500px;filter:drop-shadow(0 10px 30px rgba(0,0,0,0.8)) brightness(1.4) saturate(2.2)}
-  .bloodHidden{display:none}
+    /* BLOOD SWEEP */
+    .bloodSweep {
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      opacity:0;
+      z-index:4700;
+      pointer-events:none;
+      width:120%;
+      max-width:1500px;
+      filter:drop-shadow(0 10px 30px rgba(0,0,0,0.8))
+              brightness(1.4) saturate(2.2);
+    }
+    @keyframes bloodIn {
+      0%   { opacity:0; transform:translateX(-120%) scaleX(1.25) rotate(-6deg); }
+      20%  { opacity:1; transform:translateX(0)      scaleX(1.02) rotate(-1deg); }
+      80%  { opacity:1; transform:translateX(120%)  scaleX(1)    rotate(0deg);   }
+      100% { opacity:0; }
+    }
+    @keyframes bloodInBottom {
+      0%   { opacity:0; transform:translateX(-120%) scaleX(1.25) rotate(6deg); }
+      20%  { opacity:1; transform:translateX(0)      scaleX(1.02) rotate(1deg);  }
+      80%  { opacity:1; transform:translateX(120%)  scaleX(1)    rotate(0deg);   }
+      100% { opacity:0; }
+    }
 
-  @keyframes bloodIn {
-    0%{opacity:0;transform:translateX(-140%) scaleX(1.25) rotate(-6deg)}
-    18%{opacity:1;transform:translateX(-6%) scaleX(1.02) rotate(-1deg)}
-    60%{opacity:1;transform:translateX(0) scaleX(1) rotate(0)}
-    85%{opacity:1;transform:translateX(0) scaleX(1)}
-    100%{opacity:0;transform:translateX(0) scaleX(.98)}
-  }
-  @keyframes bloodInBottom {
-    0%{opacity:0;transform:translateX(-140%) scaleX(1.25) rotate(6deg)}
-    18%{opacity:1;transform:translateX(-6%) scaleX(1.02) rotate(1deg)}
-    60%{opacity:1;transform:translateX(0) scaleX(1) rotate(0)}
-    85%{opacity:1;transform:translateX(0) scaleX(1)}
-    100%{opacity:0;transform:translateX(0) scaleX(.98)}
-  }
+    /* VFX */
+    .vfx {
+      position:fixed;
+      inset:0;
+      z-index:4900;
+      pointer-events:none;
+      mix-blend-mode:normal;
+    }
+    .vfx .vignette {
+      position:absolute;
+      inset:0;
+      background:radial-gradient(ellipse at center,
+        rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 95%);
+      opacity:.75;
+    }
+    .vfx .scan {
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        rgba(255,255,255,0.02) 0, rgba(255,255,255,0) 2%);
+      background-size:100% 4px;
+      mix-blend-mode:overlay;
+      opacity:0.18;
+    }
+    .vfx .grain {
+      position:absolute;
+      inset:0;
+      background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="g"><feTurbulence baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(%23g)" fill="white"/></svg>');
+      opacity:.06;
+      mix-blend-mode:overlay;
+    }
+    .vfx .pulse {
+      position:absolute;
+      inset:0;
+      background:radial-gradient(circle at 50% 45%,
+        rgba(255,40,40,0.06), rgba(0,0,0,0) 40%);
+      opacity:0;
+      pointer-events:none;
+      mix-blend-mode:screen;
+      transition:opacity 220ms linear;
+    }
+    .vfx .flicker {
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:transparent;
+      mix-blend-mode:screen;
+      opacity:0;
+    }
 
-  /* overlay VFX while pulse plays: scanline, vignette, grain, flicker */
-  .vfx{position:fixed;inset:0;z-index:4900;pointer-events:none;mix-blend-mode:normal}
-  .vfx .vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 95%);opacity:.75}
-  .vfx .scan{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 0, rgba(255,255,255,0) 2%);background-size:100% 4px;mix-blend-mode:overlay;opacity:0.18}
-  .vfx .grain{position:absolute;inset:0; background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="g"><feTurbulence baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(%23g)" fill="white" /></svg>');opacity:.06;mix-blend-mode:overlay}
-  .vfx .pulse{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%, rgba(255,40,40,0.06), rgba(0,0,0,0) 40%);opacity:0;pointer-events:none;mix-blend-mode:screen;transition:opacity 220ms linear}
-  .vfx .flicker{position:absolute;inset:0;pointer-events:none;background:transparent;mix-blend-mode:screen;opacity:0}
+    /* SHAKE */
+    .shake {
+      animation:shakeX .6s cubic-bezier(.2,.9,.2,1) 1;
+    }
+    @keyframes shakeX {
+      0%   { transform:translate(-50%,-50%); }
+      10%  { transform:translate(calc(-50% + 6px),-50%); }
+      20%  { transform:translate(calc(-50% - 8px),-50%); }
+      30%  { transform:translate(calc(-50% + 4px),-50%); }
+      40%  { transform:translate(calc(-50% - 2px),-50%); }
+      100% { transform:translate(-50%,-50%); }
+    }
 
-  /* short camera shake applied to headline block */
-  .shake{animation:shakeX .6s cubic-bezier(.2,.9,.2,1) 1}
-  @keyframes shakeX{
-    0%{transform:translate(-50%,-50%)}
-    10%{transform:translate(calc(-50% + 6px),-50%)}
-    20%{transform:translate(calc(-50% - 8px),-50%)}
-    30%{transform:translate(calc(-50% + 4px),-50%)}
-    40%{transform:translate(calc(-50% - 2px),-50%)}
-    100%{transform:translate(-50%,-50%)}
-  }
+    /* DARK OVERLAY */
+    .darkOverlay {
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.35);
+      pointer-events:none;
+      z-index:4400;
+    }
 
-  /* responsive tweaks */
-  @media (max-width:600px){
-    #logo img{max-width:50vw}
-    .headlineText .line{font-size:clamp(28px,18vw,76px)}
-    .cta{flex-direction:column}
-    .cta a{font-size:18px;padding:12px 22px}
-  }
-</style>
+    /* RESPONSIVE */
+    @media (max-width:600px){
+      #logo img { max-width:50vw; }
+      .headlineText .line { font-size:clamp(28px,18vw,76px); }
+      .cta { flex-direction:column; }
+      .cta a { font-size:18px; padding:12px 22px; }
+    }
+  </style>
 </head>
 <body>
-
   <!-- Menu -->
-  <button id="anarchyBtn" class="anarchyBtn"><img src="anarchy.png" alt="Menu"></button>
+  <button id="anarchyBtn" class="anarchyBtn">
+    <img src="anarchy.png" alt="Menu">
+  </button>
   <nav id="anarchyMenu" class="anarchyMenu">
     <a href="rules.html">Rules</a>
     <a href="support.html">Support</a>
@@ -146,9 +322,11 @@
   </nav>
 
   <!-- Logo -->
-  <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
+  <div id="logo">
+    <img src="Aggro-logo.PNG" alt="Aggro PvP Logo">
+  </div>
 
-  <!-- Headline (no blood in DOM initially) -->
+  <!-- Headline -->
   <div id="headline">
     <div class="headlineText" id="headlineText" data-text="JOIN THE FIGHT">
       <span class="line">JOIN</span>
@@ -179,146 +357,124 @@
     <div class="flicker" id="vfxFlicker"></div>
   </div>
 
-<script>
-(function(){
-  const smoke = document.getElementById('smokeVideo');
-  const headlineText = document.getElementById('headlineText');
-  const vfxPulse = document.getElementById('vfxPulse');
-  const vfxFlicker = document.getElementById('vfxFlicker');
-  const anarchyBtn = document.getElementById('anarchyBtn');
-  const anarchyMenu = document.getElementById('anarchyMenu');
+  <!-- Dark vibe overlay -->
+  <div class="darkOverlay"></div>
 
-  let bloodTopEl = null;
-  let bloodBottomEl = null;
-  let sequenceRunning = false;
+  <script>
+    (function(){
+      const smoke        = document.getElementById('smokeVideo');
+      const headlineWrap = document.getElementById('headline');
+      const headlineText = document.getElementById('headlineText');
+      const vfxPulse     = document.getElementById('vfxPulse');
+      const vfxFlicker   = document.getElementById('vfxFlicker');
+      const anarchyBtn   = document.getElementById('anarchyBtn');
+      const anarchyMenu  = document.getElementById('anarchyMenu');
 
-  function restartAnimation(el, cls){
-    el.classList.remove(cls);
-    void el.offsetWidth;
-    el.classList.add(cls);
-  }
+      let bloodTopEl, bloodBottomEl, sequenceRunning = false;
 
-  function createBloodElements(){
-    // create top
-    bloodTopEl = document.createElement('img');
-    bloodTopEl.id = 'bloodTop';
-    bloodTopEl.className = 'bloodSweep';
-    bloodTopEl.src = 'blood1.png'; // swap to preferred asset
-    bloodTopEl.alt = '';
-    bloodTopEl.style.top = 'calc(50% - 1.25em - 72px)';
-    // create bottom
-    bloodBottomEl = document.createElement('img');
-    bloodBottomEl.id = 'bloodBottom';
-    bloodBottomEl.className = 'bloodSweep';
-    bloodBottomEl.src = 'blood1.png';
-    bloodBottomEl.alt = '';
-    bloodBottomEl.style.top = 'calc(50% + 1.25em + 6px)';
-    // keep hidden until animated
-    bloodTopEl.style.opacity = '0';
-    bloodBottomEl.style.opacity = '0';
-  }
+      function createBloodElements(){
+        bloodTopEl = document.createElement('img');
+        bloodTopEl.id        = 'bloodTop';
+        bloodTopEl.className = 'bloodSweep';
+        bloodTopEl.src       = 'blood1.png';
+        bloodTopEl.alt       = '';
+        bloodTopEl.style.top = 'calc(50% - 1.25em - 72px)';
+        bloodTopEl.style.opacity = '0';
 
-  // Helper: quick flicker sequence (noise frames)
-  function triggerFlicker(){
-    vfxFlicker.style.opacity = '1';
-    const seq = [
-      {t:0,   o:0.18},
-      {t:80,  o:0.06},
-      {t:160, o:0.24},
-      {t:280, o:0.08},
-      {t:420, o:0.18},
-      {t:600, o:0.0}
-    ];
-    seq.forEach(s => setTimeout(()=> {
-      vfxFlicker.style.background = `linear-gradient(90deg, rgba(255,0,0,${s.o*0.06}), transparent)`;
-    }, s.t));
-    setTimeout(()=> vfxFlicker.style.opacity = '0', 900);
-  }
+        bloodBottomEl = bloodTopEl.cloneNode();
+        bloodBottomEl.id        = 'bloodBottom';
+        bloodBottomEl.style.top = 'calc(50% + 1.25em + 6px)';
+      }
 
-  // Insert bloods into DOM right before animating so they don't affect layout
-  function insertBloods(){
-    if(!bloodTopEl || !bloodBottomEl) createBloodElements();
-    const headline = document.getElementById('headline');
-    // Remove existing if somehow present
-    if(document.getElementById('bloodTop')) document.getElementById('bloodTop').remove();
-    if(document.getElementById('bloodBottom')) document.getElementById('bloodBottom').remove();
-    headline.appendChild(bloodTopEl);
-    headline.appendChild(bloodBottomEl);
-  }
+      function restartAnimation(el, cls){
+        el.classList.remove(cls);
+        void el.offsetWidth;
+        el.classList.add(cls);
+      }
 
-  // Remove bloods from DOM after animation to keep DOM clean
-  function removeBloods(){
-    if(bloodTopEl && bloodTopEl.parentElement) bloodTopEl.parentElement.removeChild(bloodTopEl);
-    if(bloodBottomEl && bloodBottomEl.parentElement) bloodBottomEl.parentElement.removeChild(bloodBottomEl);
-  }
+      function triggerFlicker(){
+        const seq = [
+          {t:  0, o:0.18},
+          {t: 80, o:0.06},
+          {t:160, o:0.24},
+          {t:280, o:0.08},
+          {t:420, o:0.18},
+          {t:600, o:0.0}
+        ];
+        vfxFlicker.style.opacity = '1';
+        seq.forEach(s => {
+          setTimeout(() => {
+            vfxFlicker.style.background =
+              `linear-gradient(90deg, rgba(255,0,0,${s.o*0.06}), transparent)`;
+          }, s.t);
+        });
+        setTimeout(() => vfxFlicker.style.opacity = '0', 900);
+      }
 
-  // Main sequence: inserts blood, runs headline+vfx+blood, then cleans up
-  function runSequence(){
-    if(sequenceRunning) return;
-    sequenceRunning = true;
+      function insertBloods(){
+        if (!bloodTopEl) createBloodElements();
+        headlineWrap.appendChild(bloodTopEl);
+        headlineWrap.appendChild(bloodBottomEl);
+      }
 
-    smoke.classList.add('effect');
+      function removeBloods(){
+        bloodTopEl?.remove();
+        bloodBottomEl?.remove();
+      }
 
-    // Insert bloods into DOM
-    insertBloods();
+      function runSequence(){
+        if (sequenceRunning) return;
+        sequenceRunning = true;
 
-    // Trigger headline animation
-    restartAnimation(headlineText, 'impact');
-    headlineText.classList.add('glitch');
+        smoke.classList.add('effect');
+        insertBloods();
 
-    // camera shake
-    headlineText.parentElement.classList.add('shake');
-    setTimeout(()=> headlineText.parentElement.classList.remove('shake'), 700);
+        restartAnimation(headlineText, 'impact');
+        headlineText.classList.add('glitch');
+        headlineWrap.classList.add('shake');
 
-    // animate bloods
-    // add classes after short delay so layout settles
-    setTimeout(()=>{
-      if(bloodTopEl) restartAnimation(bloodTopEl, 'animateTop');
-      setTimeout(()=>{ if(bloodBottomEl) restartAnimation(bloodBottomEl, 'animateBottom'); }, 160);
-    }, 80);
+        vfxPulse.style.opacity = '1';
+        triggerFlicker();
 
-    // VFX
-    vfxPulse.style.opacity = '1';
-    triggerFlicker();
+        setTimeout(() => {
+          restartAnimation(bloodTopEl,    'bloodIn');
+          restartAnimation(bloodBottomEl, 'bloodInBottom');
+        }, 460);
 
-    // Cleanup timing — tuned to match animations
-    setTimeout(()=> vfxPulse.style.opacity = '0', 900);
-    setTimeout(()=> headlineText.classList.remove('glitch'), 1200);
-    setTimeout(()=> smoke.classList.remove('effect'), 1800);
+        setTimeout(() => vfxPulse.style.opacity = '0', 900);
+        setTimeout(() => headlineText.classList.remove('glitch'), 1200);
+        setTimeout(() => smoke.classList.remove('effect'), 1800);
+        setTimeout(() => {
+          headlineWrap.classList.remove('shake');
+          removeBloods();
+          sequenceRunning = false;
+        }, 2600);
+      }
 
-    // remove bloods after full animation finishes
-    setTimeout(()=>{
-      removeBloods();
-      sequenceRunning = false;
-    }, 2600);
-  }
+      let prevTime = 0, cooldown = false;
+      smoke.addEventListener('timeupdate', () => {
+        const t = smoke.currentTime;
+        if (prevTime - t > 0.25 && !cooldown) {
+          runSequence();
+          cooldown = true;
+          setTimeout(() => cooldown = false, 3500);
+        }
+        prevTime = t;
+      });
 
-  // Detect video loop by comparing currentTime wrap
-  let prevTime = 0;
-  let cooldown = false;
+      anarchyBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        anarchyMenu.classList.toggle('open');
+      });
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.anarchyBtn') &&
+            !e.target.closest('.anarchyMenu')) {
+          anarchyMenu.classList.remove('open');
+        }
+      });
 
-  smoke.addEventListener('timeupdate', ()=>{
-    const t = smoke.currentTime || 0;
-    if(prevTime - t > 0.25 && !cooldown){
-      runSequence();
-      cooldown = true;
-      setTimeout(()=> cooldown = false, 3500);
-    }
-    prevTime = t;
-  });
-
-  // manual trigger for testing: uncomment if needed
-  // document.addEventListener('keydown', e => { if(e.key===' ') runSequence(); });
-
-  // menu toggle
-  anarchyBtn.addEventListener('click', e => { e.stopPropagation(); anarchyMenu.classList.toggle('open'); });
-  document.addEventListener('click', e => {
-    if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) anarchyMenu.classList.remove('open');
-  });
-
-  // create blood elements early (but don't insert)
-  createBloodElements();
-})();
-</script>
+      createBloodElements();
+    })();
+  </script>
 </body>
 </html>
