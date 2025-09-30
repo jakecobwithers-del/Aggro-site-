@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Aggro PvP — JOIN THE FIGHT</title>
 <style>
+  /* Font */
   @font-face {
     font-family: "28Days";
     src: url("28%20Days%20Later.ttf") format("truetype"),
@@ -12,15 +13,18 @@
     font-display: swap;
   }
 
+  /* Base */
   html, body {
-    margin: 0; height: 100%; background: #050505;
-    font-family: "28Days", sans-serif; overflow: hidden;
+    margin: 0; height: 100%;
+    background: #050505;
+    font-family: "28Days", sans-serif;
+    overflow: hidden;
   }
 
-  /* Smoke sits under text/blood/menu */
+  /* Smoke sits ABOVE logo/buttons, BELOW headline/blood/menu */
   #smoke-wrap {
     position: fixed; inset: 0;
-    z-index: 1000;
+    z-index: 3000;
     pointer-events: none;
   }
   #smokeVideo {
@@ -31,41 +35,78 @@
   @keyframes smokeRedPulse {
     0%   { filter: brightness(0.7) saturate(1); }
     40%  { filter: brightness(1.25) saturate(2.2); }
-    100% { filter: brightness(0.85) saturate(1.3); }
+    100% { filter: brightness(0.9) saturate(1.4); }
   }
 
-  /* Logo */
+  /* Logo (behind smoke) */
   #logo {
     position: fixed; top: 6vh; left: 50%;
     transform: translateX(-50%);
-    z-index: 3000;
+    z-index: 2000; /* under smoke */
   }
   #logo img { max-width: 30vw; height: auto; }
 
-  /* Menu always above everything */
-  .anarchyBtn { position: fixed; top: 14px; right: 14px; z-index: 10000; background: none; border: none; }
+  /* CTA buttons (behind smoke) */
+  .cta {
+    position: fixed; bottom: 8vh; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 20px;
+    z-index: 2000; /* under smoke */
+  }
+  .cta a {
+    font-family: "28Days";
+    font-size: 26px;
+    padding: 16px 32px;
+    color: #fff;
+    border-radius: 10px;
+    text-decoration: none;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.4), 0 6px 15px rgba(0,0,0,0.6);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .cta a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 0 rgba(0,0,0,0.4), 0 10px 20px rgba(0,0,0,0.6);
+  }
+  .cta a.steam {
+    background: linear-gradient(#ff1a1a, #990000);
+    border: 2px solid #ff0000;
+  }
+  .cta a.discord {
+    background: linear-gradient(#5865F2, #2c3ddf);
+    border: 2px solid #3a45f5;
+  }
+
+  /* Menu button + dropdown (above smoke) */
+  .anarchyBtn {
+    position: fixed; top: 14px; right: 14px;
+    z-index: 5000; /* above smoke */
+    background: none; border: none; cursor: pointer;
+  }
   .anarchyBtn img { width: 52px; height: 52px; }
   .anarchyMenu {
-    position: fixed; top: 76px; right: 14px; z-index: 10000;
+    position: fixed; top: 76px; right: 14px;
+    z-index: 5000; /* above smoke */
     display: none; flex-direction: column; gap: 8px; padding: 10px;
     background: rgba(10,10,10,0.95); border-radius: 10px;
+    border: 1px solid rgba(255,0,0,0.3);
   }
   .anarchyMenu.open { display: flex; }
   .anarchyMenu a {
     font-family: "28Days"; font-weight: 800; color: #ffdede;
-    text-decoration: none; padding: 10px;
+    text-decoration: none; padding: 10px 12px;
   }
   .anarchyMenu a:hover { background: rgba(255,16,16,0.08); }
 
-  /* Headline stacked */
+  /* Headline stacked (above smoke) */
   #headline {
     position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    z-index: 2000;
+    z-index: 4500; /* above smoke */
     color: #fff;
     text-shadow: 0 0 20px rgba(255,0,0,0.7), 0 0 30px rgba(0,0,0,0.9);
-    opacity: 0; transition: opacity 400ms ease;
+    opacity: 0; transition: opacity 800ms ease;
   }
   #headline.visible { opacity: 1; }
   #headline div {
@@ -75,55 +116,50 @@
     white-space: nowrap;
   }
 
-  /* Blood sweeps inside headline, over text */
+  /* Blood sweeps inside headline, OVER text */
   .bloodSweep {
     position: absolute;
-    left: -100%;
+    left: -120%;
     opacity: 0;
-    z-index: 2500; /* above text */
+    z-index: 4700; /* above headline text */
     pointer-events: none;
-    width: 120%;
-    max-height: 120px;
+    width: 130%;
+    max-height: 130px;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.6));
   }
-  #bloodTop { top: -60px; }
-  #bloodBottom { bottom: -60px; }
-  .animateTop { animation: sweepTop 1.5s ease forwards; }
-  .animateBottom { animation: sweepBottom 1.5s ease forwards; }
-  @keyframes sweepTop {
-    0%   { opacity: 0; left: -100%; }
-    20%  { opacity: 1; }
-    100% { opacity: 1; left: 0; }
+  #bloodTop {
+    top: -60px; /* just above JOIN */
+    transform: skewY(-3deg) scale(1.05);
   }
-  @keyframes sweepBottom {
-    0%   { opacity: 0; left: -100%; }
-    20%  { opacity: 1; }
-    100% { opacity: 1; left: 0; }
+  #bloodBottom {
+    bottom: -60px; /* just below FIGHT */
+    transform: skewY(3deg) scale(1.05);
   }
 
-  /* Buttons */
-  .cta {
-    position: fixed; bottom: 8vh; left: 50%;
-    transform: translateX(-50%);
-    display: flex; gap: 20px;
-    z-index: 3000;
+  /* Animations (with fade out for polish) */
+  .animateTop { animation: sweepTop 1.8s ease forwards; }
+  .animateBottom { animation: sweepBottom 1.8s ease forwards; }
+  @keyframes sweepTop {
+    0%   { opacity: 0; left: -120%; }
+    15%  { opacity: 1; }
+    80%  { opacity: 1; left: 0; }
+    100% { opacity: 0; left: 0; }
   }
-  .cta a {
-    font-family: "28Days";
-    font-size: 26px;
-    padding: 16px 32px;
-    color: #fff;
-    background: linear-gradient(145deg, #8b0000, #b30000);
-    border: 2px solid #ff0000;
-    border-radius: 8px;
-    text-decoration: none;
-    text-shadow: 0 0 6px #000;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  @keyframes sweepBottom {
+    0%   { opacity: 0; left: -120%; }
+    15%  { opacity: 1; }
+    80%  { opacity: 1; left: 0; }
+    100% { opacity: 0; left: 0; }
   }
-  .cta a:hover {
-    transform: scale(1.1) rotate(-1deg);
-    box-shadow: 0 0 20px rgba(255,0,0,0.8);
+
+  /* Mobile tweaks */
+  @media (max-width: 600px) {
+    #logo img { max-width: 50vw; }
+    #headline div { font-size: clamp(36px, 14vw, 90px); }
+    .cta { flex-direction: column; gap: 12px; }
+    .cta a { font-size: 20px; padding: 12px 20px; }
+    .anarchyBtn img { width: 44px; height: 44px; }
+    #bloodTop, #bloodBottom { max-height: 90px; }
   }
 </style>
 </head>
@@ -139,22 +175,23 @@
   <a href="leaderboard.html">Leaderboard</a>
 </nav>
 
-<!-- Logo -->
+<!-- Logo (behind smoke) -->
 <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
 
-<!-- Headline stacked -->
+<!-- Headline stacked (above smoke) -->
 <div id="headline">
   <div>JOIN</div>
   <div>THE</div>
   <div>FIGHT</div>
+  <!-- Blood sweeps anchored to headline and over text -->
   <img id="bloodTop" class="bloodSweep" src="blood1.png" alt="">
   <img id="bloodBottom" class="bloodSweep" src="blood1.png" alt="">
 </div>
 
-<!-- Call-to-action buttons -->
+<!-- CTA buttons (behind smoke) -->
 <div class="cta">
-  <a href="steam://connect/YOURSERVERIP">STEAM CONNECT</a>
-  <a href="https://discord.gg/YOURDISCORD">DISCORD</a>
+  <a href="steam://connect/YOURSERVERIP" class="steam">JOIN SERVER</a>
+  <a href="https://discord.gg/YOURDISCORD" class="discord">JOIN THE COMMUNITY</a>
 </div>
 
 <!-- Smoke overlay -->
@@ -173,26 +210,26 @@
   const anarchyBtn = document.getElementById('anarchyBtn');
   const anarchyMenu = document.getElementById('anarchyMenu');
 
+  /* Force-restart CSS animations every loop for consistency */
   function restartAnimation(el, cls){
     el.classList.remove(cls);
-    void el.offsetWidth; // force reflow
+    void el.offsetWidth; // reflow
     el.classList.add(cls);
   }
 
   function runSequence(){
     smoke.classList.add('effect');
+    // Restart headline fade for a consistent beat
+    headline.classList.remove('visible');
+    void headline.offsetWidth;
     headline.classList.add('visible');
 
+    // Blood sweeps over the text
     restartAnimation(bloodTop, 'animateTop');
-    setTimeout(()=> restartAnimation(bloodBottom, 'animateBottom'), 400);
-
-    setTimeout(()=>{
-      headline.classList.remove('visible');
-      smoke.classList.remove('effect');
-    }, 3500);
+    setTimeout(()=> restartAnimation(bloodBottom, 'animateBottom'), 450);
   }
 
-  // Trigger at end of smoke loop
+  /* Detect the end of the smoke loop by time wrapping */
   let prevTime = 0;
   smoke.addEventListener('timeupdate', ()=>{
     const t = smoke.currentTime || 0;
@@ -200,12 +237,11 @@
     prevTime = t;
   });
 
-    // Menu toggle
+  /* Menu toggle (always above smoke) */
   anarchyBtn.addEventListener('click', e=>{
     e.stopPropagation();
     anarchyMenu.classList.toggle('open');
   });
-
   document.addEventListener('click', e=>{
     if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
       anarchyMenu.classList.remove('open');
@@ -215,4 +251,3 @@
 </script>
 </body>
 </html>
-
