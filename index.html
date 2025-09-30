@@ -5,69 +5,55 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Aggro PvP — JOIN THE FIGHT</title>
 <style>
-  :root {
-    --splat-opacity: 0.7;
-    --splat-scale: 1.05;
-  }
-
   @font-face {
     font-family: "28Days";
     src: url("28%20Days%20Later.ttf") format("truetype"),
          url("28 Days Later.ttf") format("truetype");
-    font-weight: 400 900;
-    font-style: normal;
     font-display: swap;
   }
 
   html, body {
-    margin: 0;
-    height: 100%;
-    background: #050505;
-    font-family: "28Days", Inter, sans-serif;
-    overflow: hidden;
+    margin: 0; height: 100%; background: #050505;
+    font-family: "28Days", sans-serif; overflow: hidden;
   }
-
-  /* Anarchy menu */
-  .anarchyBtn {
-    position: fixed; top: 14px; right: 14px; z-index: 9000;
-    background: transparent; border: none; cursor: pointer;
-  }
-  .anarchyBtn img { width: 52px; height: 52px; }
-  .anarchyMenu {
-    position: fixed; top: 76px; right: 14px; z-index: 9000;
-    display: none; flex-direction: column; gap: 8px; padding: 10px;
-    background: rgba(10,10,10,0.95); border-radius: 10px;
-    box-shadow: 0 18px 50px rgba(0,0,0,0.6);
-  }
-  .anarchyMenu.open { display: flex; }
-  .anarchyMenu a {
-    font-family: "28Days", Inter, sans-serif;
-    font-weight: 800; color: #ffdede; text-decoration: none;
-    padding: 10px 12px; border-radius: 8px;
-  }
-  .anarchyMenu a:hover { background: rgba(255,16,16,0.08); }
 
   /* Smoke background */
   #smoke-wrap { position: fixed; inset: 0; z-index: 1000; pointer-events: none; }
   #smokeVideo { width: 100%; height: 100%; object-fit: cover; opacity: 0.56; }
 
+  /* Logo */
+  #logo { position: fixed; top: 6vh; left: 50%; transform: translateX(-50%); z-index: 3000; }
+
+  /* Anarchy menu */
+  .anarchyBtn { position: fixed; top: 14px; right: 14px; z-index: 9000; background: none; border: none; }
+  .anarchyBtn img { width: 52px; height: 52px; }
+  .anarchyMenu {
+    position: fixed; top: 76px; right: 14px; z-index: 9000;
+    display: none; flex-direction: column; gap: 8px; padding: 10px;
+    background: rgba(10,10,10,0.95); border-radius: 10px;
+  }
+  .anarchyMenu.open { display: flex; }
+  .anarchyMenu a {
+    font-family: "28Days"; font-weight: 800; color: #ffdede;
+    text-decoration: none; padding: 10px;
+  }
+  .anarchyMenu a:hover { background: rgba(255,16,16,0.08); }
+
   /* Center stage */
   .centerStage {
     position: fixed; inset: 0; z-index: 2000;
     display: flex; align-items: center; justify-content: center;
-    pointer-events: none; padding: 5vh 6vw;
+    pointer-events: none;
   }
 
   #joinText {
-    font-family: "28Days", Inter, sans-serif;
-    font-weight: 900; color: #fff;
-    font-size: clamp(24px, 9vw, 80px);
+    color: #fff;
+    font-size: clamp(20px, 8vw, 64px);
     letter-spacing: 0.25em;
-    text-align: center;
     white-space: nowrap;
     opacity: 0;
     transform: translateY(20px) scale(0.98);
-    transition: opacity 220ms ease, transform 260ms ease;
+    transition: opacity 300ms ease, transform 300ms ease;
     z-index: 2010;
   }
   #joinText.visible { opacity: 1; transform: translateY(0) scale(1); }
@@ -75,29 +61,26 @@
   .splat {
     position: absolute; opacity: 0;
     mix-blend-mode: multiply;
-    filter: brightness(0.95) contrast(1.05) saturate(1.05);
-    transition: opacity 180ms ease, transform 320ms ease;
+    transition: opacity 300ms ease, transform 300ms ease;
     z-index: 2020;
   }
-  .splat.show { opacity: var(--splat-opacity); transform: scale(var(--splat-scale)); }
+  .splat.show { opacity: 0.7; transform: scale(1.05); }
 
-  #splat1 { top: 15%; left: 20%; width: 120px; }
-  #splat2 { bottom: 15%; right: 18%; width: 140px; }
+  #splat1 { top: 20%; left: 15%; width: 100px; }
+  #splat2 { bottom: 20%; right: 15%; width: 120px; }
 
   @media (max-width: 600px) {
-    #joinText { font-size: clamp(18px, 12vw, 42px); letter-spacing: 0.18em; }
-    #splat1 { top: 12%; left: 12%; width: 80px; }
-    #splat2 { bottom: 12%; right: 12%; width: 90px; }
+    #joinText { font-size: clamp(18px, 10vw, 36px); letter-spacing: 0.18em; }
+    #splat1 { width: 70px; top: 18%; left: 10%; }
+    #splat2 { width: 80px; bottom: 18%; right: 10%; }
   }
 </style>
 </head>
 <body>
 
 <!-- Anarchy menu -->
-<button id="anarchyBtn" class="anarchyBtn" aria-expanded="false" aria-controls="anarchyMenu">
-  <img src="anarchy.png" alt="Menu">
-</button>
-<nav id="anarchyMenu" class="anarchyMenu" aria-hidden="true">
+<button id="anarchyBtn" class="anarchyBtn"><img src="anarchy.png" alt="Menu"></button>
+<nav id="anarchyMenu" class="anarchyMenu">
   <a href="rules.html">Rules</a>
   <a href="support.html">Support</a>
   <a href="donate.html">Donate</a>
@@ -112,22 +95,26 @@
   </video>
 </div>
 
+<!-- Logo -->
+<div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
+
 <!-- Center stage -->
 <div class="centerStage">
   <div id="joinText">J O I N&nbsp;&nbsp;T H E&nbsp;&nbsp;F I G H T</div>
-  <img id="splat1" class="splat" src="blood1.png" alt="blood splat top-left" />
-  <img id="splat2" class="splat" src="blood1.png" alt="blood splat bottom-right" />
+  <img id="splat1" class="splat" src="blood1.png" alt="">
+  <img id="splat2" class="splat" src="blood1.png" alt="">
 </div>
 
 <script>
 (function(){
+  const smoke = document.getElementById('smokeVideo');
   const joinText = document.getElementById('joinText');
   const splat1 = document.getElementById('splat1');
   const splat2 = document.getElementById('splat2');
   const anarchyBtn = document.getElementById('anarchyBtn');
   const anarchyMenu = document.getElementById('anarchyMenu');
 
-  function showJoin() {
+  function runSequence(){
     joinText.classList.add('visible');
     setTimeout(()=> splat1.classList.add('show'), 300);
     setTimeout(()=> splat2.classList.add('show'), 600);
@@ -138,22 +125,22 @@
     }, 3000);
   }
 
-  // Trigger once after load
-  setTimeout(showJoin, 800);
+  // Trigger at end of smoke loop
+  let prevTime = 0;
+  smoke.addEventListener('timeupdate', ()=>{
+    const t = smoke.currentTime || 0;
+    if(prevTime - t > 0.3){ runSequence(); }
+    prevTime = t;
+  });
 
   // Menu toggle
   anarchyBtn.addEventListener('click', e=>{
     e.stopPropagation();
-    const open = !anarchyMenu.classList.contains('open');
-    anarchyMenu.classList.toggle('open', open);
-    anarchyBtn.setAttribute('aria-expanded', open);
-    anarchyMenu.setAttribute('aria-hidden', !open);
+    anarchyMenu.classList.toggle('open');
   });
   document.addEventListener('click', e=>{
     if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
       anarchyMenu.classList.remove('open');
-      anarchyBtn.setAttribute('aria-expanded','false');
-      anarchyMenu.setAttribute('aria-hidden','true');
     }
   });
 })();
