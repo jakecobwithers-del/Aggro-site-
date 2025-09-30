@@ -11,13 +11,14 @@
     :root{
       --bg:#050505;
       --red:#ff1a1a;
-      --phase:3000;     /* ms per phase: normal then red */
-      --text-dur:3000;  /* headline visible length (keeps legacy timing) */
+      --phase:3000;
+      --text-dur:3000;
       --flash-dur:600;
       --z-smoke:2000;
       --z-overlay:3000;
       --z-ui:6000;
       --z-head:6500;
+      --z-blood:7000; /* blood above headline */
     }
 
     *,*::before,*::after{box-sizing:border-box}
@@ -25,54 +26,56 @@
     @font-face{font-family:"28Days";src:url("28%20Days%20Later.ttf") format("truetype");font-display:swap}
     button,a{background:none;border:0;cursor:pointer;color:inherit;text-decoration:none}
 
-    /* --- Smoke (single layer like original) --- */
+    /* Smoke */
     #smoke-wrap{position:fixed;inset:0;pointer-events:none;z-index:var(--z-smoke);overflow:hidden}
-    #smokeVideo{
-      width:100%;height:100%;object-fit:cover;opacity:.6;mix-blend-mode:screen;
-      transform-origin:center center;transition:opacity .4s linear;
-      background:transparent;
-    }
+    #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:.6;mix-blend-mode:screen;transition:opacity .4s linear}
 
-    /* color tint (mix-blend-mode: color) and red flash (screen blend) */
+    /* overlays */
     #colorOverlay{position:fixed;inset:0;pointer-events:none;background:var(--red);mix-blend-mode:color;opacity:0;transition:opacity .25s linear;z-index:var(--z-overlay)}
     #redFlash{position:fixed;inset:0;pointer-events:none;background:var(--red);mix-blend-mode:screen;opacity:0;transition:opacity .06s linear;z-index:calc(var(--z-overlay)+1)}
 
-    /* --- UI always visible (logo, menu, CTAs) --- */
+    /* UI always visible */
     #logo{position:fixed;top:6vh;left:50%;transform:translateX(-50%);z-index:var(--z-ui);pointer-events:auto}
     #logo img{max-width:30vw;height:auto;max-height:84px;filter:drop-shadow(0 8px 28px rgba(0,0,0,.85))}
-
     .anarchyBtn{position:fixed;top:14px;right:14px;z-index:var(--z-ui);pointer-events:auto;background:transparent;width:64px;height:64px}
     .anarchyBtn img{width:64px;height:64px;display:block}
     .anarchyMenu{position:fixed;top:90px;right:14px;display:none;flex-direction:column;padding:12px;background:rgba(10,10,10,0.95);border-radius:12px;z-index:var(--z-ui);pointer-events:auto}
     .anarchyMenu.open{display:flex}
     .anarchyMenu a{color:#ffdede;font-size:16px;font-weight:800;padding:10px 14px;border-radius:8px;margin:6px 0}
-
     .cta{position:fixed;bottom:6vh;left:50%;transform:translateX(-50%);display:flex;gap:16px;z-index:var(--z-ui);pointer-events:auto;align-items:center}
     .cta a{position:relative;display:inline-block;font-size:18px;padding:12px 22px;border-radius:12px;background:linear-gradient(180deg,#151515,#070707);color:#fff;font-weight:800;transition:transform .12s,box-shadow .12s;will-change:transform,box-shadow}
     .cta a.steam{--ar:255;--ag:26;--ab:26}
     .cta a.discord{--ar:114;--ag:137;--ab:218}
     .cta a:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,0,0,.5)}
 
-    /* --- Headline & blood (hidden by default) --- */
-    #headline{position:fixed;top:42vh;left:50%;transform:translateX(-50%);text-align:center;z-index:var(--z-head);pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:18px}
+    /* Headline container: relative so absolute blood can overlap */
+    #headline{position:fixed;top:42vh;left:50%;transform:translateX(-50%);text-align:center;z-index:var(--z-head);pointer-events:none;width:96%;height:auto;display:flex;align-items:center;justify-content:center}
+    /* headline text sits below blood visually (lower z-index) */
     #headlineText{
       font-size:clamp(48px,14vw,136px);line-height:.9;letter-spacing:.12em;color:#fff;
       opacity:0; transform:scale(.96); transition:opacity .18s, transform .18s; will-change:opacity,transform;
-    }
-    #bloodCircle{
-      width:clamp(200px,40vw,400px); opacity:0; transform:scale(.96); transition:opacity .18s, transform .18s; pointer-events:none;
+      position:relative; z-index:calc(var(--z-blood) - 1);
+      padding:6px 12px;
     }
 
-    /* visible states controlled by JS */
+    /* blood positioned absolutely on top of headline text */
+    #bloodCircle{
+      position:absolute; left:50%; top:50%; transform:translate(-50%, -62%); /* slight vertical offset so blood sits visually over text */
+      width:clamp(220px,48vw,520px); opacity:0; transition:opacity .18s, transform .18s; pointer-events:none;
+      z-index:var(--z-blood);
+      mix-blend-mode:normal;
+    }
+
+    /* visible states applied by JS */
     .red-phase #colorOverlay{opacity:.28}
     .red-flash-on #redFlash{opacity:.42}
-    .pop-visible #headlineText{opacity:1;transform:scale(1.14)}
-    .pop-visible #bloodCircle{opacity:.6;transform:scale(1)}
+    .pop-visible #headlineText{opacity:1;transform:scale(1)}
+    .pop-visible #bloodCircle{opacity:.9;transform:translate(-50%,-50%) scale(1)}
     .pop-ui .cta a{transform:scale(1.12);box-shadow:0 28px 60px rgba(255,26,26,.22)}
     .pop-ui .anarchyBtn img{transform:scale(1.12);filter:drop-shadow(0 10px 30px rgba(255,26,26,.35))}
 
-    /* responsive tweaks */
-    @media (max-width:900px){#logo img{max-width:38vw;max-height:72px}; .anarchyMenu{right:10px;top:86px}}
+    /* responsive adjustments */
+    @media (max-width:900px){#logo img{max-width:38vw;max-height:72px} .anarchyMenu{right:10px;top:86px}}
     @media (max-width:600px){
       #headline{top:36vh}
       #headlineText{font-size:clamp(34px,10vw,72px)}
@@ -102,14 +105,14 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- logo & CTAs (always present) -->
+  <!-- logo & CTAs -->
   <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro Logo" /></div>
   <div class="cta" role="navigation" aria-label="Primary actions">
     <a class="steam" href="steam://connect/YOURSERVERIP" aria-label="Join the server">JOIN SERVER</a>
     <a class="discord" href="https://discord.gg/YOURDISCORD" target="_blank" rel="noopener" aria-label="Join Discord">JOIN COMMUNITY</a>
   </div>
 
-  <!-- smoke (single video like original) -->
+  <!-- smoke -->
   <div id="smoke-wrap">
     <video id="smokeVideo" muted autoplay loop playsinline preload="auto" crossorigin="anonymous">
       <source src="Smoke.mp4" type="video/mp4" />
@@ -120,7 +123,7 @@
   <div id="colorOverlay" aria-hidden="true"></div>
   <div id="redFlash" aria-hidden="true"></div>
 
-  <!-- headline & blood (appear only in red phase) -->
+  <!-- headline + blood (blood absolute and above text) -->
   <div id="headline" aria-hidden="true">
     <div id="headlineText" data-text="JOIN THE FIGHT">JOIN THE FIGHT</div>
     <img id="bloodCircle" src="blood1.png" alt="blood splat" />
@@ -137,7 +140,6 @@
       const blood = document.getElementById('bloodCircle');
       const steamBtn = document.querySelector('.cta a.steam');
       const discBtn = document.querySelector('.cta a.discord');
-      const menuImg = document.querySelector('.anarchyBtn img');
 
       let isRed = false;
       let intervalId = null;
@@ -147,19 +149,19 @@
       function startSmoke(){
         if(!smoke) return;
         smoke.style.opacity = '.6';
-        smoke.play().catch(()=>{ /* autoplay may be blocked until user interaction */ });
+        smoke.play().catch(()=>{});
       }
 
       function hidePopElements(){
         root.classList.remove('pop-visible');
         if(headline){ headline.style.opacity = 0; headline.style.transform = 'scale(.96)'; }
-        if(blood){ blood.style.opacity = 0; blood.style.transform = 'scale(.96)'; }
+        if(blood){ blood.style.opacity = 0; blood.style.transform = 'translate(-50%,-62%) scale(.96)'; }
       }
 
       function showPopElements(){
         root.classList.add('pop-visible');
-        if(headline){ headline.style.opacity = 1; headline.style.transform = 'scale(1.14)'; }
-        if(blood){ blood.style.opacity = 0.6; blood.style.transform = 'scale(1)'; }
+        if(headline){ headline.style.opacity = 1; headline.style.transform = 'scale(1)'; }
+        if(blood){ blood.style.opacity = 0.9; blood.style.transform = 'translate(-50%,-50%) scale(1)'; }
       }
 
       function triggerCtaPulse(el){
@@ -183,26 +185,19 @@
         root.classList.add('red-phase');
         colorOverlay.style.opacity = '.28';
 
-        // quick screen flash
         redFlash.style.opacity = '.42';
         clearTimeout(flashTimer);
         flashTimer = setTimeout(()=> { redFlash.style.opacity = '0'; }, 120);
 
-        // small delay then show headline + blood + UI pop
         clearTimeout(popTimer);
         popTimer = setTimeout(()=> {
           showPopElements();
           root.classList.add('pop-ui');
-
-          // CTA pulses (stagger)
           triggerCtaPulse(steamBtn);
           setTimeout(()=> triggerCtaPulse(discBtn), 90);
-
-          // relax pop-ui slightly before red-phase ends
-          setTimeout(()=> root.classList.remove('pop-ui'), PHASE - 300);
+          setTimeout(()=> { root.classList.remove('pop-ui'); }, PHASE - 300);
         }, 80);
 
-        // hide headline slightly before phase ends for smooth transition
         setTimeout(()=> {
           hidePopElements();
           colorOverlay.style.opacity = '0';
@@ -214,7 +209,7 @@
         else enterRed();
       }
 
-      // menu toggle simple
+      // menu toggle
       const btn = document.getElementById('anarchyBtn');
       const menu = document.getElementById('anarchyMenu');
       if(btn && menu){
@@ -236,27 +231,13 @@
       // init
       window.addEventListener('DOMContentLoaded', ()=>{
         startSmoke();
-        enterNormal(); // page starts in normal smoke stage with UI visible
-        // start repeating cycle after small warmup
-        setTimeout(()=> {
-          intervalId = setInterval(togglePhase, PHASE);
-          // first toggle occurs after PHASE so initial PHASE = normal
-        }, 160);
-
-        // resume smoke when tab becomes visible
-        document.addEventListener('visibilitychange', ()=> {
-          if(!document.hidden) startSmoke();
-        });
+        enterNormal();
+        setTimeout(()=> { intervalId = setInterval(togglePhase, PHASE); }, 160);
+        document.addEventListener('visibilitychange', ()=> { if(!document.hidden) startSmoke(); });
       });
 
-      // cleanup
-      window.addEventListener('beforeunload', ()=> {
-        clearInterval(intervalId);
-        clearTimeout(popTimer);
-        clearTimeout(flashTimer);
-      });
+      window.addEventListener('beforeunload', ()=> { clearInterval(intervalId); clearTimeout(popTimer); clearTimeout(flashTimer); });
 
-      // reduced-motion fallback
       const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
       if(prefersReduced.matches) document.documentElement.style.setProperty('--phase','1500');
     })();
