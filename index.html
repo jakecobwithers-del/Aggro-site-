@@ -64,24 +64,24 @@
     text-align: center;
     z-index: 2000;
     color: #fff;
-    text-shadow: 0 0 15px rgba(255,0,0,0.6), 0 0 25px rgba(0,0,0,0.8);
+    text-shadow: 0 0 20px rgba(255,0,0,0.7), 0 0 30px rgba(0,0,0,0.9);
     opacity: 0; transition: opacity 400ms ease;
   }
   #headline.visible { opacity: 1; }
   #headline div {
-    font-size: clamp(28px, 9vw, 80px);
+    font-size: clamp(40px, 12vw, 120px); /* bigger headline */
     letter-spacing: 0.15em;
     line-height: 1.1;
   }
 
-  /* Blood sweeps */
+  /* Blood sweeps OVER the text */
   .bloodSweep {
     position: absolute;
     opacity: 0;
-    z-index: 2000;
+    z-index: 3000; /* higher than headline */
     pointer-events: none;
     width: 100%;
-    max-height: 120px;
+    max-height: 140px;
   }
   #bloodTop {
     top: -20px; left: -100%;
@@ -108,8 +108,8 @@
   @media (max-width: 600px) {
     #logo { top: 3vh; }
     #logo img { max-width: 50vw; }
-    #headline div { font-size: clamp(20px, 8vw, 36px); letter-spacing: 0.1em; }
-    #bloodTop, #bloodBottom { max-height: 80px; }
+    #headline div { font-size: clamp(28px, 10vw, 60px); }
+    #bloodTop, #bloodBottom { max-height: 90px; }
   }
 </style>
 </head>
@@ -135,7 +135,7 @@
   <div>FIGHT</div>
 </div>
 
-<!-- Blood sweeps -->
+<!-- Blood sweeps (over text) -->
 <img id="bloodTop" class="bloodSweep" src="blood1.png" alt="">
 <img id="bloodBottom" class="bloodSweep" src="blood1.png" alt="">
 
