@@ -10,7 +10,7 @@
       --bg: #050505;
       --red: #ff1a1a;
       --cycle: 4000;         /* full loop in ms */
-      --text-dur: 3000;      /* text anim duration */
+      --text-dur: 3000;      /* text fade duration */
       --circle-dur: 3000;    /* circle anim duration */
       --circle-delay: 500;   /* circle start after ms */
       --z-menu: 5000;
@@ -23,174 +23,167 @@
     /* RESET & BASE */
     *, *::before, *::after { box-sizing: border-box; }
     html, body {
-      margin: 0; padding: 0;
-      width: 100%; height: 100%;
-      background: var(--bg);
-      overflow: hidden;
-      font-family: "28Days", sans-serif;
-      color: #fff;
+      margin:0; padding:0;
+      width:100%; height:100%;
+      background:var(--bg);
+      overflow:hidden;
+      font-family:"28Days",sans-serif;
+      color:#fff;
     }
     @font-face {
-      font-family: "28Days";
+      font-family:"28Days";
       src: url("28%20Days%20Later.ttf") format("truetype");
-      font-display: swap;
+      font-display:swap;
     }
-    button, a { background: none; border: none; cursor: pointer; }
+    button,a { background:none; border:none; cursor:pointer; }
 
     /* MENU (top-right) */
     .anarchyBtn {
-      position: fixed; top: 14px; right: 14px;
-      z-index: var(--z-menu);
+      position:fixed; top:14px; right:14px;
+      z-index:var(--z-menu);
     }
     .anarchyBtn img {
-      width: 64px; height: 64px;
-      transition: transform .2s;
+      width:64px; height:64px;
+      transition:transform .2s;
     }
-    .anarchyBtn:hover img { transform: scale(1.1); }
-
+    .anarchyBtn:hover img { transform:scale(1.1); }
     .anarchyMenu {
-      position: fixed; top: 90px; right: 14px;
-      display: none; flex-direction: column;
-      padding: 12px; background: rgba(10,10,10,0.95);
-      border-radius: 12px;
-      z-index: var(--z-menu);
+      position:fixed; top:90px; right:14px;
+      display:none; flex-direction:column;
+      padding:12px; background:rgba(10,10,10,0.95);
+      border-radius:12px; z-index:var(--z-menu);
     }
-    .anarchyMenu.open { display: flex; }
+    .anarchyMenu.open { display:flex; }
     .anarchyMenu a {
-      color: #ffdede; font-weight: 800; font-size: 16px;
-      padding: 10px 14px; text-decoration: none;
+      color:#ffdede; font-weight:800; font-size:16px;
+      padding:10px 14px; text-decoration:none;
     }
 
     /* LOGO (center-top) */
     #logo {
-      position: fixed; top: 6vh; left: 50%;
-      transform: translateX(-50%);
-      z-index: var(--z-logo);
+      position:fixed; top:6vh; left:50%;
+      transform:translateX(-50%); z-index:var(--z-logo);
     }
-    #logo img {
-      max-width: 30vw; height: auto;
-    }
+    #logo img { max-width:30vw; height:auto; }
 
     /* SMOKE BACKGROUND (continuous) */
     #smoke-wrap {
-      position: fixed; inset: 0;
-      pointer-events: none;
-      z-index: calc(var(--z-head) - 1);
+      position:fixed; inset:0; z-index:calc(var(--z-head)-1);
+      pointer-events:none;
     }
     #smokeVideo {
-      width: 100%; height: 100%;
-      object-fit: cover; opacity: .58;
+      width:100%; height:100%;
+      object-fit:cover; opacity:.58;
     }
 
     /* RED FLASH OVERLAY */
     #redOverlay {
-      position: fixed; inset: 0;
-      background: var(--red);
-      opacity: 0; mix-blend-mode: screen;
-      pointer-events: none;
-      z-index: var(--z-vfx);
-      animation-fill-mode: both;
+      position:fixed; inset:0;
+      background:var(--red);
+      opacity:0; mix-blend-mode:screen;
+      z-index:var(--z-vfx);
+      pointer-events:none;
+      animation-fill-mode:both;
     }
     @keyframes redFlash {
-      0%   { opacity: 0 }
-      10%  { opacity: .6 }
-      30%  { opacity: 0 }
-      100% { opacity: 0 }
+      0%   { opacity:0 }
+      10%  { opacity:.6 }
+      30%  { opacity:0 }
+      100% { opacity:0 }
     }
 
     /* VFX FLICKER */
     .vfx {
-      position: fixed; inset: 0;
-      pointer-events: none;
-      z-index: var(--z-vfx);
+      position:fixed; inset:0; z-index:var(--z-vfx);
+      pointer-events:none;
     }
     .vfx .flicker {
-      position: absolute; inset: 0;
-      mix-blend-mode: screen; opacity: 0;
+      position:absolute; inset:0;
+      mix-blend-mode:screen; opacity:0;
     }
 
-    /* HEADLINE TEXT */
+    /* HEADLINE TEXT (static fade) */
     #headline {
-      position: fixed; top: 42vh; left: 50%;
-      transform: translateX(-50%);
-      text-align: center;
-      z-index: var(--z-head);
-      pointer-events: none;
+      position:fixed; top:42vh; left:50%;
+      transform:translateX(-50%);
+      text-align:center; z-index:var(--z-head);
+      pointer-events:none;
     }
     #headlineText {
-      display: inline-block;
-      font-size: clamp(48px,14vw,136px);
-      line-height: .9; letter-spacing: .12em;
-      opacity: 0; will-change: transform, opacity;
-      position: relative;
+      font-size:clamp(48px,14vw,136px);
+      line-height:.9; letter-spacing:.12em;
+      opacity:0; position:relative;
+      will-change:opacity;
     }
-    @keyframes textAnim {
-      0%   { opacity: 0;   transform: scale(0.8) }
-      20%  { opacity: 1;   transform: scale(1.2) }
-      70%  { opacity: 1;   transform: scale(1)   }
-      100% { opacity: 0;   transform: scale(1)   }
+    @keyframes textFade {
+      0%,10%   { opacity:0 }
+      20%,80%  { opacity:1 }
+      100%     { opacity:0 }
     }
-    /* quick glitch on top of text */
+    .fadeText {
+      animation:textFade var(--text-dur)ms both;
+    }
+    /* keep glitch but text never moves */
     @keyframes glitch {
-      0%,100% { clip: rect(0,9999px,0,0) }
-      20%     { clip: rect(20px,9999px,40px,0) }
-      40%     { clip: rect(50px,9999px,70px,0) }
-      60%     { clip: rect(10px,9999px,30px,0) }
-      80%     { clip: rect(60px,9999px,80px,0) }
+      0%,100% { clip:rect(0,9999px,0,0) }
+      20%     { clip:rect(20px,9999px,40px,0) }
+      40%     { clip:rect(50px,9999px,70px,0) }
+      60%     { clip:rect(10px,9999px,30px,0) }
+      80%     { clip:rect(60px,9999px,80px,0) }
     }
-    .glitch,
-    .glitch::before,
-    .glitch::after {
-      animation: glitch .6s steps(2) both;
+    .glitch, .glitch::before, .glitch::after {
+      animation:glitch .6s steps(2) both;
     }
-    .glitch::before,
-    .glitch::after {
-      content: attr(data-text);
-      position: absolute; inset: 0;
-      mix-blend-mode: screen; opacity: .6;
+    .glitch::before, .glitch::after {
+      content:attr(data-text);
+      position:absolute; inset:0;
+      mix-blend-mode:screen; opacity:.6;
     }
-    .glitch::before { color: #ff4b4b; left: 2px }
-    .glitch::after  { color: #7fb7ff; left: -2px }
+    .glitch::before { color:#ff4b4b; left:2px }
+    .glitch::after  { color:#7fb7ff; left:-2px }
 
     /* BLOOD CIRCLE */
     #bloodCircle {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%,-50%) scale(0);
-      opacity: 0;
-      width: clamp(200px,50vw,400px);
-      pointer-events: none;
-      z-index: var(--z-blood);
-      animation-fill-mode: both;
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%) scale(0);
+      opacity:0;
+      width:clamp(200px,50vw,400px);
+      pointer-events:none;
+      z-index:var(--z-blood);
+      animation-fill-mode:both;
     }
     @keyframes circleAnim {
-      0%   { opacity: 0;   transform: translate(-50%,-50%) scale(0) }
-      30%  { opacity: .6;  transform: translate(-50%,-50%) scale(1) }
-      70%  { opacity: .6;  transform: translate(-50%,-50%) scale(1) }
-      100% { opacity: 0;   transform: translate(-50%,-50%) scale(1.5) }
+      0%   { opacity:0;   transform:translate(-50%,-50%) scale(0) }
+      30%  { opacity:.6;  transform:translate(-50%,-50%) scale(1) }
+      70%  { opacity:.6;  transform:translate(-50%,-50%) scale(1) }
+      100% { opacity:0;   transform:translate(-50%,-50%) scale(1.5) }
+    }
+    .animCircle {
+      animation:circleAnim var(--circle-dur)ms var(--circle-delay)ms both;
     }
 
     /* CTA */
     .cta {
-      position: fixed; bottom: 8vh; left: 50%;
-      transform: translateX(-50%);
-      display: flex; gap: 20px; z-index: var(--z-logo);
+      position:fixed; bottom:8vh; left:50%;
+      transform:translateX(-50%);
+      display:flex; gap:20px; z-index:var(--z-logo);
     }
     .cta a {
-      font-size: 22px; padding: 10px 26px;
-      border-radius: 12px;
-      background: linear-gradient(180deg,#151515 0%,#070707 60%);
-      color: #fff; text-decoration: none;
-      transition: transform .2s;
+      font-size:22px; padding:10px 26px;
+      border-radius:12px;
+      background:linear-gradient(180deg,#151515,#070707);
+      color:#fff; text-decoration:none;
+      transition:transform .2s;
     }
-    .cta a:hover { transform: translateY(-3px) }
+    .cta a:hover { transform:translateY(-3px) }
 
-    @media (max-width: 600px) {
-      .anarchyBtn img { width: 56px; height: 56px }
-      .anarchyMenu { top: 80px; right: 8px }
-      .anarchyMenu a { font-size: 14px; padding: 8px 12px }
-      #headlineText { font-size: clamp(28px,18vw,76px) }
-      #bloodCircle { width: clamp(150px,60vw,300px) }
-      .cta a { font-size: 18px; padding: 8px 20px }
+    @media(max-width:600px){
+      .anarchyBtn img { width:56px; height:56px }
+      .anarchyMenu { top:80px; right:8px }
+      .anarchyMenu a { font-size:14px; padding:8px 12px }
+      #headlineText { font-size:clamp(28px,18vw,76px) }
+      #bloodCircle { width:clamp(150px,60vw,300px) }
+      .cta a { font-size:18px; padding:8px 20px }
     }
   </style>
 </head>
@@ -202,11 +195,11 @@
     <img src="anarchy.png" alt="Toggle menu"/>
   </button>
   <nav id="anarchyMenu" class="anarchyMenu" role="menu">
-    <a role="menuitem" href="rules.html">Rules</a>
-    <a role="menuitem" href="support.html">Support</a>
-    <a role="menuitem" href="donate.html">Donate</a>
-    <a role="menuitem" href="killfeed.html">Kill Feed</a>
-    <a role="menuitem" href="leaderboard.html">Leaderboard</a>
+    <a href="rules.html">Rules</a>
+    <a href="support.html">Support</a>
+    <a href="donate.html">Donate</a>
+    <a href="killfeed.html">Kill Feed</a>
+    <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
   <!-- Logo -->
@@ -245,17 +238,17 @@
 
   <script>
   (function(){
-    const cycle    = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cycle'));
-    const text     = document.getElementById('headlineText');
-    const circle   = document.getElementById('bloodCircle');
-    const redOvl   = document.getElementById('redOverlay');
-    const flicker  = document.getElementById('vfxFlicker');
-    let running    = false;
+    const cycle   = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cycle'));
+    const text    = document.getElementById('headlineText');
+    const circle  = document.getElementById('bloodCircle');
+    const red     = document.getElementById('redOverlay');
+    const flicker = document.getElementById('vfxFlicker');
+    let running   = false;
 
-    function restart(el, name, duration){
+    function restart(el, name, dur, delay=0){
       el.style.animation = 'none';
       void el.offsetWidth;
-      el.style.animation = `${name} ${duration}ms both`;
+      el.style.animation = `${name} ${dur}ms ${delay}ms both`;
     }
 
     function triggerFlicker(){
@@ -267,26 +260,36 @@
       if(running) return;
       running = true;
 
-      restart(redOvl, 'redFlash', 600);
-      restart(text,  'textAnim',  parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-dur')));
-      setTimeout(()=> restart(circle,'circleAnim', parseInt(getComputedStyle(document.documentElement).getPropertyValue('--circle-dur'))),
-                 parseInt(getComputedStyle(document.documentElement).getPropertyValue('--circle-delay')));
+      // red flash
+      restart(red, 'redFlash', 600);
+
+      // text fade only
+      restart(text, 'textFade', parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-dur')));
+      // glitch on top
+      setTimeout(()=> text.classList.add('glitch'), 200);
+      setTimeout(()=> text.classList.remove('glitch'), 800);
+
+      // blood circle
+      restart(circle, 'circleAnim',
+              parseInt(getComputedStyle(document.documentElement).getPropertyValue('--circle-dur')),
+              parseInt(getComputedStyle(document.documentElement).getPropertyValue('--circle-delay')));
+
+      // flicker
       triggerFlicker();
 
       setTimeout(()=> running = false, cycle);
     }
 
     // menu toggle
-    document.getElementById('anarchyBtn').addEventListener('click', e => {
+    document.getElementById('anarchyBtn').addEventListener('click', e=>{
       e.stopPropagation();
-      const nav = document.getElementById('anarchyMenu');
-      const open = nav.classList.toggle('open');
+      const m = document.getElementById('anarchyMenu');
+      const open = m.classList.toggle('open');
       e.currentTarget.setAttribute('aria-expanded', open);
     });
-    document.addEventListener('click', e => {
-      if (!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) {
-        const nav = document.getElementById('anarchyMenu');
-        nav.classList.remove('open');
+    document.addEventListener('click', e=>{
+      if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
+        document.getElementById('anarchyMenu').classList.remove('open');
         document.getElementById('anarchyBtn').setAttribute('aria-expanded', false);
       }
     });
