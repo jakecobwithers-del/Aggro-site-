@@ -4,25 +4,26 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Aggro PvP — JOIN THE FIGHT</title>
-
   <style>
     :root {
       --bg: #050505;
       --red: #ff1a1a;
-      --cycle: 4000;         /* full loop in ms */
-      --text-dur: 3000;      /* text fade duration */
-      --circle-dur: 3000;    /* circle anim duration */
-      --circle-delay: 500;   /* circle start after ms */
-      --z-menu: 5000;
+      --cycle: 4000;        /* full loop in ms */
+      --text-dur: 3000;     /* text fade duration */
+      --circle-dur: 3000;   /* circle anim duration */
+      --circle-delay: 500;  /* circle start after ms */
+
+      /* stacking */
+      --z-menu: 2000;       /* menu & buttons under smoke */
       --z-logo: 2000;
-      --z-head: 4500;
-      --z-blood: 4700;
-      --z-vfx: 4900;
+      --z-head: 4500;       /* headline over smoke */
+      --z-blood: 4700;      /* blood over headline */
+      --z-vfx: 4900;        /* red flash + flicker top */
     }
 
-    /* RESET & BASE */
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body {
+    /* base reset */
+    *,*::before,*::after { box-sizing:border-box }
+    html,body {
       margin:0; padding:0;
       width:100%; height:100%;
       background:var(--bg);
@@ -32,12 +33,12 @@
     }
     @font-face {
       font-family:"28Days";
-      src: url("28%20Days%20Later.ttf") format("truetype");
+      src:url("28%20Days%20Later.ttf") format("truetype");
       font-display:swap;
     }
-    button,a { background:none; border:none; cursor:pointer; }
+    button,a { background:none; border:none; cursor:pointer }
 
-    /* MENU (top-right) */
+    /* menu under smoke */
     .anarchyBtn {
       position:fixed; top:14px; right:14px;
       z-index:var(--z-menu);
@@ -46,43 +47,46 @@
       width:64px; height:64px;
       transition:transform .2s;
     }
-    .anarchyBtn:hover img { transform:scale(1.1); }
+    .anarchyBtn:hover img { transform:scale(1.1) }
     .anarchyMenu {
       position:fixed; top:90px; right:14px;
       display:none; flex-direction:column;
       padding:12px; background:rgba(10,10,10,0.95);
-      border-radius:12px; z-index:var(--z-menu);
+      border-radius:12px;
+      z-index:var(--z-menu);
     }
-    .anarchyMenu.open { display:flex; }
+    .anarchyMenu.open { display:flex }
     .anarchyMenu a {
       color:#ffdede; font-weight:800; font-size:16px;
       padding:10px 14px; text-decoration:none;
     }
 
-    /* LOGO (center-top) */
+    /* logo under smoke */
     #logo {
       position:fixed; top:6vh; left:50%;
-      transform:translateX(-50%); z-index:var(--z-logo);
+      transform:translateX(-50%);
+      z-index:var(--z-logo);
     }
-    #logo img { max-width:30vw; height:auto; }
+    #logo img { max-width:30vw; height:auto }
 
-    /* SMOKE BACKGROUND (continuous) */
+    /* smoke loop */
     #smoke-wrap {
-      position:fixed; inset:0; z-index:calc(var(--z-head)-1);
+      position:fixed; inset:0;
       pointer-events:none;
+      z-index:calc(var(--z-head)-1);
     }
     #smokeVideo {
       width:100%; height:100%;
       object-fit:cover; opacity:.58;
     }
 
-    /* RED FLASH OVERLAY */
+    /* red flash overlay */
     #redOverlay {
       position:fixed; inset:0;
       background:var(--red);
       opacity:0; mix-blend-mode:screen;
-      z-index:var(--z-vfx);
       pointer-events:none;
+      z-index:var(--z-vfx);
       animation-fill-mode:both;
     }
     @keyframes redFlash {
@@ -92,21 +96,23 @@
       100% { opacity:0 }
     }
 
-    /* VFX FLICKER */
+    /* vfx flicker */
     .vfx {
-      position:fixed; inset:0; z-index:var(--z-vfx);
+      position:fixed; inset:0;
       pointer-events:none;
+      z-index:var(--z-vfx);
     }
     .vfx .flicker {
       position:absolute; inset:0;
       mix-blend-mode:screen; opacity:0;
     }
 
-    /* HEADLINE TEXT (static fade) */
+    /* headline text (static fade) */
     #headline {
       position:fixed; top:42vh; left:50%;
       transform:translateX(-50%);
-      text-align:center; z-index:var(--z-head);
+      text-align:center;
+      z-index:var(--z-head);
       pointer-events:none;
     }
     #headlineText {
@@ -123,7 +129,8 @@
     .fadeText {
       animation:textFade var(--text-dur)ms both;
     }
-    /* keep glitch but text never moves */
+
+    /* glitch overlay */
     @keyframes glitch {
       0%,100% { clip:rect(0,9999px,0,0) }
       20%     { clip:rect(20px,9999px,40px,0) }
@@ -142,14 +149,16 @@
     .glitch::before { color:#ff4b4b; left:2px }
     .glitch::after  { color:#7fb7ff; left:-2px }
 
-    /* BLOOD CIRCLE */
+    /* blood circle—wide & dramatic */
     #bloodCircle {
       position:absolute; top:50%; left:50%;
       transform:translate(-50%,-50%) scale(0);
       opacity:0;
-      width:clamp(200px,50vw,400px);
+      width:clamp(300px,60vw,800px);
       pointer-events:none;
       z-index:var(--z-blood);
+      filter: saturate(1.4) contrast(1.3)
+              drop-shadow(0 0 20px var(--red));
       animation-fill-mode:both;
     }
     @keyframes circleAnim {
@@ -158,15 +167,13 @@
       70%  { opacity:.6;  transform:translate(-50%,-50%) scale(1) }
       100% { opacity:0;   transform:translate(-50%,-50%) scale(1.5) }
     }
-    .animCircle {
-      animation:circleAnim var(--circle-dur)ms var(--circle-delay)ms both;
-    }
 
-    /* CTA */
+    /* CTA under smoke */
     .cta {
       position:fixed; bottom:8vh; left:50%;
       transform:translateX(-50%);
-      display:flex; gap:20px; z-index:var(--z-logo);
+      display:flex; gap:20px;
+      z-index:var(--z-logo);
     }
     .cta a {
       font-size:22px; padding:10px 26px;
@@ -177,19 +184,20 @@
     }
     .cta a:hover { transform:translateY(-3px) }
 
+    /* responsive */
     @media(max-width:600px){
       .anarchyBtn img { width:56px; height:56px }
       .anarchyMenu { top:80px; right:8px }
       .anarchyMenu a { font-size:14px; padding:8px 12px }
       #headlineText { font-size:clamp(28px,18vw,76px) }
-      #bloodCircle { width:clamp(150px,60vw,300px) }
+      #bloodCircle { width:clamp(200px,80vw,600px) }
       .cta a { font-size:18px; padding:8px 20px }
     }
   </style>
 </head>
 <body>
 
-  <!-- Anarchy Menu -->
+  <!-- Anarchy Menu under smoke -->
   <button id="anarchyBtn" class="anarchyBtn"
           aria-controls="anarchyMenu" aria-expanded="false">
     <img src="anarchy.png" alt="Toggle menu"/>
@@ -202,27 +210,27 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- Logo -->
+  <!-- Logo under smoke -->
   <div id="logo">
     <img src="Aggro-logo.PNG" alt="Aggro PvP Logo"/>
   </div>
 
-  <!-- Smoke Background -->
+  <!-- Continuous smoke -->
   <div id="smoke-wrap">
     <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
       <source src="Smoke.mp4" type="video/mp4"/>
     </video>
   </div>
 
-  <!-- Red Flash -->
+  <!-- Red flash -->
   <div id="redOverlay"></div>
 
-  <!-- VFX Flicker -->
+  <!-- VFX flicker -->
   <div class="vfx">
     <div id="vfxFlicker" class="flicker"></div>
   </div>
 
-  <!-- Headline & Blood -->
+  <!-- Headline & blood -->
   <div id="headline">
     <div id="headlineText" data-text="JOIN THE FIGHT">
       JOIN THE FIGHT
@@ -230,7 +238,7 @@
     <img id="bloodCircle" src="blood1.png" alt="Blood splatter"/>
   </div>
 
-  <!-- Call to Action -->
+  <!-- Call to action under smoke -->
   <div class="cta">
     <a href="steam://connect/YOURSERVERIP">JOIN SERVER</a>
     <a href="https://discord.gg/YOURDISCORD">JOIN COMMUNITY</a>
@@ -238,7 +246,8 @@
 
   <script>
   (function(){
-    const cycle   = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cycle'));
+    const cycle   = parseInt(getComputedStyle(document.documentElement)
+                     .getPropertyValue('--cycle'));
     const text    = document.getElementById('headlineText');
     const circle  = document.getElementById('bloodCircle');
     const red     = document.getElementById('redOverlay');
@@ -260,37 +269,35 @@
       if(running) return;
       running = true;
 
-      // red flash
-      restart(red, 'redFlash', 600);
-
-      // text fade only
-      restart(text, 'textFade', parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-dur')));
-      // glitch on top
+      restart(red,     'redFlash', 600);
+      restart(text,    'textFade', parseInt(getComputedStyle(
+                        document.documentElement).getPropertyValue('--text-dur')));
+      text.classList.remove('glitch');
       setTimeout(()=> text.classList.add('glitch'), 200);
-      setTimeout(()=> text.classList.remove('glitch'), 800);
-
-      // blood circle
-      restart(circle, 'circleAnim',
-              parseInt(getComputedStyle(document.documentElement).getPropertyValue('--circle-dur')),
-              parseInt(getComputedStyle(document.documentElement).getPropertyValue('--circle-delay')));
-
-      // flicker
+      restart(circle,  'circleAnim',
+                  parseInt(getComputedStyle(document.documentElement)
+                  .getPropertyValue('--circle-dur')),
+                  parseInt(getComputedStyle(document.documentElement)
+                  .getPropertyValue('--circle-delay')));
       triggerFlicker();
 
       setTimeout(()=> running = false, cycle);
     }
 
     // menu toggle
-    document.getElementById('anarchyBtn').addEventListener('click', e=>{
-      e.stopPropagation();
-      const m = document.getElementById('anarchyMenu');
-      const open = m.classList.toggle('open');
-      e.currentTarget.setAttribute('aria-expanded', open);
-    });
+    document.getElementById('anarchyBtn')
+      .addEventListener('click', e=>{
+        e.stopPropagation();
+        const nav = document.getElementById('anarchyMenu');
+        const open = nav.classList.toggle('open');
+        e.currentTarget.setAttribute('aria-expanded', open);
+      });
     document.addEventListener('click', e=>{
-      if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
+      if(!e.target.closest('.anarchyBtn') &&
+         !e.target.closest('.anarchyMenu')){
         document.getElementById('anarchyMenu').classList.remove('open');
-        document.getElementById('anarchyBtn').setAttribute('aria-expanded', false);
+        document.getElementById('anarchyBtn')
+          .setAttribute('aria-expanded', false);
       }
     });
 
