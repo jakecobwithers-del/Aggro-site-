@@ -86,10 +86,9 @@
   .headlineText.glitch::before{color:#ff4b4b;mix-blend-mode:screen;transform:translateX(-6px);opacity:.0}
   .headlineText.glitch::after{color:#7fb7ff;mix-blend-mode:screen;transform:translateX(6px);opacity:.0}
 
-  /* BLOOD — cinematic slashes with motion + splatter alpha maps */
+  /* BLOOD placeholders (not inserted in DOM initially) */
   .bloodSweep{position:absolute;left:50%;transform:translateX(-50%);opacity:0;z-index:4700;pointer-events:none;width:120%;max-width:1500px;filter:drop-shadow(0 10px 30px rgba(0,0,0,0.8)) brightness(1.4) saturate(2.2)}
-  #bloodTop{top:calc(50% - 1.25em - 72px);transform-origin:left center}
-  #bloodBottom{top:calc(50% + 1.25em + 6px);transform-origin:left center}
+  .bloodHidden{display:none}
 
   @keyframes bloodIn {
     0%{opacity:0;transform:translateX(-140%) scaleX(1.25) rotate(-6deg)}
@@ -105,8 +104,6 @@
     85%{opacity:1;transform:translateX(0) scaleX(1)}
     100%{opacity:0;transform:translateX(0) scaleX(.98)}
   }
-  .animateTop{animation:bloodIn 2.6s cubic-bezier(.2,.9,.2,1) forwards}
-  .animateBottom{animation:bloodInBottom 2.6s cubic-bezier(.2,.9,.2,1) forwards}
 
   /* overlay VFX while pulse plays: scanline, vignette, grain, flicker */
   .vfx{position:fixed;inset:0;z-index:4900;pointer-events:none;mix-blend-mode:normal}
@@ -133,7 +130,6 @@
     .headlineText .line{font-size:clamp(28px,18vw,76px)}
     .cta{flex-direction:column}
     .cta a{font-size:18px;padding:12px 22px}
-    #bloodTop,#bloodBottom{max-height:90px;width:150%}
   }
 </style>
 </head>
@@ -152,16 +148,13 @@
   <!-- Logo -->
   <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
 
-  <!-- Headline + blood -->
+  <!-- Headline (no blood in DOM initially) -->
   <div id="headline">
     <div class="headlineText" id="headlineText" data-text="JOIN THE FIGHT">
       <span class="line">JOIN</span>
       <span class="line">THE</span>
       <span class="line">FIGHT</span>
     </div>
-
-    <img id="bloodTop" class="bloodSweep" src="blood1.png" alt="">
-    <img id="bloodBottom" class="bloodSweep" src="blood1.png" alt="">
   </div>
 
   <!-- CTA -->
@@ -190,12 +183,14 @@
 (function(){
   const smoke = document.getElementById('smokeVideo');
   const headlineText = document.getElementById('headlineText');
-  const bloodTop = document.getElementById('bloodTop');
-  const bloodBottom = document.getElementById('bloodBottom');
   const vfxPulse = document.getElementById('vfxPulse');
   const vfxFlicker = document.getElementById('vfxFlicker');
   const anarchyBtn = document.getElementById('anarchyBtn');
   const anarchyMenu = document.getElementById('anarchyMenu');
+
+  let bloodTopEl = null;
+  let bloodBottomEl = null;
+  let sequenceRunning = false;
 
   function restartAnimation(el, cls){
     el.classList.remove(cls);
@@ -203,48 +198,99 @@
     el.classList.add(cls);
   }
 
+  function createBloodElements(){
+    // create top
+    bloodTopEl = document.createElement('img');
+    bloodTopEl.id = 'bloodTop';
+    bloodTopEl.className = 'bloodSweep';
+    bloodTopEl.src = 'blood1.png'; // swap to preferred asset
+    bloodTopEl.alt = '';
+    bloodTopEl.style.top = 'calc(50% - 1.25em - 72px)';
+    // create bottom
+    bloodBottomEl = document.createElement('img');
+    bloodBottomEl.id = 'bloodBottom';
+    bloodBottomEl.className = 'bloodSweep';
+    bloodBottomEl.src = 'blood1.png';
+    bloodBottomEl.alt = '';
+    bloodBottomEl.style.top = 'calc(50% + 1.25em + 6px)';
+    // keep hidden until animated
+    bloodTopEl.style.opacity = '0';
+    bloodBottomEl.style.opacity = '0';
+  }
+
   // Helper: quick flicker sequence (noise frames)
-  function triggerFlicker(duration = 900){
-    // flicker frames timed to feel organic
+  function triggerFlicker(){
     vfxFlicker.style.opacity = '1';
-    let seq = [
-      {t:0, o:0.18},
-      {t:80, o:0.06},
+    const seq = [
+      {t:0,   o:0.18},
+      {t:80,  o:0.06},
       {t:160, o:0.24},
       {t:280, o:0.08},
       {t:420, o:0.18},
       {t:600, o:0.0}
     ];
-    seq.forEach(s => setTimeout(()=> vfxFlicker.style.background = `linear-gradient(90deg, rgba(255,0,0,${s.o*0.06}), transparent)` , s.t));
-    // final fade
-    setTimeout(()=> vfxFlicker.style.opacity = '0', duration);
+    seq.forEach(s => setTimeout(()=> {
+      vfxFlicker.style.background = `linear-gradient(90deg, rgba(255,0,0,${s.o*0.06}), transparent)`;
+    }, s.t));
+    setTimeout(()=> vfxFlicker.style.opacity = '0', 900);
   }
 
-  // Main sequence: keeps smoke playing, adds effect for duration of blood+headline
+  // Insert bloods into DOM right before animating so they don't affect layout
+  function insertBloods(){
+    if(!bloodTopEl || !bloodBottomEl) createBloodElements();
+    const headline = document.getElementById('headline');
+    // Remove existing if somehow present
+    if(document.getElementById('bloodTop')) document.getElementById('bloodTop').remove();
+    if(document.getElementById('bloodBottom')) document.getElementById('bloodBottom').remove();
+    headline.appendChild(bloodTopEl);
+    headline.appendChild(bloodBottomEl);
+  }
+
+  // Remove bloods from DOM after animation to keep DOM clean
+  function removeBloods(){
+    if(bloodTopEl && bloodTopEl.parentElement) bloodTopEl.parentElement.removeChild(bloodTopEl);
+    if(bloodBottomEl && bloodBottomEl.parentElement) bloodBottomEl.parentElement.removeChild(bloodBottomEl);
+  }
+
+  // Main sequence: inserts blood, runs headline+vfx+blood, then cleans up
   function runSequence(){
-    // add smoke red glitch
+    if(sequenceRunning) return;
+    sequenceRunning = true;
+
     smoke.classList.add('effect');
 
-    // headline impact + temporary chroma/glitch
+    // Insert bloods into DOM
+    insertBloods();
+
+    // Trigger headline animation
     restartAnimation(headlineText, 'impact');
-    // slight camera shake
+    headlineText.classList.add('glitch');
+
+    // camera shake
     headlineText.parentElement.classList.add('shake');
     setTimeout(()=> headlineText.parentElement.classList.remove('shake'), 700);
 
-    // chroma split flicker: temporarily show ::before/::after by toggling classes
-    headlineText.classList.add('glitch');
-    // blood sweeps
-    restartAnimation(bloodTop, 'animateTop');
-    setTimeout(()=> restartAnimation(bloodBottom, 'animateBottom'), 160);
+    // animate bloods
+    // add classes after short delay so layout settles
+    setTimeout(()=>{
+      if(bloodTopEl) restartAnimation(bloodTopEl, 'animateTop');
+      setTimeout(()=>{ if(bloodBottomEl) restartAnimation(bloodBottomEl, 'animateBottom'); }, 160);
+    }, 80);
 
-    // VFX pulse on entire screen for duration
+    // VFX
     vfxPulse.style.opacity = '1';
     triggerFlicker();
 
-    // timed removals to return to baseline
-    setTimeout(()=> vfxPulse.style.opacity = '0', 900);   // soft pulse end
-    setTimeout(()=> headlineText.classList.remove('glitch'), 1200); // stop chroma
-    setTimeout(()=> smoke.classList.remove('effect'), 1800); // stop smoke pulse class
+    // Cleanup timing — tuned to match animations
+    setTimeout(()=> vfxPulse.style.opacity = '0', 900);
+    setTimeout(()=> headlineText.classList.remove('glitch'), 1200);
+    setTimeout(()=> smoke.classList.remove('effect'), 1800);
+
+    // remove bloods after full animation finishes
+    setTimeout(()=>{
+      removeBloods();
+      sequenceRunning = false;
+    }, 2600);
   }
 
   // Detect video loop by comparing currentTime wrap
@@ -253,17 +299,15 @@
 
   smoke.addEventListener('timeupdate', ()=>{
     const t = smoke.currentTime || 0;
-    // wrap detected (current time suddenly smaller than prev) and not in cooldown
     if(prevTime - t > 0.25 && !cooldown){
       runSequence();
       cooldown = true;
-      // cooldown slightly longer than the sequence to avoid overlap
       setTimeout(()=> cooldown = false, 3500);
     }
     prevTime = t;
   });
 
-  // allow manual trigger for testing (uncomment if needed)
+  // manual trigger for testing: uncomment if needed
   // document.addEventListener('keydown', e => { if(e.key===' ') runSequence(); });
 
   // menu toggle
@@ -272,8 +316,8 @@
     if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) anarchyMenu.classList.remove('open');
   });
 
-  // small enhancement: ensure headline stays perfectly centered ignoring blood images
-  // (blood images use absolute positioning so they won't affect layout)
+  // create blood elements early (but don't insert)
+  createBloodElements();
 })();
 </script>
 </body>
