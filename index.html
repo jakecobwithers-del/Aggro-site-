@@ -10,61 +10,71 @@
       --red: #ff1a1a;
 
       /* timing */
-      --cycle: 4000;        /* full loop */
-      --text-dur: 3000;     /* how long text stays */
-      --flash-dur: 600;     /* red flash */
-      --circle-dur: 3000;   /* blood circle total */
-      --circle-delay: 0;    /* start exactly with text */
+      --cycle: 4000;
+      --text-dur: 3000;
+      --flash-dur: 600;
+      --circle-dur: 3000;
+      --circle-delay: 0;
 
-      /* z-indexes */
-      --z-menu: 4000;       /* menu on top */
-      --z-smoke: 2000;      /* smoke under overlays */
-      --z-color: 2500;      /* red-tint overlay above smoke */
-      --z-head: 3000;       /* text above tint */
-      --z-blood: 3500;      /* blood above text */
-      --z-vfx: 4500;        /* flash + flicker on top */
-      --z-cta: 1000;        /* CTA under smoke */
-      --z-logo: 1000;       /* logo under smoke */
+      /* z-layers */
+      --z-menu: 6000;      /* menu on top */
+      --z-vfx: 4500;       /* flash/flicker */
+      --z-blood: 3500;
+      --z-head: 3000;
+      --z-color: 2500;     /* red-tint overlay */
+      --z-smoke: 2000;
+      --z-cta: 1000;
+      --z-logo: 1000;
     }
 
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body {
+    *,*::before,*::after { box-sizing: border-box }
+    html,body {
       margin:0; padding:0;
       width:100%; height:100%;
       background:var(--bg);
       overflow:hidden;
-      font-family:"28Days", sans-serif;
+      font-family:"28Days",sans-serif;
       color:#fff;
     }
     @font-face {
       font-family:"28Days";
-      src: url("28%20Days%20Later.ttf") format("truetype");
+      src:url("28%20Days%20Later.ttf") format("truetype");
       font-display:swap;
     }
-    button, a { background:none; border:none; cursor:pointer; }
+    button,a { background:none; border:none; cursor:pointer }
 
-    /* MENU (over smoke) */
+    /* MENU (always on top) */
     .anarchyBtn {
       position:fixed; top:14px; right:14px;
       z-index:var(--z-menu);
+      pointer-events:auto;
+    }
+    .anarchyBtn img {
+      width:64px; height:64px;
+      display:block;
     }
     .anarchyMenu {
       position:fixed; top:90px; right:14px;
       display:none; flex-direction:column;
       padding:12px; background:rgba(10,10,10,0.95);
-      border-radius:12px; z-index:var(--z-menu);
+      border-radius:12px;
+      z-index:var(--z-menu);
+      pointer-events:auto;
     }
     .anarchyMenu.open { display:flex }
     .anarchyMenu a {
-      color:#ffdede; font-weight:800; font-size:16px;
+      color:#ffdede; font-size:16px; font-weight:800;
       padding:10px 14px; text-decoration:none;
+      background:transparent;
     }
 
     /* CTA & LOGO (under smoke) */
     .cta {
       position:fixed; bottom:8vh; left:50%;
-      transform:translateX(-50%); display:flex; gap:20px;
+      transform:translateX(-50%);
+      display:flex; gap:20px;
       z-index:var(--z-cta);
+      pointer-events:auto;
     }
     .cta a {
       font-size:22px; padding:10px 26px;
@@ -77,35 +87,42 @@
 
     #logo {
       position:fixed; top:6vh; left:50%;
-      transform:translateX(-50%); z-index:var(--z-logo);
+      transform:translateX(-50%);
+      z-index:var(--z-logo);
+      pointer-events:auto;
     }
-    #logo img { max-width:30vw; height:auto; }
+    #logo img { max-width:30vw; height:auto }
 
     /* SMOKE VIDEO */
     #smoke-wrap {
-      position:fixed; inset:0; pointer-events:none;
+      position:fixed; inset:0;
+      pointer-events:none;
       z-index:var(--z-smoke);
     }
     #smokeVideo {
-      width:100%; height:100%; object-fit:cover;
-      opacity:.6;
+      width:100%; height:100%;
+      object-fit:cover; opacity:.6;
     }
 
-    /* LIGHT RED TINT (mix-blend-mode: color) */
+    /* LIGHT RED TINT OVERLAY */
     #colorOverlay {
-      position:fixed; inset:0; pointer-events:none;
+      position:fixed; inset:0;
       background:var(--red);
       mix-blend-mode:color;
-      opacity:0; /* hidden until text appears */
-      transition: opacity var(--text-dur)ms ease-in-out;
+      opacity:0;
+      transition:opacity var(--text-dur)ms ease-in-out;
       z-index:var(--z-color);
+      pointer-events:none;
     }
 
     /* RED FLASH */
     #redOverlay {
-      position:fixed; inset:0; pointer-events:none;
-      background:var(--red); mix-blend-mode:screen;
-      opacity:0; z-index:var(--z-vfx);
+      position:fixed; inset:0;
+      background:var(--red);
+      mix-blend-mode:screen;
+      opacity:0;
+      z-index:var(--z-vfx);
+      pointer-events:none;
       animation-fill-mode:both;
     }
     @keyframes redFlash {
@@ -115,27 +132,30 @@
       100% { opacity:0 }
     }
 
-    /* VFX FLICKER */
+    /* FLICKER */
     .vfx {
-      position:fixed; inset:0; pointer-events:none;
+      position:fixed; inset:0;
+      pointer-events:none;
       z-index:var(--z-vfx);
     }
     .vfx .flicker {
       position:absolute; inset:0;
-      mix-blend-mode:screen; opacity:0;
+      mix-blend-mode:screen;
+      opacity:0;
     }
 
-    /* HEADLINE TEXT */
+    /* HEADLINE */
     #headline {
       position:fixed; top:42vh; left:50%;
-      transform:translateX(-50%); text-align:center;
-      z-index:var(--z-head); pointer-events:none;
+      transform:translateX(-50%);
+      text-align:center;
+      z-index:var(--z-head);
+      pointer-events:none;
     }
     #headlineText {
       font-size:clamp(48px,14vw,136px);
       line-height:.9; letter-spacing:.12em;
-      opacity:0; position:relative;
-      will-change:opacity;
+      opacity:0; will-change:opacity;
     }
     @keyframes textFade {
       0%,10%   { opacity:0 }
@@ -169,7 +189,8 @@
       transform:translate(-50%,-50%) scale(1);
       opacity:0;
       width:clamp(200px,40vw,400px);
-      pointer-events:none; z-index:var(--z-blood);
+      pointer-events:none;
+      z-index:var(--z-blood);
       animation-fill-mode:both;
     }
     @keyframes circleAnim {
@@ -194,12 +215,12 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- CTA & logo under smoke -->
+  <!-- CTA & logo -->
   <div class="cta">
     <a href="steam://connect/YOURSERVERIP">JOIN SERVER</a>
     <a href="https://discord.gg/YOURDISCORD">JOIN COMMUNITY</a>
   </div>
-  <div id="logo"><img src="Aggro-logo.PNG" alt="Logo"/></div>
+  <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro Logo"/></div>
 
   <!-- smoke -->
   <div id="smoke-wrap">
@@ -208,16 +229,14 @@
     </video>
   </div>
 
-  <!-- color-blend overlay -->
+  <!-- overlays -->
   <div id="colorOverlay"></div>
-
-  <!-- red flash + flicker -->
   <div id="redOverlay"></div>
   <div class="vfx"><div id="vfxFlicker" class="flicker"></div></div>
 
   <!-- headline & blood -->
   <div id="headline">
-    <div id="headlineText" data-text="JOIN THE FIGHT">
+    <div id="headlineText" class="fadeText" data-text="JOIN THE FIGHT">
       JOIN THE FIGHT
     </div>
     <img id="bloodCircle" src="blood1.png" alt="Blood circle"/>
@@ -225,73 +244,71 @@
 
   <script>
   (function(){
-    const S     = getComputedStyle(document.documentElement);
-    const cycle = +S.getPropertyValue('--cycle');
-    const txt   = +S.getPropertyValue('--text-dur');
-    const flash = +S.getPropertyValue('--flash-dur');
+    const S      = getComputedStyle(document.documentElement);
+    const cycle  = +S.getPropertyValue('--cycle');
+    const txtDur = +S.getPropertyValue('--text-dur');
+    const flash  = +S.getPropertyValue('--flash-dur');
 
-    const smoke       = document.getElementById('smokeVideo');
-    const colorOvl    = document.getElementById('colorOverlay');
-    const redOvl      = document.getElementById('redOverlay');
-    const textEl      = document.getElementById('headlineText');
-    const circle      = document.getElementById('bloodCircle');
-    const flicker     = document.getElementById('vfxFlicker');
-    let running = false;
+    const smoke      = document.getElementById('smokeVideo');
+    const colorOvl   = document.getElementById('colorOverlay');
+    const redOvl     = document.getElementById('redOverlay');
+    const textEl     = document.getElementById('headlineText');
+    const circle     = document.getElementById('bloodCircle');
+    const flicker    = document.getElementById('vfxFlicker');
+    let running      = false;
 
-    function restart(el, name, d, delay=0){
+    function restart(el,name,dur,delay=0){
       el.style.animation = 'none';
       void el.offsetWidth;
-      el.style.animation = `${name} ${d}ms ${delay}ms both`;
+      el.style.animation = `${name} ${dur}ms ${delay}ms both`;
     }
 
-    function runSequence(){
+    function run(){
       if(running) return;
       running = true;
 
-      // 1) color-blend tint on smoke
+      // 1) colorBlend tint
       colorOvl.style.opacity = '1';
-      setTimeout(()=> colorOvl.style.opacity = '0', txt);
+      setTimeout(()=> colorOvl.style.opacity = '0', txtDur);
 
       // 2) red flash
-      restart(redOvl, 'redFlash', flash);
+      restart(redOvl,'redFlash',flash);
 
       // 3) text fade + glitch
-      restart(textEl, 'textFade', txt);
+      restart(textEl,'textFade',txtDur);
       textEl.classList.remove('glitch');
-      setTimeout(()=> textEl.classList.add('glitch'), 200);
+      setTimeout(()=> textEl.classList.add('glitch'),200);
 
       // 4) blood fade
-      restart(circle, 'circleAnim',
+      restart(circle,'circleAnim',
               +S.getPropertyValue('--circle-dur'),
               +S.getPropertyValue('--circle-delay'));
 
       // 5) flicker
       flicker.style.opacity = '1';
-      setTimeout(()=> flicker.style.opacity = '0', flash);
+      setTimeout(()=> flicker.style.opacity = '0',flash);
 
       setTimeout(()=> running = false, cycle);
     }
 
     // menu toggle
-    document.getElementById('anarchyBtn')
-      .addEventListener('click', e=>{
-        e.stopPropagation();
-        const menu = document.getElementById('anarchyMenu');
-        const open = menu.classList.toggle('open');
-        e.currentTarget.setAttribute('aria-expanded', open);
-      });
-    document.addEventListener('click', e=>{
-      if(!e.target.closest('.anarchyBtn') && 
+    document.getElementById('anarchyBtn').addEventListener('click',e=>{
+      e.stopPropagation();
+      const menu = document.getElementById('anarchyMenu');
+      const open = menu.classList.toggle('open');
+      e.currentTarget.setAttribute('aria-expanded',open);
+    });
+    document.addEventListener('click',e=>{
+      if(!e.target.closest('.anarchyBtn') &&
          !e.target.closest('.anarchyMenu')){
         document.getElementById('anarchyMenu').classList.remove('open');
-        document.getElementById('anarchyBtn')
-          .setAttribute('aria-expanded', false);
+        document.getElementById('anarchyBtn').setAttribute('aria-expanded',false);
       }
     });
 
-    window.addEventListener('DOMContentLoaded', ()=>{
-      runSequence();
-      setInterval(runSequence, cycle);
+    window.addEventListener('DOMContentLoaded',()=>{
+      run();
+      setInterval(run,cycle);
     });
   })();
   </script>
