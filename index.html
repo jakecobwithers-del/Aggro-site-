@@ -37,148 +37,99 @@
       font-display:swap;
     }
 
-    /* Basic controls */
     button,a{background:none;border:0;cursor:pointer;color:inherit;text-decoration:none;padding:0;font-family:inherit}
 
-    /* MENU button (simple image style restored) */
-    .anarchyBtn{
-      position:fixed;top:14px;right:14px;z-index:var(--z-menu);pointer-events:auto;
-      background:transparent;border:0;padding:0;width:64px;height:64px;
-    }
+    /* MENU button (simple image) */
+    .anarchyBtn{position:fixed;top:14px;right:14px;z-index:var(--z-menu);pointer-events:auto;background:transparent;width:64px;height:64px}
     .anarchyBtn img{width:64px;height:64px;display:block}
 
-    .anarchyMenu{
-      position:fixed;top:90px;right:14px;display:none;flex-direction:column;
-      padding:12px;background:rgba(10,10,10,0.95);
-      border-radius:12px;z-index:var(--z-menu);pointer-events:auto;min-width:160px;
-    }
+    .anarchyMenu{position:fixed;top:90px;right:14px;display:none;flex-direction:column;padding:12px;background:rgba(10,10,10,0.95);border-radius:12px;z-index:var(--z-menu);pointer-events:auto;min-width:160px}
     .anarchyMenu.open{display:flex}
-    .anarchyMenu a{
-      color:#ffdede;font-size:16px;font-weight:800;padding:10px 14px;border-radius:8px;margin:6px 0;
-      transition:background .12s,transform .12s,text-shadow .12s;
-    }
-    .anarchyMenu a:hover{
-      background:rgba(255,26,26,0.06);transform:translateX(6px);
-      text-shadow:0 0 6px rgba(255,26,26,.25);
-    }
+    .anarchyMenu a{color:#ffdede;font-size:16px;font-weight:800;padding:10px 14px;border-radius:8px;margin:6px 0;transition:background .12s,transform .12s,text-shadow .12s}
+    .anarchyMenu a:hover{background:rgba(255,26,26,0.06);transform:translateX(6px);text-shadow:0 0 6px rgba(255,26,26,.25)}
 
     /* CTA & LOGO */
-    .cta{
-      position:fixed;bottom:6vh;left:50%;transform:translateX(-50%);display:flex;gap:16px;z-index:var(--z-cta);pointer-events:auto;
-      align-items:center;
-    }
-    .cta a{
-      position:relative;display:inline-block;font-size:18px;padding:12px 22px;border-radius:12px;background:linear-gradient(180deg,#151515,#070707);
-      color:#fff;font-weight:800;letter-spacing:.06em;transition:transform .12s cubic-bezier(.2,.9,.2,1),box-shadow .12s,background .12s,filter .12s;
-      will-change:transform,box-shadow,filter;outline: none;
-    }
+    .cta{position:fixed;bottom:6vh;left:50%;transform:translateX(-50%);display:flex;gap:16px;z-index:var(--z-cta);pointer-events:auto;align-items:center}
+    .cta a{position:relative;display:inline-block;font-size:18px;padding:12px 22px;border-radius:12px;background:linear-gradient(180deg,#151515,#070707);color:#fff;font-weight:800;letter-spacing:.06em;transition:transform .12s cubic-bezier(.2,.9,.2,1),box-shadow .12s,background .12s,filter .12s;will-change:transform,box-shadow,filter;outline:none}
     .cta a:focus{box-shadow:0 10px 30px rgba(255,26,26,.12)}
-
-    /* per-button accent classes */
     .cta a.steam { --accent-r:255; --accent-g:26; --accent-b:26; }
     .cta a.discord { --accent-r:114; --accent-g:137; --accent-b:218; }
+    .cta a:hover,.cta a:focus{transform: translateY(-6px) scale(1.08);box-shadow: 0 20px 50px rgba(0,0,0,.35);filter: saturate(1.08) drop-shadow(0 10px 28px rgba(0,0,0,.6));}
 
-    /* hover baseline */
-    .cta a:hover,
-    .cta a:focus {
-      transform: translateY(-6px) scale(1.08);
-      box-shadow: 0 20px 50px rgba(0,0,0,.35);
-      filter: saturate(1.08) drop-shadow(0 10px 28px rgba(0,0,0,.6));
-    }
+    /* CTA pulse animation (for JS trigger) */
+    @keyframes ctaPulse {0%{transform:scale(1);box-shadow:0 8px 26px rgba(0,0,0,.3)}30%{transform:scale(1.14);box-shadow:0 30px 80px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.32);filter:saturate(1.2) brightness(1.05)}70%{transform:scale(1.06);box-shadow:0 18px 44px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.22)}100%{transform:scale(1);box-shadow:0 8px 26px rgba(0,0,0,.3)}}
+    .pulse-once{animation:ctaPulse 420ms cubic-bezier(.2,.9,.2,1) both}
+    .cta a::after{content:"";display:block;position:absolute;inset:2px;border-radius:10px;pointer-events:none;opacity:0;transition:opacity .12s}
+    .cta a.steam::after{box-shadow:inset 0 0 28px rgba(255,26,26,.12)}
+    .cta a.discord::after{box-shadow:inset 0 0 28px rgba(114,137,218,.10)}
+    .pulse-once::after{opacity:1;transition:opacity .08s}
 
-    /* pulse animation used when red flash runs */
-    @keyframes ctaPulse {
-      0%   { transform: scale(1); box-shadow: 0 8px 26px rgba(0,0,0,.3); filter: none; }
-      30%  { transform: scale(1.14); box-shadow: 0 30px 80px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.32); filter: saturate(1.2) brightness(1.05); }
-      70%  { transform: scale(1.06); box-shadow: 0 18px 44px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.22); filter: saturate(1.08); }
-      100% { transform: scale(1); box-shadow: 0 8px 26px rgba(0,0,0,.3); filter: none; }
-    }
-
-    /* class to trigger the pulse once */
-    .pulse-once { animation: ctaPulse 420ms cubic-bezier(.2,.9,.2,1) both; }
-
-    /* micro-decoration: subtle colored rim inside the button during pop */
-    .cta a::after{
-      content:"";
-      display:block;
-      position:absolute;
-      inset:2px;
-      border-radius:10px;
-      pointer-events:none;
-      opacity:0;
-      transition:opacity .12s;
-    }
-    .cta a.steam::after{ box-shadow: inset 0 0 28px rgba(255,26,26,.12); }
-    .cta a.discord::after{ box-shadow: inset 0 0 28px rgba(114,137,218,.10); }
-    .pulse-once::after{ opacity:1; transition:opacity .08s; }
-
+    /* logo */
     #logo{position:fixed;top:6vh;left:50%;transform:translateX(-50%);z-index:var(--z-logo);pointer-events:auto}
     #logo img{max-width:28vw;height:auto;max-height:84px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.8))}
 
-    /* SMOKE VIDEO */
+    /* smoke */
     #smoke-wrap{position:fixed;inset:0;pointer-events:none;z-index:var(--z-smoke);overflow:hidden}
     #smokeVideo,#smokeVideo2{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;filter:contrast(1.05) saturate(.95)}
     #smokeVideo2{opacity:.28;mix-blend-mode:screen;transform:scale(1.04) translateY(-2%)}
 
-    /* COLOR / RED FLASH */
+    /* overlays */
     #colorOverlay{position:fixed;inset:0;background:var(--red);mix-blend-mode:color;opacity:0;transition:opacity var(--text-dur)ms ease-in-out;z-index:var(--z-color);pointer-events:none}
     #redOverlay{position:fixed;inset:0;background:var(--red);mix-blend-mode:screen;opacity:0;z-index:var(--z-vfx);pointer-events:none;animation-fill-mode:both}
     @keyframes redFlash{0%{opacity:0}10%{opacity:.42}30%{opacity:0}100%{opacity:0}}
 
-    /* FLICKER */
     .vfx{position:fixed;inset:0;pointer-events:none;z-index:var(--z-vfx)}
     .flicker{position:absolute;inset:0;mix-blend-mode:screen;opacity:0;background:
       radial-gradient(ellipse at 20% 20%,rgba(255,255,255,.06),transparent 10%),
       radial-gradient(ellipse at 80% 80%,rgba(255,255,255,.04),transparent 12%);transition:opacity .08s}
 
-    /* HEADLINE */
+    /* headline + visibility safety */
     #headline{position:fixed;top:42vh;left:50%;transform:translateX(-50%);text-align:center;z-index:var(--z-head);pointer-events:none;width:98%}
-    #headlineText{font-size:clamp(48px,14vw,136px);line-height:.9;letter-spacing:.12em;opacity:0;position:relative;display:inline-block;padding:6px 12px}
+    #headlineText{font-size:clamp(48px,14vw,136px);line-height:.9;letter-spacing:.12em;opacity:1;position:relative;display:inline-block;padding:6px 12px;transform-origin:center;will-change:transform,opacity}
+    /* slam + fade */
     @keyframes headlineImpact{0%{opacity:0;transform:scale(.78)}60%{opacity:1;transform:scale(1.06)}100%{transform:scale(1)}}
     .impact{animation:headlineImpact var(--text-dur)ms cubic-bezier(.2,.9,.2,1) both}
     @keyframes textFade{0%,10%{opacity:0}20%,80%{opacity:1}100%{opacity:0}}
     .fadeText{animation:textFade var(--text-dur)ms both}
-    .glitch,.glitch::before,.glitch::after{animation:glitch .6s steps(2) both}
+
+    /* glitch */
     @keyframes glitch{0%,100%{clip:rect(0,9999px,0,0)}20%{clip:rect(20px,9999px,40px,0)}40%{clip:rect(50px,9999px,70px,0)}60%{clip:rect(10px,9999px,30px,0)}80%{clip:rect(60px,9999px,80px,0)}}
+    .glitch,.glitch::before,.glitch::after{animation:glitch .6s steps(2) both}
     .glitch::before,.glitch::after{content:attr(data-text);position:absolute;inset:0;opacity:.6}
     .glitch::before{color:#ff4b4b;left:2px}
     .glitch::after{color:#7fb7ff;left:-2px}
 
-    /* BLOOD CIRCLE */
-    #bloodCircle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(1);opacity:0;width:clamp(200px,40vw,420px);pointer-events:none;z-index:var(--z-blood)}
+    /* blood splat visibility + animations */
+    #bloodCircle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(1);opacity:.6;width:clamp(200px,40vw,420px);pointer-events:none;z-index:var(--z-blood)}
     @keyframes circleAnim{0%,20%{opacity:0}25%,75%{opacity:.6}100%{opacity:0}}
     @keyframes bloodPulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.08)}}
     .pulseOnce{animation:circleAnim var(--circle-dur)ms both}
     .pulseLoop{animation:bloodPulse 1.2s ease-in-out infinite}
 
-    /* vfx root class for broader pops */
+    /* explicit short pop for headline */
+    @keyframes textPop {0%{transform:scale(1)}30%{transform:scale(1.14)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+    .text-pop{animation:textPop 420ms cubic-bezier(.2,.9,.2,1) both;will-change:transform}
+
+    /* vfx root classes for pops on UI */
     .vfx-active .anarchyBtn img{transform:scale(1.08);transition:transform .12s,filter .12s}
     .vfx-active .anarchyBtn img{filter:drop-shadow(0 6px 18px rgba(255,26,26,.35))}
     .vfx-active .cta a{transform:scale(1.06);box-shadow:0 18px 40px rgba(255,26,26,.18);transition:transform .12s,box-shadow .12s}
-
     .vfx-active-short .anarchyBtn img{transform:scale(1.12)}
     .vfx-active-short .cta a{transform:scale(1.12);box-shadow:0 22px 56px rgba(255,26,26,.22)}
 
-    /* responsive adjustments and larger mobile logo */
-    @media (max-width:900px){
-      #logo img{max-width:38vw;max-height:72px}
-      .anarchyMenu{right:10px;top:86px}
-    }
-    @media (max-width:600px){
-      #headline{top:36vh}
-      #headlineText{font-size:clamp(34px,10vw,72px)}
-      #bloodCircle{width:60vw}
-      .cta a{font-size:16px;padding:10px 16px}
-      /* make logo noticeably larger on mobile */
-      #logo img{max-width:62vw;max-height:110px}
-      .anarchyBtn{width:56px;height:56px}
-    }
+    /* responsive larger mobile logo */
+    @media (max-width:900px){#logo img{max-width:38vw;max-height:72px}.anarchyMenu{right:10px;top:86px}}
+    @media (max-width:600px){#headline{top:36vh}#headlineText{font-size:clamp(34px,10vw,72px)}#bloodCircle{width:60vw}.cta a{font-size:16px;padding:10px 16px}#logo img{max-width:62vw;max-height:110px}.anarchyBtn{width:56px;height:56px}}
 
     /* prefers-reduced-motion fallback */
     @media (prefers-reduced-motion: reduce){
-      .impact,.pulseLoop,.pulseOnce,.glitch,.pulse-once{animation:none!important}
+      .impact,.pulseLoop,.pulseOnce,.glitch,.pulse-once,.text-pop{animation:none!important}
       .vfx-active .anarchyBtn img,.vfx-active .cta a{transform:none;box-shadow:none;filter:none}
     }
+
+    /* emergency visibility overrides for debugging (comment out when done) */
+    /* #headlineText{opacity:1 !important} */
+    /* #bloodCircle{opacity:.6 !important} */
   </style>
 </head>
 <body>
@@ -219,116 +170,165 @@
   <!-- headline & blood -->
   <div id="headline" aria-hidden="false">
     <div id="headlineText" class="fadeText impact" data-text="JOIN THE FIGHT">JOIN THE FIGHT</div>
-    <img id="bloodCircle" class="pulseOnce" src="blood1.png" alt="" />
+    <img id="bloodCircle" class="pulseOnce" src="blood1.png" alt="blood splat" />
   </div>
 
   <script>
     (function(){
-      const S = getComputedStyle(document.documentElement);
-      const cycle = Number(S.getPropertyValue('--cycle')) || 4000;
-      const txtDur = Number(S.getPropertyValue('--text-dur')) || 3000;
-      const flash = Number(S.getPropertyValue('--flash-dur')) || 600;
-      const circleDur = Number(S.getPropertyValue('--circle-dur')) || 3000;
-      const circleDelay = Number(S.getPropertyValue('--circle-delay')) || 0;
+      // safe guards + debug logging
+      try {
+        const S = getComputedStyle(document.documentElement);
+        const cycle = Number(S.getPropertyValue('--cycle')) || 4000;
+        const txtDur = Number(S.getPropertyValue('--text-dur')) || 3000;
+        const flash = Number(S.getPropertyValue('--flash-dur')) || 600;
+        const circleDur = Number(S.getPropertyValue('--circle-dur')) || 3000;
+        const circleDelay = Number(S.getPropertyValue('--circle-delay')) || 0;
 
-      const colorOvl = document.getElementById('colorOverlay');
-      const redOvl = document.getElementById('redOverlay');
-      const textEl = document.getElementById('headlineText');
-      const circle = document.getElementById('bloodCircle');
-      const flicker = document.getElementById('vfxFlicker');
-      const root = document.documentElement;
-      const steamBtn = document.querySelector('.cta a.steam');
-      const discordBtn = document.querySelector('.cta a.discord');
-      let running = false;
+        const colorOvl = document.getElementById('colorOverlay');
+        const redOvl = document.getElementById('redOverlay');
+        const textEl = document.getElementById('headlineText');
+        const circle = document.getElementById('bloodCircle');
+        const flicker = document.getElementById('vfxFlicker');
+        const root = document.documentElement;
+        const steamBtn = document.querySelector('.cta a.steam');
+        const discordBtn = document.querySelector('.cta a.discord');
+        let running = false;
 
-      function restartAnimation(el, name, dur, delay = 0){
-        el.style.animation = 'none';
-        void el.offsetWidth;
-        el.style.animation = `${name} ${dur}ms ${delay}ms both`;
-      }
+        // quick DOM visibility check (helps if something else makes them invisible)
+        if (!textEl) console.warn('Missing #headlineText element');
+        if (!circle) console.warn('Missing #bloodCircle element');
 
-      function triggerCtaPulse(btn){
-        if(!btn) return;
-        btn.classList.remove('pulse-once');
-        void btn.offsetWidth;
-        btn.classList.add('pulse-once');
-      }
-
-      function run(){
-        if(running) return;
-        running = true;
-
-        // color tint
-        colorOvl.style.opacity = '1';
-        setTimeout(()=> colorOvl.style.opacity = '0', Math.max(200, txtDur - 150));
-
-        // red flash animation
-        restartAnimation(redOvl,'redFlash',flash);
-
-        // root classes to pop UI elements
-        root.classList.add('vfx-active');
-        root.classList.add('vfx-active-short');
-        setTimeout(()=> root.classList.remove('vfx-active-short'), 180);
-        setTimeout(()=> root.classList.remove('vfx-active'), flash + 120);
-
-        // trigger CTA pulses staggered
-        triggerCtaPulse(steamBtn);
-        setTimeout(()=> triggerCtaPulse(discordBtn), 90);
-
-        // headline: re-trigger impact + fade + glitch
-        restartAnimation(textEl,'headlineImpact',Math.max(700, txtDur));
-        restartAnimation(textEl,'textFade',txtDur);
-        textEl.classList.remove('glitch');
-        setTimeout(()=> textEl.classList.add('glitch'),200);
-
-        // blood: pulse animation and quick emphasis pulse
-        restartAnimation(circle,'circleAnim',circleDur,circleDelay);
-        circle.classList.remove('pulseLoop');
-        setTimeout(()=> circle.classList.add('pulseLoop'), 240);
-
-        // flicker visual
-        flicker.style.opacity = '1';
-        setTimeout(()=> flicker.style.opacity = '0', flash + 60);
-
-        setTimeout(()=> running = false, cycle);
-      }
-
-      // menu toggle (simple)
-      const btn = document.getElementById('anarchyBtn');
-      const menu = document.getElementById('anarchyMenu');
-      btn.addEventListener('click', function(e){
-        e.stopPropagation();
-        const open = menu.classList.toggle('open');
-        menu.setAttribute('aria-hidden', String(!open));
-        btn.setAttribute('aria-expanded', String(open));
-      });
-      document.addEventListener('click', function(e){
-        if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
-          menu.classList.remove('open');
-          menu.setAttribute('aria-hidden', 'true');
-          btn.setAttribute('aria-expanded', 'false');
+        function restartAnimation(el, name, dur, delay = 0){
+          if(!el) return;
+          el.style.animation = 'none';
+          void el.offsetWidth;
+          el.style.animation = `${name} ${dur}ms ${delay}ms both`;
         }
-      });
 
-      // keyboard accessible toggle
-      btn.addEventListener('keydown', function(e){
-        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btn.click(); }
-      });
+        function triggerCtaPulse(btn){
+          if(!btn) return;
+          btn.classList.remove('pulse-once');
+          void btn.offsetWidth;
+          btn.classList.add('pulse-once');
+        }
 
-      // start
-      window.addEventListener('DOMContentLoaded', function(){
-        run();
-        setInterval(run, cycle);
-      });
+        function triggerHeadlinePop(){
+          if(!textEl) return;
+          textEl.classList.remove('text-pop');
+          void textEl.offsetWidth;
+          textEl.classList.add('text-pop');
+        }
 
-      // prefers-reduced-motion handling
-      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-      if(prefersReduced.matches){
-        document.documentElement.style.setProperty('--text-dur','800');
-        document.documentElement.style.setProperty('--cycle','3000');
-        textEl.classList.remove('impact','glitch');
-        circle.classList.remove('pulseLoop');
-        colorOvl.style.transition = 'none';
+        function run(){
+          if(running) return;
+          running = true;
+
+          // ensure baseline visibility in case something set opacity to 0
+          if (textEl) { textEl.style.opacity = ''; textEl.style.visibility = ''; }
+          if (circle) { circle.style.opacity = ''; circle.style.visibility = ''; }
+
+          // color tint
+          if (colorOvl) {
+            colorOvl.style.opacity = '1';
+            setTimeout(()=> colorOvl.style.opacity = '0', Math.max(200, txtDur - 150));
+          }
+
+          // red flash animation
+          restartAnimation(redOvl,'redFlash',flash);
+
+          // root classes to pop UI elements (short + normal)
+          root.classList.add('vfx-active');
+          root.classList.add('vfx-active-short');
+          setTimeout(()=> root.classList.remove('vfx-active-short'), 180);
+          setTimeout(()=> root.classList.remove('vfx-active'), flash + 120);
+
+          // trigger CTA pulses staggered
+          triggerCtaPulse(steamBtn);
+          setTimeout(()=> triggerCtaPulse(discordBtn), 90);
+
+          // headline: re-trigger impact + fade + glitch, then explicit pop
+          restartAnimation(textEl,'headlineImpact',Math.max(700, txtDur));
+          restartAnimation(textEl,'textFade',txtDur);
+          if (textEl) {
+            textEl.classList.remove('glitch');
+            setTimeout(()=> textEl.classList.add('glitch'),200);
+          }
+          // explicit short pop so the text visually 'pops' with the flash
+          triggerHeadlinePop();
+
+          // blood: pulse animation and quick emphasis pulse
+          restartAnimation(circle,'circleAnim',circleDur,circleDelay);
+          if (circle) {
+            circle.classList.remove('pulseLoop');
+            setTimeout(()=> circle.classList.add('pulseLoop'), 240);
+          }
+
+          // flicker visual
+          if (flicker) {
+            flicker.style.opacity = '1';
+            setTimeout(()=> flicker.style.opacity = '0', flash + 60);
+          }
+
+          setTimeout(()=> running = false, cycle);
+        }
+
+        // simple accessible menu toggle
+        const btn = document.getElementById('anarchyBtn');
+        const menu = document.getElementById('anarchyMenu');
+        if (btn && menu) {
+          btn.addEventListener('click', function(e){
+            e.stopPropagation();
+            const open = menu.classList.toggle('open');
+            menu.setAttribute('aria-hidden', String(!open));
+            btn.setAttribute('aria-expanded', String(open));
+          });
+          document.addEventListener('click', function(e){
+            if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
+              menu.classList.remove('open');
+              menu.setAttribute('aria-hidden', 'true');
+              btn.setAttribute('aria-expanded', 'false');
+            }
+          });
+          btn.addEventListener('keydown', function(e){
+            if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btn.click(); }
+          });
+        }
+
+        // start animations after DOM is ready and assets had a tick
+        window.addEventListener('DOMContentLoaded', function(){
+          // small delay to ensure video or other layout settles on some devices
+          setTimeout(()=> {
+            run();
+            setInterval(run, cycle);
+          }, 120);
+        });
+
+        // prefers-reduced-motion handling
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+        if(prefersReduced.matches){
+          document.documentElement.style.setProperty('--text-dur','800');
+          document.documentElement.style.setProperty('--cycle','3000');
+          if (textEl) textEl.classList.remove('impact','glitch');
+          if (circle) circle.classList.remove('pulseLoop');
+          if (colorOvl) colorOvl.style.transition = 'none';
+        }
+      } catch (err) {
+        // surface any runtime error to console so it doesn't silently fail
+        console.error('Aggro splash script error:', err);
+        // as a last resort, make headline visible for debugging
+        try { const t = document.getElementById('headlineText'); if(t){ t.style.opacity='1'; t.style.visibility='visible'; } } catch(e){}
+      }
+    })();
+  </script>
+</body>
+</html>
+```Ovl.style.transition = 'none';
+        }
+      } catch (err) {
+        // surface any runtime error to console so it doesn't silently fail
+        console.error('Aggro splash script error:', err);
+        // as a last resort, make headline visible for debugging
+        try { const t = document.getElementById('headlineText'); if(t){ t.style.opacity='1'; t.style.visibility='visible'; } } catch(e){}
       }
     })();
   </script>
