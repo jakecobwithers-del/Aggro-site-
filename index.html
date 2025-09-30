@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Aggro PvP — JOIN THE FIGHT</title>
   <style>
-    /* Variables */
     :root {
       --bg: #050505;
       --red: #ff1a1a;
@@ -18,12 +17,15 @@
       --z-vfx: 4900;
     }
 
-    /* Reset & Base */
-    *, *::before, *::after { box-sizing: border-box }
+    /* RESET & BASE */
+    *, *::before, *::after { box-sizing: border-box; }
     html, body {
-      margin: 0; width: 100%; height: 100%;
-      background: var(--bg); overflow: hidden;
-      font-family: "28Days", sans-serif; color: #fff;
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      background: var(--bg);
+      overflow: hidden;
+      font-family: "28Days", sans-serif;
+      color: #fff;
     }
     @font-face {
       font-family: "28Days";
@@ -31,34 +33,42 @@
            url("28 Days Later.ttf")   format("truetype");
       font-display: swap;
     }
-    button, a { background: none; border: none; cursor: pointer }
+    button, a { background: none; border: none; cursor: pointer; }
 
     /* MENU (top-right) */
     .anarchyBtn {
-      position: fixed; top: 14px; right: 14px;
+      position: fixed;
+      top: 14px; right: 14px;
       z-index: var(--z-menu);
     }
     .anarchyBtn img {
       width: 72px; height: 72px;
       transition: transform .2s;
     }
-    .anarchyBtn:hover img { transform: scale(1.1) }
+    .anarchyBtn:hover img { transform: scale(1.1); }
     .anarchyBtn:focus img {
       outline: 2px solid var(--red);
       outline-offset: 2px;
     }
+
     .anarchyMenu {
-      position: fixed; top: 100px; right: 14px;
-      display: none; flex-direction: column;
-      padding: 14px; background: var(--menu-bg);
+      position: fixed;
+      top: 100px; right: 14px;
+      display: none;
+      flex-direction: column;
+      padding: 14px;
+      background: var(--menu-bg);
       border-radius: var(--radius);
       border: 1px solid rgba(255,0,0,0.18);
       z-index: var(--z-menu);
     }
-    .anarchyMenu.open { display: flex }
+    .anarchyMenu.open { display: flex; }
     .anarchyMenu a {
-      color: #ffdede; font-weight: 800; font-size: 18px;
-      padding: 12px 16px; text-decoration: none;
+      color: #ffdede;
+      font-weight: 800;
+      font-size: 18px;
+      padding: 12px 16px;
+      text-decoration: none;
     }
     .anarchyMenu a:focus {
       outline: 2px solid var(--red);
@@ -67,21 +77,31 @@
 
     /* LOGO (center-top) */
     #logo {
-      position: fixed; top: 6vh; left: 50%;
+      position: fixed;
+      top: 6vh; left: 50%;
       transform: translateX(-50%);
       z-index: var(--z-logo);
     }
-    #logo img { max-width: 30vw; height: auto }
+    #logo img {
+      max-width: 30vw;
+      height: auto;
+    }
 
-    /* SMOKE (video background) */
+    /* SMOKE VIDEO (background) */
     #smoke-wrap {
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: calc(var(--z-head) - 1);
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: calc(var(--z-head) - 1);
     }
     #smokeVideo {
       width: 100%; height: 100%;
-      object-fit: cover; opacity: 0.58;
+      object-fit: cover;
+      opacity: 0.58;
       transition: filter 240ms linear;
+    }
+    #smokeVideo.smoke-pulse {
+      animation: smokePulse 1.8s ease both;
     }
     @keyframes smokePulse {
       0%   { filter: brightness(0.7) saturate(0.9) contrast(0.95); }
@@ -89,53 +109,43 @@
       100% { filter: brightness(0.95) saturate(1.3) contrast(1); }
     }
 
-    /* VFX overlay */
+    /* VFX OVERLAY */
     .vfx {
-      position: fixed; inset: 0;
-      z-index: var(--z-vfx); pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: var(--z-vfx);
+      pointer-events: none;
     }
     .vfx .pulse {
       position: absolute; inset: 0;
       background: radial-gradient(circle at 50% 45%,
         rgba(255,40,40,0.06), transparent 40%);
-      opacity: 0; mix-blend-mode: screen;
+      opacity: 0;
       transition: opacity 220ms linear;
+      mix-blend-mode: screen;
     }
     .vfx .flicker {
       position: absolute; inset: 0;
-      mix-blend-mode: screen; opacity: 0;
+      opacity: 0;
+      mix-blend-mode: screen;
     }
 
-    /* BLOOD VIDEO overlay */
-    #bloodVideo {
-      position: absolute; top: 50%; left: 50%;
-      width: 120%; max-width: 1500px;
-      transform: translate(-50%,-50%) scale(1.2);
-      opacity: 0; pointer-events: none;
-      mix-blend-mode: multiply;
-      filter: brightness(1.5) contrast(1.2);
-      z-index: var(--z-blood);
-      animation-fill-mode: both;
-    }
-    @keyframes bloodVideoIn {
-      0%   { opacity: 0; transform: translate(-50%,-50%) scale(1.2); }
-      25%  { opacity: 1; transform: translate(-50%,-50%) scale(1);   }
-      75%  { opacity: 1; transform: translate(-50%,-50%) scale(1);   }
-      100% { opacity: 0; transform: translate(-50%,-50%) scale(1.3); }
-    }
-
-    /* HEADLINE & GLITCH (center) */
+    /* HEADLINE & BLOOD VIDEO (center) */
     #headline {
-      position: fixed; top: 42vh; left: 50%;
+      position: fixed;
+      top: 42vh; left: 50%;
       transform: translateX(-50%);
-      text-align: center; z-index: var(--z-head);
+      text-align: center;
+      z-index: var(--z-head);
       pointer-events: none;
     }
     .headlineText {
       display: inline-block;
       font-size: clamp(48px,14vw,136px);
-      line-height: .95; letter-spacing: .12em;
-      color: #fff; opacity: 0;
+      line-height: 0.95;
+      letter-spacing: 0.12em;
+      color: #fff;
+      opacity: 0;
       will-change: transform, opacity, filter;
       position: relative;
     }
@@ -144,6 +154,11 @@
       50%  { opacity: 1; transform: scale(1.05); }
       100% { opacity: 1; transform: scale(1); }
     }
+    .headlineText.impact {
+      animation: headlineImpact 1.2s ease-out both;
+    }
+
+    /* glitch */
     @keyframes textGlitch {
       0%   { clip: rect(0,9999px,0,0); }
       10%  { clip: rect(20px,9999px,40px,0); }
@@ -154,9 +169,6 @@
       60%  { clip: rect(30px,9999px,50px,0); }
       100% { clip: rect(0,9999px,0,0); }
     }
-    .headlineText.impact {
-      animation: headlineImpact 1.2s ease-out both;
-    }
     .headlineText.glitch,
     .headlineText.glitch::before,
     .headlineText.glitch::after {
@@ -166,38 +178,71 @@
     .headlineText.glitch::after {
       content: attr(data-text);
       position: absolute; inset: 0;
-      mix-blend-mode: screen; opacity: .6;
+      mix-blend-mode: screen;
+      opacity: 0.6;
       pointer-events: none;
     }
-    .headlineText.glitch::before { color: #ff4b4b; left: 2px }
-    .headlineText.glitch::after  { color: #7fb7ff; left: -2px }
+    .headlineText.glitch::before { color: #ff4b4b; left: 2px; }
+    .headlineText.glitch::after  { color: #7fb7ff; left: -2px; }
+
+    /* BLOOD VIDEO */
+    #bloodVideo {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%) scale(1.2);
+      width: 120%; max-width: 1500px;
+      opacity: 0;
+      mix-blend-mode: multiply;
+      filter: brightness(1.5) contrast(1.2);
+      z-index: var(--z-blood);
+      pointer-events: none;
+    }
+    #bloodVideo.blood-video-in {
+      animation: bloodVideoIn 1.5s ease-out both;
+    }
+    @keyframes bloodVideoIn {
+      0%   { opacity: 0; transform: translate(-50%,-50%) scale(1.2); }
+      25%  { opacity: 1; transform: translate(-50%,-50%) scale(1);   }
+      75%  { opacity: 1; transform: translate(-50%,-50%) scale(1);   }
+      100% { opacity: 0; transform: translate(-50%,-50%) scale(1.3); }
+    }
 
     /* CTA (bottom-center) */
     .cta {
-      position: fixed; bottom: 8vh; left: 50%;
+      position: fixed;
+      bottom: 8vh; left: 50%;
       transform: translateX(-50%);
-      display: flex; gap: 20px; z-index: var(--z-logo);
+      display: flex; gap: 20px;
+      z-index: var(--z-logo);
     }
     .cta a {
-      font-size: 26px; padding: 14px 30px;
+      font-size: 26px;
+      padding: 14px 30px;
       border-radius: var(--radius);
       background: linear-gradient(180deg,#151515 0%,#070707 60%);
       border: 2px solid rgba(255,0,0,0.18);
       box-shadow: 0 10px 24px rgba(0,0,0,0.7),
                   inset 0 -6px 12px rgba(255,0,0,0.02);
-      color: #fff; text-decoration: none;
-      position: relative; overflow: hidden;
-      transition: transform .18s, box-shadow .18s, background .18s;
+      color: #fff;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: transform .18s,
+                  box-shadow .18s,
+                  background .18s;
     }
     .cta a:before {
-      content: ""; position: absolute; inset: 0;
-      background: linear-gradient(90deg,rgba(255,255,255,.02),transparent);
-      mix-blend-mode: overlay; pointer-events: none;
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), transparent);
+      mix-blend-mode: overlay;
+      pointer-events: none;
     }
     .cta a:hover {
       transform: translateY(-4px);
       background: linear-gradient(180deg,var(--red) 0%,#990000 70%);
-      box-shadow: 0 18px 40px rgba(255,0,0,.35);
+      box-shadow: 0 18px 40px rgba(255,0,0,0.35);
     }
 
     /* Responsive */
@@ -242,7 +287,7 @@
     <div class="flicker" id="vfxFlicker"></div>
   </div>
 
-  <!-- Headline area -->
+  <!-- Headline & Blood Video -->
   <div id="headline">
     <div id="headlineText" class="headlineText" data-text="JOIN THE FIGHT">
       <span class="line">JOIN</span>
@@ -263,7 +308,7 @@
   </div>
 
   <script>
-  (function(){
+  ;(function(){
     const btn        = document.getElementById('anarchyBtn');
     const menu       = document.getElementById('anarchyMenu');
     const smokeVid   = document.getElementById('smokeVideo');
@@ -273,7 +318,7 @@
     const bloodVid   = document.getElementById('bloodVideo');
     let running = false;
 
-    /* Menu toggle */
+    // Menu toggle
     btn.addEventListener('click', e => {
       e.stopPropagation();
       const open = menu.classList.toggle('open');
@@ -287,14 +332,14 @@
       }
     });
 
-    /* Restart CSS animation helper */
+    // Restart CSS animation helper
     function restart(el, cls) {
       el.classList.remove(cls);
       void el.offsetWidth;
       el.classList.add(cls);
     }
 
-    /* VFX flicker sequence */
+    // VFX flicker
     function triggerFlicker() {
       const seq = [
         { t: 0,   o: 0.18 },
@@ -312,13 +357,13 @@
       setTimeout(() => (vfxFlicker.style.opacity = '0'), 900);
     }
 
-    /* Main intro sequence */
+    // Main intro sequence
     function runIntro() {
       if (running) return;
       running = true;
 
       // smoke pulse
-      restart(smokeVid, 'smokePulse');
+      restart(smokeVid, 'smoke-pulse');
 
       // headline impact & glitch
       restart(headline, 'impact');
@@ -331,9 +376,9 @@
 
       // blood video
       bloodVid.currentTime = 0;
-      restart(bloodVid, 'bloodVideoIn');
+      restart(bloodVid, 'blood-video-in');
 
-      // allow replays
+      // allow replay
       setTimeout(() => (running = false), 2000);
     }
 
