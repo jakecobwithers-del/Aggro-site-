@@ -4,197 +4,221 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Aggro PvP — JOIN THE FIGHT</title>
-
   <link rel="preload" href="28%20Days%20Later.ttf" as="font" type="font/ttf" crossorigin>
-
   <style>
-    :root{
-      --bg:#050505;
-      --red:#ff1a1a;
-      --cycle:4000;
-      --text-dur:3000;
-      --flash-dur:600;
-      --circle-dur:3000;
-      --circle-delay:0;
-
-      --z-menu:6000;
-      --z-vfx:4500;
-      --z-blood:3500;
-      --z-head:3000;
-      --z-color:2500;
-      --z-smoke:2000;
-      --z-cta:1000;
-      --z-logo:10000;
+    :root {
+      --bg: #050505;
+      --red: #ff1a1a;
+      --cycle: 4000;
+      --text-dur: 3000;
+      --flash-dur: 600;
+      --circle-dur: 3000;
+      --circle-delay: 0;
     }
 
-    *,*::before,*::after{box-sizing:border-box}
-    html,body{height:100%;width:100%;margin:0;padding:0;background:var(--bg);overflow:hidden;color:#fff;font-family:"28Days",Impact,sans-serif}
-
-    @font-face{
-      font-family:"28Days";
-      src:url("28%20Days%20Later.ttf") format("truetype");
-      font-display:swap;
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      overflow: hidden;
+      font-family: "28Days", Impact, sans-serif;
+      color: #fff;
     }
 
-    button,a{background:none;border:none;cursor:pointer;color:inherit;text-decoration:none;padding:0;font-family:inherit}
-
-    /* MENU */
-    .anarchyBtn{
-      position:fixed;top:14px;right:14px;z-index:var(--z-menu);pointer-events:auto;
-      background:transparent;padding:0;width:64px;height:64px;
-    }
-    .anarchyBtn img{width:64px;height:64px;display:block}
-
-    /* removed backdrop-filter, removed box-shadow and any "thing" under menu */
-    .anarchyMenu{
-      position:fixed;top:90px;right:14px;display:none;flex-direction:column;
-      padding:8px;background:rgba(12,12,12,0.96);
-      border-radius:10px;z-index:var(--z-menu);pointer-events:auto;min-width:160px;
-    }
-    .anarchyMenu.open{display:flex}
-    .anarchyMenu a{
-      color:#ffdede;font-size:15px;font-weight:800;padding:10px 12px;border-radius:8px;margin:6px 0;
-      transition:background .12s,transform .12s,text-shadow .12s;
-    }
-    .anarchyMenu a:hover{
-      background:rgba(255,26,26,0.06);transform:translateX(6px);
-      text-shadow:0 0 6px rgba(255,26,26,.25);
+    @font-face {
+      font-family: "28Days";
+      src: url("28%20Days%20Later.ttf") format("truetype");
+      font-display: swap;
     }
 
-    /* LOGO — bigger on all sizes and especially mobile */
-    #logo{position:fixed;top:6vh;left:50%;transform:translateX(-50%);z-index:var(--z-logo);pointer-events:auto}
-    #logo img{
-      width:auto;
-      max-width:36vw;
-      max-height:120px;
-      height:auto;
-      filter:drop-shadow(0 8px 28px rgba(0,0,0,.9));
-      transition:transform .12s;
-    }
-    @media (max-width:900px){
-      #logo img{max-width:46vw;max-height:110px}
-    }
-    @media (max-width:600px){
-      #logo img{max-width:72vw;max-height:132px}
+    #smoke-wrap {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1000;
+      overflow: hidden;
     }
 
-    /* CTA area with improved Steam + Discord styles */
-    .cta{
-      position:fixed;bottom:6vh;left:50%;transform:translateX(-50%);display:flex;gap:14px;z-index:var(--z-cta);pointer-events:auto;
-      align-items:center;
+    #smokeVideo, #smokeVideo2 {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.55;
+      filter: contrast(1.05) saturate(0.95);
     }
 
-    .cta a{
-      position:relative;display:inline-flex;align-items:center;gap:10px;
-      font-size:16px;padding:12px 18px;border-radius:12px;color:#fff;font-weight:800;
-      letter-spacing:.04em;text-decoration:none;box-shadow:0 8px 26px rgba(0,0,0,.35);
-      transition:transform .12s cubic-bezier(.2,.9,.2,1),box-shadow .12s,filter .12s;
-      will-change:transform,box-shadow,filter;
+    #smokeVideo2 {
+      opacity: 0.28;
+      mix-blend-mode: screen;
+      transform: scale(1.04) translateY(-2%);
     }
 
-    /* Steam button - aggressive red accent */
-    .cta a.steam{
-      background: linear-gradient(180deg,#2b0b0b,#120505);
-      border:1px solid rgba(255,26,26,0.12);
-    }
-    .cta a.steam::before{
-      content:"";
-      width:18px;height:18px;background:radial-gradient(circle at 30% 30%,#fff8,#ff8080 40%,transparent 60%);
-      border-radius:4px;display:inline-block;flex:0 0 18px;box-shadow:0 2px 8px rgba(255,26,26,.12);
-      transform:translateY(-1px);
-    }
-
-    /* Discord button - cool blue accent */
-    .cta a.discord{
-      background: linear-gradient(180deg,#0a1630,#061024);
-      border:1px solid rgba(114,137,218,0.12);
-    }
-    .cta a.discord::before{
-      content:"";width:18px;height:18px;background:radial-gradient(circle at 30% 30%,#fff8,#9fb3ff 40%,transparent 60%);
-      border-radius:4px;display:inline-block;flex:0 0 18px;box-shadow:0 2px 8px rgba(114,137,218,.12);
-      transform:translateY(-1px);
+    #colorOverlay {
+      position: fixed;
+      inset: 0;
+      background: var(--red);
+      mix-blend-mode: color;
+      opacity: 0;
+      transition: opacity var(--text-dur)ms ease-in-out;
+      z-index: 2000;
+      pointer-events: none;
     }
 
-    /* hover / focus for CTAs */
-    .cta a:hover,
-    .cta a:focus{
-      transform:translateY(-6px) scale(1.05);
-      box-shadow:0 26px 68px rgba(0,0,0,.5);
-      outline:none;
+    #redOverlay {
+      position: fixed;
+      inset: 0;
+      background: var(--red);
+      mix-blend-mode: screen;
+      opacity: 0;
+      z-index: 3000;
+      pointer-events: none;
+      animation-fill-mode: both;
     }
 
-    /* active / keyboard */
-    .cta a:active{ transform:translateY(-3px) scale(1.02) }
+    @keyframes redFlash {
+      0% { opacity: 0 }
+      10% { opacity: 0.42 }
+      30% { opacity: 0 }
+      100% { opacity: 0 }
+    }
 
-    /* small accessibility focus ring */
-    .cta a:focus-visible{ box-shadow:0 0 0 4px rgba(255,255,255,0.04), 0 26px 68px rgba(0,0,0,.5) }
+    #headline {
+      position: fixed;
+      top: 42vh;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 4000;
+      pointer-events: none;
+      width: 98%;
+    }
 
-    /* Core visuals unchanged below */
+    #headlineText {
+      font-size: clamp(48px, 14vw, 136px);
+      line-height: 0.9;
+      letter-spacing: 0.12em;
+      opacity: 0;
+      position: relative;
+      display: inline-block;
+      padding: 6px 12px;
+    }
 
-    /* SMOKE VIDEO */
-    #smoke-wrap{position:fixed;inset:0;pointer-events:none;z-index:var(--z-smoke);overflow:hidden}
-    #smokeVideo,#smokeVideo2{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;filter:contrast(1.05) saturate(.95)}
-    #smokeVideo2{opacity:.28;mix-blend-mode:screen;transform:scale(1.04) translateY(-2%)}
+    @keyframes headlineImpact {
+      0% { opacity: 0; transform: scale(0.78) }
+      60% { opacity: 1; transform: scale(1.06) }
+      100% { transform: scale(1) }
+    }
 
-    /* COLOR / RED FLASH */
-    #colorOverlay{position:fixed;inset:0;background:var(--red);mix-blend-mode:color;opacity:0;transition:opacity var(--text-dur)ms ease-in-out;z-index:var(--z-color);pointer-events:none}
-    #redOverlay{position:fixed;inset:0;background:var(--red);mix-blend-mode:screen;opacity:0;z-index:var(--z-vfx);pointer-events:none;animation-fill-mode:both}
-    @keyframes redFlash{0%{opacity:0}10%{opacity:.42}30%{opacity:0}100%{opacity:0}}
+    .impact {
+      animation: headlineImpact var(--text-dur)ms cubic-bezier(.2,.9,.2,1) both;
+    }
 
-    .vfx{position:fixed;inset:0;pointer-events:none;z-index:var(--z-vfx)}
-    .flicker{position:absolute;inset:0;mix-blend-mode:screen;opacity:0;background:
-      radial-gradient(ellipse at 20% 20%,rgba(255,255,255,.06),transparent 10%),
-      radial-gradient(ellipse at 80% 80%,rgba(255,255,255,.04),transparent 12%);transition:opacity .08s}
+    @keyframes textFade {
+      0%,10% { opacity: 0 }
+      20%,80% { opacity: 1 }
+      100% { opacity: 0 }
+    }
 
-    /* HEADLINE & BLOOD (unchanged behavior) */
-    #headline{position:fixed;top:42vh;left:50%;transform:translateX(-50%);text-align:center;z-index:var(--z-head);pointer-events:none;width:98%}
-    #headlineText{font-size:clamp(48px,14vw,136px);line-height:.9;letter-spacing:.12em;opacity:0;position:relative;display:inline-block;padding:6px 12px}
-    @keyframes headlineImpact{0%{opacity:0;transform:scale(.78)}60%{opacity:1;transform:scale(1.06)}100%{transform:scale(1)}}
-    .impact{animation:headlineImpact var(--text-dur)ms cubic-bezier(.2,.9,.2,1) both}
-    @keyframes textFade{0%,10%{opacity:0}20%,80%{opacity:1}100%{opacity:0}}
-    .fadeText{animation:textFade var(--text-dur)ms both}
-    .glitch,.glitch::before,.glitch::after{animation:glitch .6s steps(2) both}
-    @keyframes glitch{0%,100%{clip:rect(0,9999px,0,0)}20%{clip:rect(20px,9999px,40px,0)}40%{clip:rect(50px,9999px,70px,0)}60%{clip:rect(10px,9999px,30px,0)}80%{clip:rect(60px,9999px,80px,0)}}
-    .glitch::before,.glitch::after{content:attr(data-text);position:absolute;inset:0;opacity:.6}
-    .glitch::before{color:#ff4b4b;left:2px}
-    .glitch::after{color:#7fb7ff;left:-2px}
+    .fadeText {
+      animation: textFade var(--text-dur)ms both;
+    }
 
-    #bloodCircle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(1);opacity:0;width:clamp(200px,40vw,420px);pointer-events:none;z-index:var(--z-blood)}
-    @keyframes circleAnim{0%,20%{opacity:0}25%,75%{opacity:.6}100%{opacity:0}}
-    @keyframes bloodPulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.08)}}
-    .pulseOnce{animation:circleAnim var(--circle-dur)ms both}
-    .pulseLoop{animation:bloodPulse 1.2s ease-in-out infinite}
+    @keyframes glitch {
+      0%,100% { clip: rect(0,9999px,0,0) }
+      20% { clip: rect(20px,9999px,40px,0) }
+      40% { clip: rect(50px,9999px,70px,0) }
+      60% { clip: rect(10px,9999px,30px,0) }
+      80% { clip: rect(60px,9999px,80px,0) }
+    }
 
-    /* small reduces and accessibility */
-    @media (prefers-reduced-motion: reduce){
-      .impact,.pulseLoop,.pulseOnce,.glitch{animation:none!important}
-      .cta a{transition:none}
-      #logo img{transition:none}
+    .glitch, .glitch::before, .glitch::after {
+      animation: glitch 0.6s steps(2) both;
+    }
+
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      opacity: 0.6;
+    }
+
+    .glitch::before { color: #ff4b4b; left: 2px }
+    .glitch::after { color: #7fb7ff; left: -2px }
+
+    #bloodCircle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0;
+      width: clamp(200px, 40vw, 420px);
+      pointer-events: none;
+      z-index: 3500;
+    }
+
+    @keyframes circleAnim {
+      0%,20% { opacity: 0 }
+      25%,75% { opacity: 0.6 }
+      100% { opacity: 0 }
+    }
+
+    .pulseOnce {
+      animation: circleAnim var(--circle-dur)ms both;
+    }
+
+    #logo {
+      position: fixed;
+      top: 6vh;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5000;
+      pointer-events: auto;
+    }
+
+    #logo img {
+      max-width: 28vw;
+      height: auto;
+      max-height: 84px;
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,.8));
+    }
+
+    .cta {
+      position: fixed;
+      bottom: 6vh;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 16px;
+      z-index: 5000;
+      pointer-events: auto;
+      align-items: center;
+    }
+
+    .cta a {
+      font-size: 18px;
+      padding: 12px 22px;
+      border-radius: 12px;
+      background: linear-gradient(180deg,#151515,#070707);
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-decoration: none;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+
+    .cta a:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(255,26,26,.12);
+      background: linear-gradient(180deg,#ff1a1a,#770000);
     }
   </style>
 </head>
 <body>
-  <!-- MENU -->
-  <button id="anarchyBtn" class="anarchyBtn" aria-controls="anarchyMenu" aria-expanded="false" title="Menu">
-    <img src="anarchy.png" alt="Toggle menu" />
-  </button>
-  <nav id="anarchyMenu" class="anarchyMenu" role="menu" aria-hidden="true">
-    <a href="rules.html">Rules</a>
-    <a href="support.html">Support</a>
-    <a href="donate.html">Donate</a>
-    <a href="killfeed.html">Kill Feed</a>
-    <a href="leaderboard.html">Leaderboard</a>
-  </nav>
-
-  <!-- CTA & logo -->
-  <div class="cta" role="navigation" aria-label="Primary actions">
-    <a class="steam" href="steam://connect/YOURSERVERIP" aria-label="Join the server">JOIN SERVER</a>
-    <a class="discord" href="https://discord.gg/YOURDISCORD" target="_blank" rel="noopener" aria-label="Join Discord">JOIN COMMUNITY</a>
-  </div>
-  <div id="logo" aria-hidden="true"><img src="Aggro-logo.PNG" alt="Aggro Logo" /></div>
-
-  <!-- smoke layers -->
-  <div id="smoke-wrap" aria-hidden="true">
+  <div id="smoke-wrap">
     <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
       <source src="Smoke.mp4" type="video/mp4" />
     </video>
@@ -203,109 +227,32 @@
     </video>
   </div>
 
-  <!-- overlays -->
-  <div id="colorOverlay" aria-hidden="true"></div>
-  <div id="redOverlay" aria-hidden="true"></div>
-  <div class="vfx" aria-hidden="true"><div id="vfxFlicker" class="flicker"></div></div>
+  <div id="colorOverlay"></div>
+  <div id="redOverlay"></div>
 
-  <!-- headline & blood -->
-  <div id="headline" aria-hidden="false">
-    <div id="headlineText" class="fadeText impact" data-text="JOIN THE FIGHT">JOIN THE FIGHT</div>
-    <img id="bloodCircle" class="pulseOnce" src="blood1.png" alt="" />
+  <div id="headline">
+    <div id="headlineText" class="fadeText impact glitch" data-text="JOIN THE FIGHT">JOIN THE FIGHT</div>
+    <img id="bloodCircle" class="pulseOnce" src="blood1.png" alt="Blood splat" />
+  </div>
+
+  <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro Logo" /></div>
+
+  <div class="cta">
+    <a class="steam" href="steam://connect/YOURSERVERIP">JOIN SERVER</a>
+    <a class="discord" href="https://discord.gg/YOURDISCORD" target="_blank">JOIN COMMUNITY</a>
   </div>
 
   <script>
-    (function(){
-      const S = getComputedStyle(document.documentElement);
-      const cycle = Number(S.getPropertyValue('--cycle')) || 4000;
-      const txtDur = Number(S.getPropertyValue('--text-dur')) || 3000;
-      const flash = Number(S.getPropertyValue('--flash-dur')) || 600;
-      const circleDur = Number(S.getPropertyValue('--circle-dur')) || 3000;
-      const circleDelay = Number(S.getPropertyValue('--circle-delay')) || 0;
+    const cycle = 4000;
+    const textDur = 3000;
+    const flashDur = 600;
 
-      const colorOvl = document.getElementById('colorOverlay');
-      const redOvl = document.getElementById('redOverlay');
-      const textEl = document.getElementById('headlineText');
-      const circle = document.getElementById('bloodCircle');
-      const flicker = document.getElementById('vfxFlicker');
-      const logoImg = document.querySelector('#logo img');
-      let running = false;
+    const colorOverlay = document.getElementById('colorOverlay');
+    const redOverlay = document.getElementById('redOverlay');
+    const headlineText = document.getElementById('headlineText');
+    const bloodCircle = document.getElementById('bloodCircle');
 
-      function restartAnimation(el, name, dur, delay = 0){
-        if(!el) return;
-        el.style.animation = 'none';
-        void el.offsetWidth;
-        el.style.animation = `${name} ${dur}ms ${delay}ms both`;
-      }
-
-      function pulseCTA(btn){
-        if(!btn) return;
-        btn.classList.remove('pulse-once');
-        void btn.offsetWidth;
-        btn.classList.add('pulse-once');
-      }
-
-      function run(){
-        if(running) return;
-        running = true;
-
-        // color tint
-        colorOvl.style.opacity = '1';
-        setTimeout(()=> colorOvl.style.opacity = '0', txtDur - 150);
-
-        // red flash
-        restartAnimation(redOvl,'redFlash',flash);
-
-        // headline: re-trigger impact + fade + pop
-        restartAnimation(textEl,'headlineImpact',Math.max(700, txtDur));
-        restartAnimation(textEl,'textFade',txtDur);
-        textEl.classList.remove('glitch');
-        setTimeout(()=> textEl.classList.add('glitch'),200);
-
-        // blood: pulse animation
-        restartAnimation(circle,'circleAnim',circleDur,circleDelay);
-        circle.classList.remove('pulseLoop');
-        setTimeout(()=> circle.classList.add('pulseLoop'), 240);
-
-        // flicker
-        if(flicker){ flicker.style.opacity = '1'; setTimeout(()=> flicker.style.opacity = '0', flash + 60); }
-
-        // CTA pulses
-        const steam = document.querySelector('.cta a.steam');
-        const disc = document.querySelector('.cta a.discord');
-        pulseCTA(steam);
-        setTimeout(()=> pulseCTA(disc), 90);
-
-        setTimeout(()=> running = false, cycle);
-      }
-
-      // menu toggle
-      const btn = document.getElementById('anarchyBtn');
-      const menu = document.getElementById('anarchyMenu');
-      btn.addEventListener('click', e=>{
-        e.stopPropagation();
-        const open = menu.classList.toggle('open');
-        menu.setAttribute('aria-hidden', !open);
-        btn.setAttribute('aria-expanded', String(open));
-      });
-      document.addEventListener('click', e=>{
-        if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
-          menu.classList.remove('open');
-          menu.setAttribute('aria-hidden', 'true');
-          btn.setAttribute('aria-expanded', 'false');
-        }
-      });
-
-      // start
-      window.addEventListener('DOMContentLoaded', ()=>{
-        if(document.documentElement.matches('(prefers-reduced-motion: reduce)')){
-          document.documentElement.style.setProperty('--text-dur','800');
-          document.documentElement.style.setProperty('--cycle','3000');
-        }
-        run();
-        setInterval(run, cycle);
-      });
-    })();
-  </script>
-</body>
-</html>
+    function restartAnimation(el, name, dur) {
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = `${name} ${dur}
