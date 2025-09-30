@@ -38,13 +38,12 @@
     }
 
     /* Basic controls */
-    button,a{background:none;border:none;cursor:pointer;color:inherit;text-decoration:none;padding:0}
+    button,a{background:none;border:0;cursor:pointer;color:inherit;text-decoration:none;padding:0;font-family:inherit}
 
-    /* MENU button restored to original simple image style */
+    /* MENU button (simple image style restored) */
     .anarchyBtn{
       position:fixed;top:14px;right:14px;z-index:var(--z-menu);pointer-events:auto;
-      background:transparent;border:0;padding:0;
-      width:64px;height:64px;
+      background:transparent;border:0;padding:0;width:64px;height:64px;
     }
     .anarchyBtn img{width:64px;height:64px;display:block}
 
@@ -66,16 +65,53 @@
     /* CTA & LOGO */
     .cta{
       position:fixed;bottom:6vh;left:50%;transform:translateX(-50%);display:flex;gap:16px;z-index:var(--z-cta);pointer-events:auto;
+      align-items:center;
     }
     .cta a{
-      font-size:18px;padding:12px 22px;border-radius:12px;background:linear-gradient(180deg,#151515,#070707);
-      color:#fff;font-weight:800;letter-spacing:.06em;transition:transform .12s,box-shadow .12s,background .12s;
-      will-change:transform,box-shadow;
+      position:relative;display:inline-block;font-size:18px;padding:12px 22px;border-radius:12px;background:linear-gradient(180deg,#151515,#070707);
+      color:#fff;font-weight:800;letter-spacing:.06em;transition:transform .12s cubic-bezier(.2,.9,.2,1),box-shadow .12s,background .12s,filter .12s;
+      will-change:transform,box-shadow,filter;outline: none;
     }
-    /* stronger pop on hover baseline */
-    .cta a:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(255,26,26,.12);background:linear-gradient(180deg,#ff1a1a,#770000)}
+    .cta a:focus{box-shadow:0 10px 30px rgba(255,26,26,.12)}
 
-    /* logo larger on desktop but we will increase mobile size below */
+    /* per-button accent classes */
+    .cta a.steam { --accent-r:255; --accent-g:26; --accent-b:26; }
+    .cta a.discord { --accent-r:114; --accent-g:137; --accent-b:218; }
+
+    /* hover baseline */
+    .cta a:hover,
+    .cta a:focus {
+      transform: translateY(-6px) scale(1.08);
+      box-shadow: 0 20px 50px rgba(0,0,0,.35);
+      filter: saturate(1.08) drop-shadow(0 10px 28px rgba(0,0,0,.6));
+    }
+
+    /* pulse animation used when red flash runs */
+    @keyframes ctaPulse {
+      0%   { transform: scale(1); box-shadow: 0 8px 26px rgba(0,0,0,.3); filter: none; }
+      30%  { transform: scale(1.14); box-shadow: 0 30px 80px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.32); filter: saturate(1.2) brightness(1.05); }
+      70%  { transform: scale(1.06); box-shadow: 0 18px 44px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.22); filter: saturate(1.08); }
+      100% { transform: scale(1); box-shadow: 0 8px 26px rgba(0,0,0,.3); filter: none; }
+    }
+
+    /* class to trigger the pulse once */
+    .pulse-once { animation: ctaPulse 420ms cubic-bezier(.2,.9,.2,1) both; }
+
+    /* micro-decoration: subtle colored rim inside the button during pop */
+    .cta a::after{
+      content:"";
+      display:block;
+      position:absolute;
+      inset:2px;
+      border-radius:10px;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity .12s;
+    }
+    .cta a.steam::after{ box-shadow: inset 0 0 28px rgba(255,26,26,.12); }
+    .cta a.discord::after{ box-shadow: inset 0 0 28px rgba(114,137,218,.10); }
+    .pulse-once::after{ opacity:1; transition:opacity .08s; }
+
     #logo{position:fixed;top:6vh;left:50%;transform:translateX(-50%);z-index:var(--z-logo);pointer-events:auto}
     #logo img{max-width:28vw;height:auto;max-height:84px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.8))}
 
@@ -115,12 +151,11 @@
     .pulseOnce{animation:circleAnim var(--circle-dur)ms both}
     .pulseLoop{animation:bloodPulse 1.2s ease-in-out infinite}
 
-    /* POP when red smoke comes: add a short pop + glow */
+    /* vfx root class for broader pops */
     .vfx-active .anarchyBtn img{transform:scale(1.08);transition:transform .12s,filter .12s}
     .vfx-active .anarchyBtn img{filter:drop-shadow(0 6px 18px rgba(255,26,26,.35))}
     .vfx-active .cta a{transform:scale(1.06);box-shadow:0 18px 40px rgba(255,26,26,.18);transition:transform .12s,box-shadow .12s}
 
-    /* reduce the pop after a short period for naturalness */
     .vfx-active-short .anarchyBtn img{transform:scale(1.12)}
     .vfx-active-short .cta a{transform:scale(1.12);box-shadow:0 22px 56px rgba(255,26,26,.22)}
 
@@ -139,9 +174,9 @@
       .anarchyBtn{width:56px;height:56px}
     }
 
-    /* prefers-reduced-motion fallback (no aggressive transforms) */
+    /* prefers-reduced-motion fallback */
     @media (prefers-reduced-motion: reduce){
-      .impact,.pulseLoop,.pulseOnce,.glitch{animation:none!important}
+      .impact,.pulseLoop,.pulseOnce,.glitch,.pulse-once{animation:none!important}
       .vfx-active .anarchyBtn img,.vfx-active .cta a{transform:none;box-shadow:none;filter:none}
     }
   </style>
@@ -161,8 +196,8 @@
 
   <!-- CTA & logo -->
   <div class="cta" role="navigation" aria-label="Primary actions">
-    <a href="steam://connect/YOURSERVERIP" aria-label="Join the server">JOIN SERVER</a>
-    <a href="https://discord.gg/YOURDISCORD" target="_blank" rel="noopener" aria-label="Join Discord">JOIN COMMUNITY</a>
+    <a class="steam" href="steam://connect/YOURSERVERIP" aria-label="Join the server">JOIN SERVER</a>
+    <a class="discord" href="https://discord.gg/YOURDISCORD" target="_blank" rel="noopener" aria-label="Join Discord">JOIN COMMUNITY</a>
   </div>
   <div id="logo" aria-hidden="true"><img src="Aggro-logo.PNG" alt="Aggro Logo" /></div>
 
@@ -202,12 +237,21 @@
       const circle = document.getElementById('bloodCircle');
       const flicker = document.getElementById('vfxFlicker');
       const root = document.documentElement;
+      const steamBtn = document.querySelector('.cta a.steam');
+      const discordBtn = document.querySelector('.cta a.discord');
       let running = false;
 
       function restartAnimation(el, name, dur, delay = 0){
         el.style.animation = 'none';
         void el.offsetWidth;
         el.style.animation = `${name} ${dur}ms ${delay}ms both`;
+      }
+
+      function triggerCtaPulse(btn){
+        if(!btn) return;
+        btn.classList.remove('pulse-once');
+        void btn.offsetWidth;
+        btn.classList.add('pulse-once');
       }
 
       function run(){
@@ -221,16 +265,17 @@
         // red flash animation
         restartAnimation(redOvl,'redFlash',flash);
 
-        // add vfx-active class to make menu + cta pop during flash
+        // root classes to pop UI elements
         root.classList.add('vfx-active');
-        // short stronger pop class for first 180ms then relax to regular vfx-active
         root.classList.add('vfx-active-short');
         setTimeout(()=> root.classList.remove('vfx-active-short'), 180);
-
-        // remove vfx-active after a slightly longer window so the glow feels synced with flash
         setTimeout(()=> root.classList.remove('vfx-active'), flash + 120);
 
-        // headline: re-trigger impact + fade
+        // trigger CTA pulses staggered
+        triggerCtaPulse(steamBtn);
+        setTimeout(()=> triggerCtaPulse(discordBtn), 90);
+
+        // headline: re-trigger impact + fade + glitch
         restartAnimation(textEl,'headlineImpact',Math.max(700, txtDur));
         restartAnimation(textEl,'textFade',txtDur);
         textEl.classList.remove('glitch');
