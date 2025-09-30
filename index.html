@@ -14,7 +14,7 @@
       --circle-delay: 500;  /* circle delay ms */
       --flash-dur: 600;     /* overlay flash ms */
 
-      /* z-index layers */
+      /* z-index stacking */
       --z-menu: 4000;       /* menu top */
       --z-cta: 1000;        /* CTA bottom */
       --z-logo: 1000;       /* logo bottom */
@@ -40,7 +40,7 @@
     }
     button,a { background:none;border:none;cursor:pointer }
 
-    /* Anarchy Menu over smoke */
+    /* Menu above smoke */
     .anarchyBtn {
       position:fixed; top:14px; right:14px;
       z-index:var(--z-menu);
@@ -90,9 +90,9 @@
       object-fit:cover; opacity:.58;
       transition: filter var(--text-dur)ms ease-in-out;
     }
-    /* force pure red tint */
+    /* light red tint */
     .smokeTint {
-      filter: sepia(1) saturate(10000%) hue-rotate(0deg) brightness(1.2);
+      filter: sepia(0.5) saturate(5) hue-rotate(-10deg) brightness(1.1);
     }
 
     /* Red flash overlay */
@@ -123,13 +123,15 @@
     /* Headline text */
     #headline {
       position:fixed; top:42vh; left:50%;
-      transform:translateX(-50%); text-align:center;
-      z-index:var(--z-head); pointer-events:none;
+      transform:translateX(-50%);
+      text-align:center; z-index:var(--z-head);
+      pointer-events:none;
     }
     #headlineText {
       font-size:clamp(48px,14vw,136px);
       line-height:.9; letter-spacing:.12em;
-      opacity:0; position:relative; will-change:opacity;
+      opacity:0; position:relative;
+      will-change:opacity;
     }
     @keyframes textFade {
       0%,10%   { opacity:0 }
@@ -139,8 +141,6 @@
     .fadeText {
       animation:textFade var(--text-dur)ms both;
     }
-
-    /* Glitch overlay */
     @keyframes glitch {
       0%,100% { clip:rect(0,9999px,0,0) }
       20%     { clip:rect(20px,9999px,40px,0) }
@@ -177,6 +177,8 @@
   </style>
 </head>
 <body>
+
+  <!-- Menu -->
   <button id="anarchyBtn" class="anarchyBtn" aria-controls="anarchyMenu" aria-expanded="false">
     <img src="anarchy.png" alt="Toggle menu"/>
   </button>
@@ -188,23 +190,29 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
+  <!-- CTA -->
   <div class="cta">
     <a href="steam://connect/YOURSERVERIP">JOIN SERVER</a>
     <a href="https://discord.gg/YOURDISCORD">JOIN COMMUNITY</a>
   </div>
 
+  <!-- Logo -->
   <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro Logo"/></div>
 
+  <!-- Smoke background -->
   <div id="smoke-wrap">
-    <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
+    <video id="smokeVideo" muted autoplay loop playsinline preload>
       <source src="Smoke.mp4" type="video/mp4"/>
     </video>
   </div>
 
+  <!-- Red flash overlay -->
   <div id="redOverlay"></div>
 
+  <!-- Flicker -->
   <div class="vfx"><div id="vfxFlicker" class="flicker"></div></div>
 
+  <!-- Headline & Blood -->
   <div id="headline">
     <div id="headlineText" data-text="JOIN THE FIGHT">JOIN THE FIGHT</div>
     <img id="bloodCircle" src="blood1.png" alt="Blood splatter"/>
@@ -212,16 +220,16 @@
 
   <script>
   (function(){
-    const smoke     = document.getElementById('smokeVideo');
-    const red       = document.getElementById('redOverlay');
-    const text      = document.getElementById('headlineText');
-    const circle    = document.getElementById('bloodCircle');
-    const flicker   = document.getElementById('vfxFlicker');
-    const style     = getComputedStyle(document.documentElement);
-    const cycle     = +style.getPropertyValue('--cycle');
-    const textDur   = +style.getPropertyValue('--text-dur');
-    const flashDur  = +style.getPropertyValue('--flash-dur');
-    let running     = false;
+    const smoke   = document.getElementById('smokeVideo');
+    const red     = document.getElementById('redOverlay');
+    const text    = document.getElementById('headlineText');
+    const circle  = document.getElementById('bloodCircle');
+    const flicker = document.getElementById('vfxFlicker');
+    const S       = getComputedStyle(document.documentElement);
+    const cycle   = +S.getPropertyValue('--cycle');
+    const textDur = +S.getPropertyValue('--text-dur');
+    const flash   = +S.getPropertyValue('--flash-dur');
+    let running   = false;
 
     function restart(el, name, dur, delay=0){
       el.style.animation = 'none';
@@ -233,9 +241,10 @@
       if(running) return;
       running = true;
 
-      // flash overlay
-      restart(red, 'redFlash', flashDur);
-      // tint smoke red for the text duration
+      // red overlay
+      restart(red, 'redFlash', flash);
+
+      // **light** red smoke tint for exactly text duration
       smoke.classList.add('smokeTint');
       setTimeout(()=> smoke.classList.remove('smokeTint'), textDur);
 
@@ -245,25 +254,26 @@
       setTimeout(()=> text.classList.add('glitch'), 200);
 
       // blood circle
-      restart(circle, 'circleAnim',
-              +style.getPropertyValue('--circle-dur'),
-              +style.getPropertyValue('--circle-delay'));
+      restart(circle,'circleAnim',
+              +S.getPropertyValue('--circle-dur'),
+              +S.getPropertyValue('--circle-delay'));
 
       // flicker
       flicker.style.opacity = '1';
-      setTimeout(()=> flicker.style.opacity = '0', flashDur);
+      setTimeout(()=> flicker.style.opacity = '0', flash);
 
+      // unlock next cycle
       setTimeout(()=> running = false, cycle);
     }
 
     // menu toggle
-    document.getElementById('anarchyBtn').addEventListener('click', e=>{
+    document.getElementById('anarchyBtn').addEventListener('click', e => {
       e.stopPropagation();
       const nav = document.getElementById('anarchyMenu');
       const open = nav.classList.toggle('open');
       e.currentTarget.setAttribute('aria-expanded', open);
     });
-    document.addEventListener('click', e=>{
+    document.addEventListener('click', e => {
       if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
         document.getElementById('anarchyMenu').classList.remove('open');
         document.getElementById('anarchyBtn').setAttribute('aria-expanded', false);
