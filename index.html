@@ -17,11 +17,11 @@
     font-family: "28Days", sans-serif; overflow: hidden;
   }
 
-  /* Smoke background — sits above everything except menu */
+  /* Smoke overlay above everything except menu */
   #smoke-wrap {
     position: fixed; inset: 0;
-    z-index: 9000; /* above text/logo/blood */
-    pointer-events: none; /* don’t block clicks */
+    z-index: 9000;
+    pointer-events: none;
   }
   #smokeVideo {
     width: 100%; height: 100%;
@@ -38,11 +38,11 @@
   #logo {
     position: fixed; top: 6vh; left: 50%;
     transform: translateX(-50%);
-    z-index: 2000; /* below smoke */
+    z-index: 2000;
   }
   #logo img { max-width: 30vw; height: auto; }
 
-  /* Menu — always above smoke */
+  /* Menu always above smoke */
   .anarchyBtn { position: fixed; top: 14px; right: 14px; z-index: 10000; background: none; border: none; }
   .anarchyBtn img { width: 52px; height: 52px; }
   .anarchyMenu {
@@ -59,50 +59,49 @@
 
   /* Headline */
   #joinText {
-    position: fixed; top: 40%; left: 50%;
+    position: fixed; top: 45%; left: 50%;
     transform: translate(-50%, -50%);
-    font-size: clamp(24px, 8vw, 72px);
-    color: #fff; letter-spacing: 0.25em;
-    text-shadow: 0 0 12px rgba(255,0,0,0.6);
-    z-index: 2000; /* below smoke */
-    opacity: 0; transition: opacity 300ms ease;
+    font-size: clamp(28px, 9vw, 80px);
+    color: #fff; letter-spacing: 0.2em;
+    text-align: center;
+    text-shadow: 0 0 15px rgba(255,0,0,0.6), 0 0 25px rgba(0,0,0,0.8);
+    z-index: 2000;
+    opacity: 0; transition: opacity 400ms ease;
   }
   #joinText.visible { opacity: 1; }
 
-  /* Blood layer */
-  #bloodLayer {
-    position: fixed; inset: 0;
+  /* Blood sweeps */
+  .bloodSweep {
+    position: fixed;
+    opacity: 0;
+    z-index: 2000;
     pointer-events: none;
-    z-index: 2000; /* below smoke */
   }
-  .drip {
-    position: absolute; top: -50px;
-    width: 8px; height: 20px;
-    background: red; border-radius: 50%;
-    opacity: 0.9;
-    animation: dripFall linear forwards;
+  #bloodTop {
+    top: 0; left: -100%;
+    width: 100%; height: auto;
+    max-height: 180px;
   }
-  @keyframes dripFall {
-    0%   { transform: translateY(0) scaleY(1); opacity: 1; }
-    80%  { transform: translateY(90vh) scaleY(1.2); opacity: 1; }
-    100% { transform: translateY(100vh) scaleY(0.8); opacity: 0; }
+  #bloodBottom {
+    bottom: 0; right: -100%;
+    width: 100%; height: auto;
+    max-height: 180px;
   }
-  .splat {
-    position: absolute; bottom: 0;
-    width: 40px; height: 20px;
-    background: red; border-radius: 50% 50% 0 0;
-    opacity: 0; transform: scale(0.5);
-    animation: splatPop 0.4s ease forwards;
+  .bloodSweep.show {
+    animation: sweepIn 1.2s ease forwards;
   }
-  @keyframes splatPop {
-    to { opacity: 1; transform: scale(1); }
+  @keyframes sweepIn {
+    0%   { opacity: 0; transform: translateX(0); }
+    20%  { opacity: 1; }
+    100% { opacity: 1; transform: translateX(100%); }
   }
 
   /* Mobile tweaks */
   @media (max-width: 600px) {
     #logo { top: 3vh; }
     #logo img { max-width: 50vw; }
-    #joinText { font-size: clamp(18px, 7vw, 32px); letter-spacing: 0.12em; }
+    #joinText { font-size: clamp(20px, 8vw, 36px); letter-spacing: 0.12em; }
+    #bloodTop, #bloodBottom { max-height: 100px; }
   }
 </style>
 </head>
@@ -124,10 +123,11 @@
 <!-- Headline -->
 <div id="joinText">J O I N&nbsp;&nbsp;T H E&nbsp;&nbsp;F I G H T</div>
 
-<!-- Blood -->
-<div id="bloodLayer"></div>
+<!-- Blood sweeps -->
+<img id="bloodTop" class="bloodSweep" src="blood1.png" alt="">
+<img id="bloodBottom" class="bloodSweep" src="blood1.png" alt="">
 
-<!-- Smoke (on top of everything except menu) -->
+<!-- Smoke overlay -->
 <div id="smoke-wrap">
   <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
     <source src="Smoke.mp4" type="video/mp4">
@@ -138,41 +138,33 @@
 (function(){
   const smoke = document.getElementById('smokeVideo');
   const joinText = document.getElementById('joinText');
-  const bloodLayer = document.getElementById('bloodLayer');
+  const bloodTop = document.getElementById('bloodTop');
+  const bloodBottom = document.getElementById('bloodBottom');
   const anarchyBtn = document.getElementById('anarchyBtn');
   const anarchyMenu = document.getElementById('anarchyMenu');
 
-  function spawnDrip(){
-    const drip = document.createElement('div');
-    drip.className = 'drip';
-    drip.style.left = Math.random() * 100 + 'vw';
-    drip.style.animationDuration = (2 + Math.random()*2) + 's';
+  function runSequence(){
+    smoke.classList.add('effect');
+    joinText.classList.add('visible');
 
-    drip.addEventListener('animationend', ()=>{
-      drip.remove();
-      const splat = document.createElement('div');
-      splat.className = 'splat';
-      splat.style.left = drip.style.left;
-      bloodLayer.appendChild(splat);
-      setTimeout(()=> splat.remove(), 1500);
-    });
+    // Trigger blood sweeps
+    bloodTop.classList.add('show');
+    setTimeout(()=> bloodBottom.classList.add('show'), 300);
 
-    bloodLayer.appendChild(drip);
+    // Reset after a few seconds
+    setTimeout(()=>{
+      joinText.classList.remove('visible');
+      smoke.classList.remove('effect');
+      bloodTop.classList.remove('show');
+      bloodBottom.classList.remove('show');
+    }, 3000);
   }
 
-  // Continuous dripping
-  setInterval(spawnDrip, 800);
-
-  // Smoke loop triggers text
+  // Trigger at end of smoke loop
   let prevTime = 0;
   smoke.addEventListener('timeupdate', ()=>{
     const t = smoke.currentTime || 0;
-    if(prevTime - t > 0.3){
-      joinText.classList.add('visible');
-      smoke.classList.add('effect');
-      setTimeout(()=> joinText.classList.remove('visible'), 2500);
-      setTimeout(()=> smoke.classList.remove('effect'), 2500);
-    }
+    if(prevTime - t > 0.3){ runSequence(); }
     prevTime = t;
   });
 
