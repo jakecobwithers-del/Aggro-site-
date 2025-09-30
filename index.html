@@ -20,6 +20,12 @@
   /* Smoke background */
   #smoke-wrap { position: fixed; inset: 0; z-index: 1000; pointer-events: none; }
   #smokeVideo { width: 100%; height: 100%; object-fit: cover; opacity: 0.56; }
+  #smokeVideo.effect { animation: smokePulse 1.5s ease; }
+  @keyframes smokePulse {
+    0%   { filter: brightness(0.6) blur(0px); }
+    50%  { filter: brightness(1.2) blur(3px); }
+    100% { filter: brightness(0.6) blur(0px); }
+  }
 
   /* Logo */
   #logo {
@@ -57,7 +63,13 @@
     text-align: center;
   }
 
+  #headlineWrap {
+    position: relative;
+    display: inline-block;
+  }
+
   #joinText {
+    position: relative;
     color: #fff;
     font-size: clamp(20px, 8vw, 64px);
     letter-spacing: 0.25em;
@@ -65,20 +77,21 @@
     opacity: 0;
     transform: translateY(20px) scale(0.98);
     transition: opacity 300ms ease, transform 300ms ease;
-    z-index: 2010;
+    z-index: 2;
   }
   #joinText.visible { opacity: 1; transform: translateY(0) scale(1); }
 
   .splat {
-    position: absolute; opacity: 0;
+    position: absolute;
+    opacity: 0;
     mix-blend-mode: multiply;
     transition: opacity 300ms ease, transform 300ms ease;
-    z-index: 2020;
+    z-index: 3;
   }
   .splat.show { opacity: 0.7; transform: scale(1.05); }
 
-  #splat1 { top: 20%; left: 15%; width: 100px; }
-  #splat2 { bottom: 20%; right: 15%; width: 120px; }
+  #splat1 { top: -20px; left: -40px; width: 80px; }
+  #splat2 { bottom: -20px; right: -40px; width: 100px; }
 
   /* Mobile adjustments */
   @media (max-width: 600px) {
@@ -93,8 +106,8 @@
       padding: 0 10px;
     }
 
-    #splat1 { width: 70px; top: 18%; left: 10%; }
-    #splat2 { width: 80px; bottom: 18%; right: 10%; }
+    #splat1 { width: 60px; top: -15px; left: -25px; }
+    #splat2 { width: 70px; bottom: -15px; right: -25px; }
   }
 </style>
 </head>
@@ -122,9 +135,11 @@
 
 <!-- Center stage -->
 <div class="centerStage">
-  <div id="joinText">J O I N&nbsp;&nbsp;T H E&nbsp;&nbsp;F I G H T</div>
-  <img id="splat1" class="splat" src="blood1.png" alt="">
-  <img id="splat2" class="splat" src="blood1.png" alt="">
+  <div id="headlineWrap">
+    <div id="joinText">J O I N&nbsp;&nbsp;T H E&nbsp;&nbsp;F I G H T</div>
+    <img id="splat1" class="splat" src="blood1.png" alt="">
+    <img id="splat2" class="splat" src="blood1.png" alt="">
+  </div>
 </div>
 
 <script>
@@ -137,13 +152,16 @@
   const anarchyMenu = document.getElementById('anarchyMenu');
 
   function runSequence(){
+    smoke.classList.add('effect');
     joinText.classList.add('visible');
     setTimeout(()=> splat1.classList.add('show'), 300);
     setTimeout(()=> splat2.classList.add('show'), 600);
+
     setTimeout(()=>{
       joinText.classList.remove('visible');
       splat1.classList.remove('show');
       splat2.classList.remove('show');
+      smoke.classList.remove('effect');
     }, 3000);
   }
 
