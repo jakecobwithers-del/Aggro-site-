@@ -17,10 +17,10 @@
     font-family: "28Days", sans-serif; overflow: hidden;
   }
 
-  /* Smoke overlay above everything except menu */
+  /* Smoke sits under text/blood/menu */
   #smoke-wrap {
     position: fixed; inset: 0;
-    z-index: 9000;
+    z-index: 1000;
     pointer-events: none;
   }
   #smokeVideo {
@@ -29,18 +29,33 @@
   }
   #smokeVideo.effect { animation: smokeRedPulse 1.8s ease; }
   @keyframes smokeRedPulse {
-    0%   { filter: brightness(0.7) saturate(1) hue-rotate(0deg) blur(0px); }
-    40%  { filter: brightness(1.25) saturate(2.2) hue-rotate(-20deg) blur(3px); }
-    100% { filter: brightness(0.85) saturate(1.3) hue-rotate(-12deg) blur(0px); }
+    0%   { filter: brightness(0.7) saturate(1); }
+    40%  { filter: brightness(1.25) saturate(2.2); }
+    100% { filter: brightness(0.85) saturate(1.3); }
   }
 
   /* Logo */
   #logo {
     position: fixed; top: 6vh; left: 50%;
     transform: translateX(-50%);
-    z-index: 2000;
+    z-index: 3000;
   }
   #logo img { max-width: 30vw; height: auto; }
+
+  /* Menu always above everything */
+  .anarchyBtn { position: fixed; top: 14px; right: 14px; z-index: 10000; background: none; border: none; }
+  .anarchyBtn img { width: 52px; height: 52px; }
+  .anarchyMenu {
+    position: fixed; top: 76px; right: 14px; z-index: 10000;
+    display: none; flex-direction: column; gap: 8px; padding: 10px;
+    background: rgba(10,10,10,0.95); border-radius: 10px;
+  }
+  .anarchyMenu.open { display: flex; }
+  .anarchyMenu a {
+    font-family: "28Days"; font-weight: 800; color: #ffdede;
+    text-decoration: none; padding: 10px;
+  }
+  .anarchyMenu a:hover { background: rgba(255,16,16,0.08); }
 
   /* Headline stacked */
   #headline {
@@ -60,26 +75,20 @@
     white-space: nowrap;
   }
 
-  /* Blood sweeps OVER the text, positioned relative to headline */
+  /* Blood sweeps inside headline, over text */
   .bloodSweep {
     position: absolute;
     left: -100%;
     opacity: 0;
-    z-index: 3000; /* higher than headline */
+    z-index: 2500; /* above text */
     pointer-events: none;
     width: 120%;
     max-height: 120px;
   }
-  #bloodTop {
-    top: -60px; /* just above JOIN */
-    transform: skewY(-3deg) scale(1.05);
-  }
-  #bloodBottom {
-    bottom: -60px; /* just below FIGHT */
-    transform: skewY(3deg) scale(1.05);
-  }
-  .bloodSweep.showTop { animation: sweepTop 1.5s ease forwards; }
-  .bloodSweep.showBottom { animation: sweepBottom 1.5s ease forwards; }
+  #bloodTop { top: -60px; }
+  #bloodBottom { bottom: -60px; }
+  .animateTop { animation: sweepTop 1.5s ease forwards; }
+  .animateBottom { animation: sweepBottom 1.5s ease forwards; }
   @keyframes sweepTop {
     0%   { opacity: 0; left: -100%; }
     20%  { opacity: 1; }
@@ -91,12 +100,12 @@
     100% { opacity: 1; left: 0; }
   }
 
-  /* Call-to-action buttons */
+  /* Buttons */
   .cta {
     position: fixed; bottom: 8vh; left: 50%;
     transform: translateX(-50%);
     display: flex; gap: 20px;
-    z-index: 2000;
+    z-index: 3000;
   }
   .cta a {
     font-family: "28Days";
@@ -112,29 +121,23 @@
     overflow: hidden;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-  .cta a::before {
-    content: "";
-    position: absolute; inset: 0;
-    background: url("blood1.png") center/cover no-repeat;
-    opacity: 0.25;
-    pointer-events: none;
-  }
   .cta a:hover {
     transform: scale(1.1) rotate(-1deg);
     box-shadow: 0 0 20px rgba(255,0,0,0.8);
   }
-
-  /* Mobile tweaks */
-  @media (max-width: 600px) {
-    #logo img { max-width: 50vw; }
-    #headline div { font-size: clamp(36px, 14vw, 80px); }
-    .cta { flex-direction: column; gap: 12px; }
-    .cta a { font-size: 20px; padding: 12px 20px; }
-    #bloodTop, #bloodBottom { max-height: 80px; }
-  }
 </style>
 </head>
 <body>
+
+<!-- Menu -->
+<button id="anarchyBtn" class="anarchyBtn"><img src="anarchy.png" alt="Menu"></button>
+<nav id="anarchyMenu" class="anarchyMenu">
+  <a href="rules.html">Rules</a>
+  <a href="support.html">Support</a>
+  <a href="donate.html">Donate</a>
+  <a href="killfeed.html">Kill Feed</a>
+  <a href="leaderboard.html">Leaderboard</a>
+</nav>
 
 <!-- Logo -->
 <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
@@ -144,7 +147,6 @@
   <div>JOIN</div>
   <div>THE</div>
   <div>FIGHT</div>
-  <!-- Blood sweeps anchored to headline -->
   <img id="bloodTop" class="bloodSweep" src="blood1.png" alt="">
   <img id="bloodBottom" class="bloodSweep" src="blood1.png" alt="">
 </div>
@@ -168,21 +170,25 @@
   const headline = document.getElementById('headline');
   const bloodTop = document.getElementById('bloodTop');
   const bloodBottom = document.getElementById('bloodBottom');
+  const anarchyBtn = document.getElementById('anarchyBtn');
+  const anarchyMenu = document.getElementById('anarchyMenu');
+
+  function restartAnimation(el, cls){
+    el.classList.remove(cls);
+    void el.offsetWidth; // force reflow
+    el.classList.add(cls);
+  }
 
   function runSequence(){
     smoke.classList.add('effect');
     headline.classList.add('visible');
 
-    // Trigger blood sweeps
-    bloodTop.classList.add('showTop');
-    setTimeout(()=> bloodBottom.classList.add('showBottom'), 400);
+    restartAnimation(bloodTop, 'animateTop');
+    setTimeout(()=> restartAnimation(bloodBottom, 'animateBottom'), 400);
 
-    // Reset after a few seconds
     setTimeout(()=>{
       headline.classList.remove('visible');
       smoke.classList.remove('effect');
-      bloodTop.classList.remove('showTop');
-      bloodBottom.classList.remove('showBottom');
     }, 3500);
   }
 
@@ -193,7 +199,20 @@
     if(prevTime - t > 0.3){ runSequence(); }
     prevTime = t;
   });
+
+    // Menu toggle
+  anarchyBtn.addEventListener('click', e=>{
+    e.stopPropagation();
+    anarchyMenu.classList.toggle('open');
+  });
+
+  document.addEventListener('click', e=>{
+    if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
+      anarchyMenu.classList.remove('open');
+    }
+  });
 })();
 </script>
 </body>
 </html>
+
