@@ -8,26 +8,30 @@
     :root {
       --bg: #050505;
       --red: #ff1a1a;
-      --cycle: 4000;        /* loop length ms */
-      --text-dur: 3000;     /* text fade duration ms */
-      --circle-dur: 2500;   /* blood circle duration ms */
-      --circle-delay: 500;  /* blood circle start delay ms */
+      --cycle: 4000;         /* full loop in ms */
+      --text-dur: 3000;      /* text fade duration ms */
+      --circle-dur: 2500;    /* blood circle duration ms */
+      --circle-delay: 500;   /* blood circle start delay ms */
+      --flash-dur: 600;      /* red flash & smoke tint duration */
 
       /* z-index layers */
-      --z-menu: 4000;       /* menu over smoke */
-      --z-cta: 1000;        /* CTA under smoke */
-      --z-logo: 1000;       /* logo under smoke */
-      --z-smoke: 2000;      /* smoke above logo/CTA */
-      --z-head: 3000;       /* text above smoke */
-      --z-blood: 3500;      /* blood above text */
-      --z-vfx: 4500;        /* red flash/flicker top */
+      --z-menu: 4000;        /* menu over smoke */
+      --z-cta: 1000;         /* CTA under smoke */
+      --z-logo: 1000;        /* logo under smoke */
+      --z-smoke: 2000;       /* smoke above logo/CTA */
+      --z-head: 3000;        /* text above smoke */
+      --z-blood: 3500;       /* blood above text */
+      --z-vfx: 4500;         /* red flash/flicker top */
     }
 
     *,*::before,*::after { box-sizing:border-box }
     html,body {
-      margin:0; padding:0; width:100%; height:100%;
-      background: var(--bg); overflow:hidden;
-      font-family:"28Days",sans-serif; color:#fff;
+      margin:0; padding:0;
+      width:100%; height:100%;
+      background: var(--bg);
+      overflow:hidden;
+      font-family:"28Days",sans-serif;
+      color:#fff;
     }
     @font-face {
       font-family:"28Days";
@@ -41,11 +45,11 @@
       position: fixed; top:14px; right:14px;
       z-index: var(--z-menu);
     }
-    .anarchyBtn img { width:64px; height:64px }
+    .anarchyBtn img { width:64px; height:64px; }
     .anarchyMenu {
       position: fixed; top:90px; right:14px;
       display: none; flex-direction: column;
-      padding: 12px; background: rgba(10,10,10,0.95);
+      padding:12px; background: rgba(10,10,10,0.95);
       border-radius:12px;
       z-index: var(--z-menu);
     }
@@ -90,6 +94,16 @@
       object-fit:cover; opacity:.58;
     }
 
+    /* smoke tint animation */
+    @keyframes smokeFlash {
+      0%,10%   { filter: none; }
+      20%,40%  { filter: sepia(1) saturate(5) hue-rotate(-10deg) brightness(1.2); }
+      100%     { filter: none; }
+    }
+    #smokeVideo.smokeFlash {
+      animation: smokeFlash var(--flash-dur)ms both;
+    }
+
     /* Red flash overlay */
     #redOverlay {
       position: fixed; inset:0;
@@ -101,7 +115,7 @@
     }
     @keyframes redFlash {
       0%   { opacity:0 }
-      10%  { opacity:.6 }
+      10%  { opacity:.4 }
       30%  { opacity:0 }
       100% { opacity:0 }
     }
@@ -117,10 +131,10 @@
       mix-blend-mode: screen; opacity:0;
     }
 
-    /* Headline text (fade only) */
+    /* Headline text */
     #headline {
       position: fixed; top:42vh; left:50%;
-      transform: translateX(-50%);
+      transform:translateX(-50%);
       text-align:center;
       z-index: var(--z-head);
       pointer-events:none;
@@ -137,9 +151,10 @@
       100%     { opacity:0 }
     }
     .fadeText {
-      animation: textFade var(--text-dur)ms both;
+      animation:textFade var(--text-dur)ms both;
     }
-    /* glitch overlay */
+
+    /* Glitch overlay */
     @keyframes glitch {
       0%,100% { clip:rect(0,9999px,0,0) }
       20%     { clip:rect(20px,9999px,40px,0) }
@@ -158,7 +173,7 @@
     .glitch::before { color:#ff4b4b; left:2px }
     .glitch::after  { color:#7fb7ff; left:-2px }
 
-    /* Blood circle synced to text */
+    /* Blood circle synced */
     #bloodCircle {
       position:absolute; top:50%; left:50%;
       transform:translate(-50%,-50%) scale(0);
@@ -201,7 +216,7 @@
     <img src="Aggro-logo.PNG" alt="Aggro PvP Logo"/>
   </div>
 
-  <!-- Smoke -->
+  <!-- Smoke Background -->
   <div id="smoke-wrap">
     <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
       <source src="Smoke.mp4" type="video/mp4"/>
@@ -211,7 +226,7 @@
   <!-- Red Flash -->
   <div id="redOverlay"></div>
 
-  <!-- Flicker -->
+  <!-- VFX Flicker -->
   <div class="vfx">
     <div id="vfxFlicker" class="flicker"></div>
   </div>
@@ -226,12 +241,15 @@
 
   <script>
   (function(){
-    const cycle   = parseInt(getComputedStyle(document.documentElement)
-                     .getPropertyValue('--cycle'));
+    const smoke   = document.getElementById('smokeVideo');
+    const red     = document.getElementById('redOverlay');
     const text    = document.getElementById('headlineText');
     const circle  = document.getElementById('bloodCircle');
-    const red     = document.getElementById('redOverlay');
     const flicker = document.getElementById('vfxFlicker');
+    const cycle   = parseInt(getComputedStyle(document.documentElement)
+                     .getPropertyValue('--cycle'));
+    const flash   = parseInt(getComputedStyle(document.documentElement)
+                     .getPropertyValue('--flash-dur'));
     let running   = false;
 
     function restart(el, anim, dur, delay=0){
@@ -242,23 +260,31 @@
 
     function triggerFlicker(){
       flicker.style.opacity = '1';
-      setTimeout(()=> flicker.style.opacity = '0', 400);
+      setTimeout(()=> flicker.style.opacity = '0', flash);
     }
 
     function run(){
       if(running) return;
       running = true;
 
-      restart(red,   'redFlash', 600);
-      restart(text,  'textFade', parseInt(getComputedStyle(document.documentElement)
-                            .getPropertyValue('--text-dur')));
+      // red overlay + smoke tint
+      restart(red,        'redFlash',     flash);
+      restart(smoke,      'smokeFlash',   flash);
+
+      // text fade + glitch
+      restart(text,       'textFade',     parseInt(getComputedStyle(document.documentElement)
+                                .getPropertyValue('--text-dur')));
       text.classList.remove('glitch');
       setTimeout(()=> text.classList.add('glitch'), 200);
-      restart(circle,'circleAnim',
-                  parseInt(getComputedStyle(document.documentElement)
-                  .getPropertyValue('--circle-dur')),
-                  parseInt(getComputedStyle(document.documentElement)
-                  .getPropertyValue('--circle-delay')));
+
+      // blood circle
+      restart(circle,     'circleAnim',
+                                parseInt(getComputedStyle(document.documentElement)
+                                .getPropertyValue('--circle-dur')),
+                                parseInt(getComputedStyle(document.documentElement)
+                                .getPropertyValue('--circle-delay')));
+
+      // flicker
       triggerFlicker();
 
       setTimeout(()=> running = false, cycle);
