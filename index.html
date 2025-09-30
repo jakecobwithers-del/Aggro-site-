@@ -54,27 +54,28 @@
   }
   #headline.visible { opacity: 1; }
   #headline div {
-    font-size: clamp(60px, 16vw, 160px); /* back to big scale */
+    font-size: clamp(60px, 16vw, 160px);
     letter-spacing: 0.15em;
     line-height: 1.1;
     white-space: nowrap;
   }
 
-  /* Blood sweeps OVER the text */
+  /* Blood sweeps OVER the text, positioned relative to headline */
   .bloodSweep {
     position: absolute;
+    left: -100%;
     opacity: 0;
     z-index: 3000; /* higher than headline */
     pointer-events: none;
-    width: 100%;
-    max-height: 160px;
+    width: 120%;
+    max-height: 120px;
   }
   #bloodTop {
-    top: 0; left: -100%;
+    top: -60px; /* just above JOIN */
     transform: skewY(-3deg) scale(1.05);
   }
   #bloodBottom {
-    bottom: 0; right: -100%;
+    bottom: -60px; /* just below FIGHT */
     transform: skewY(3deg) scale(1.05);
   }
   .bloodSweep.showTop { animation: sweepTop 1.5s ease forwards; }
@@ -85,9 +86,9 @@
     100% { opacity: 1; left: 0; }
   }
   @keyframes sweepBottom {
-    0%   { opacity: 0; right: -100%; }
+    0%   { opacity: 0; left: -100%; }
     20%  { opacity: 1; }
-    100% { opacity: 1; right: 0; }
+    100% { opacity: 1; left: 0; }
   }
 
   /* Call-to-action buttons */
@@ -99,19 +100,28 @@
   }
   .cta a {
     font-family: "28Days";
-    font-size: 24px;
-    padding: 14px 28px;
+    font-size: 26px;
+    padding: 16px 32px;
     color: #fff;
-    background: rgba(120,0,0,0.8);
+    background: linear-gradient(145deg, #8b0000, #b30000);
     border: 2px solid #ff0000;
-    border-radius: 6px;
+    border-radius: 8px;
     text-decoration: none;
     text-shadow: 0 0 6px #000;
-    transition: transform 0.2s ease, background 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .cta a::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: url("blood1.png") center/cover no-repeat;
+    opacity: 0.25;
+    pointer-events: none;
   }
   .cta a:hover {
-    background: rgba(180,0,0,0.95);
-    transform: scale(1.08);
+    transform: scale(1.1) rotate(-1deg);
+    box-shadow: 0 0 20px rgba(255,0,0,0.8);
   }
 
   /* Mobile tweaks */
@@ -119,8 +129,8 @@
     #logo img { max-width: 50vw; }
     #headline div { font-size: clamp(36px, 14vw, 80px); }
     .cta { flex-direction: column; gap: 12px; }
-    .cta a { font-size: 18px; padding: 12px 20px; }
-    #bloodTop, #bloodBottom { max-height: 100px; }
+    .cta a { font-size: 20px; padding: 12px 20px; }
+    #bloodTop, #bloodBottom { max-height: 80px; }
   }
 </style>
 </head>
@@ -134,15 +144,14 @@
   <div>JOIN</div>
   <div>THE</div>
   <div>FIGHT</div>
+  <!-- Blood sweeps anchored to headline -->
+  <img id="bloodTop" class="bloodSweep" src="blood1.png" alt="">
+  <img id="bloodBottom" class="bloodSweep" src="blood1.png" alt="">
 </div>
-
-<!-- Blood sweeps (over text) -->
-<img id="bloodTop" class="bloodSweep" src="blood1.png" alt="">
-<img id="bloodBottom" class="bloodSweep" src="blood1.png" alt="">
 
 <!-- Call-to-action buttons -->
 <div class="cta">
-  <a href="steam://connect/YOURSERVERIP">CONNECT</a>
+  <a href="steam://connect/YOURSERVERIP">STEAM CONNECT</a>
   <a href="https://discord.gg/YOURDISCORD">DISCORD</a>
 </div>
 
