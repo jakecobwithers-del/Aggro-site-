@@ -1,192 +1,98 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Aggro PvP — JOIN THE FIGHT</title>
+
+  <link rel="preload" href="28%20Days%20Later.ttf" as="font" type="font/ttf" crossorigin>
+
   <style>
     :root{
       --bg:#050505;
       --red:#ff1a1a;
-
-      /* timing */
-      --cycle:6000;      /* full cycle (normal + red) */
-      --text-dur:3000;   /* headline visibility length */
-      --flash-dur:600;   /* red flash length */
-      --circle-dur:3000;
-      --circle-delay:0;
-
-      /* z-layers */
-      --z-menu:6000;
-      --z-vfx:4500;
-      --z-blood:3500;
-      --z-head:3000;
-      --z-color:2500;
+      --phase:3000;     /* ms per phase: normal then red */
+      --text-dur:3000;  /* headline visible length (keeps legacy timing) */
+      --flash-dur:600;
       --z-smoke:2000;
-      --z-cta:1000;
-      --z-logo:1000;
+      --z-overlay:3000;
+      --z-ui:6000;
+      --z-head:6500;
     }
 
     *,*::before,*::after{box-sizing:border-box}
-    html,body{margin:0;padding:0;width:100%;height:100%;background:var(--bg);overflow:hidden;font-family:"28Days",Impact,sans-serif;color:#fff}
-    @font-face{
-      font-family:"28Days";
-      src:url("28%20Days%20Later.ttf") format("truetype");
-      font-display:swap;
-    }
-    button,a{background:none;border:none;cursor:pointer;color:inherit;text-decoration:none}
+    html,body{height:100%;width:100%;margin:0;padding:0;background:var(--bg);overflow:hidden;color:#fff;font-family:"28Days",Impact,sans-serif}
+    @font-face{font-family:"28Days";src:url("28%20Days%20Later.ttf") format("truetype");font-display:swap}
+    button,a{background:none;border:0;cursor:pointer;color:inherit;text-decoration:none}
 
-    /* MENU (simple image as you originally had) */
-    .anarchyBtn{
-      position:fixed; top:14px; right:14px; z-index:var(--z-menu);
-      pointer-events:auto; background:transparent; width:64px; height:64px;
-    }
-    .anarchyBtn img{width:64px;height:64px;display:block}
-    .anarchyMenu{
-      position:fixed; top:90px; right:14px; display:none; flex-direction:column;
-      padding:12px; background:rgba(10,10,10,0.95); border-radius:12px;
-      z-index:var(--z-menu); pointer-events:auto;
-    }
-    .anarchyMenu.open{display:flex}
-    .anarchyMenu a{ color:#ffdede; font-size:16px; font-weight:800; padding:10px 14px; text-decoration:none; }
-
-    /* CTA & LOGO */
-    .cta{
-      position:fixed; bottom:8vh; left:50%; transform:translateX(-50%);
-      display:flex; gap:20px; z-index:var(--z-cta); pointer-events:auto;
-    }
-    .cta a{
-      font-size:22px; padding:10px 26px; border-radius:12px;
-      background:linear-gradient(180deg,#151515,#070707); color:#fff; text-decoration:none;
-      transition:transform .12s, box-shadow .12s; font-weight:800;
-    }
-    .cta a.steam{ --ar:255; --ag:26; --ab:26; }
-    .cta a.discord{ --ar:114; --ag:137; --ab:218; }
-
-    .cta a:hover{ transform:translateY(-4px); box-shadow:0 12px 36px rgba(0,0,0,.5) }
-
-    #logo{ position:fixed; top:6vh; left:50%; transform:translateX(-50%); z-index:var(--z-logo); pointer-events:auto }
-    #logo img{ max-width:30vw; height:auto; max-height:84px; filter:drop-shadow(0 8px 28px rgba(0,0,0,.85)) }
-
-    /* SMOKE (single video like your first) */
-    #smoke-wrap{ position:fixed; inset:0; pointer-events:none; z-index:var(--z-smoke); overflow:hidden }
+    /* --- Smoke (single layer like original) --- */
+    #smoke-wrap{position:fixed;inset:0;pointer-events:none;z-index:var(--z-smoke);overflow:hidden}
     #smokeVideo{
-      width:100%; height:100%; object-fit:cover; opacity:.6; mix-blend-mode:screen;
-      transform-origin:center center; transition:opacity .4s linear;
+      width:100%;height:100%;object-fit:cover;opacity:.6;mix-blend-mode:screen;
+      transform-origin:center center;transition:opacity .4s linear;
+      background:transparent;
     }
 
-    /* color overlay matches your original approach */
-    #colorOverlay{
-      position:fixed; inset:0; background:var(--red); mix-blend-mode:color;
-      opacity:0; transition:opacity var(--text-dur)ms ease-in-out; z-index:var(--z-color); pointer-events:none;
-    }
+    /* color tint (mix-blend-mode: color) and red flash (screen blend) */
+    #colorOverlay{position:fixed;inset:0;pointer-events:none;background:var(--red);mix-blend-mode:color;opacity:0;transition:opacity .25s linear;z-index:var(--z-overlay)}
+    #redFlash{position:fixed;inset:0;pointer-events:none;background:var(--red);mix-blend-mode:screen;opacity:0;transition:opacity .06s linear;z-index:calc(var(--z-overlay)+1)}
 
-    /* red flash (screen blend) */
-    #redOverlay{
-      position:fixed; inset:0; background:var(--red); mix-blend-mode:screen;
-      opacity:0; z-index:var(--z-vfx); pointer-events:none; animation-fill-mode:both;
-    }
-    @keyframes redFlash{
-      0%{opacity:0}
-      10%{opacity:.42}
-      30%{opacity:0}
-      100%{opacity:0}
-    }
+    /* --- UI always visible (logo, menu, CTAs) --- */
+    #logo{position:fixed;top:6vh;left:50%;transform:translateX(-50%);z-index:var(--z-ui);pointer-events:auto}
+    #logo img{max-width:30vw;height:auto;max-height:84px;filter:drop-shadow(0 8px 28px rgba(0,0,0,.85))}
 
-    /* flicker (subtle) */
-    .vfx{ position:fixed; inset:0; pointer-events:none; z-index:var(--z-vfx) }
-    .vfx .flicker{ position:absolute; inset:0; mix-blend-mode:screen; opacity:0;
-      background:
-        radial-gradient(ellipse at 20% 20%, rgba(255,255,255,.06), transparent 10%),
-        radial-gradient(ellipse at 80% 80%, rgba(255,255,255,.04), transparent 12%);
-      transition:opacity .08s linear;
-    }
+    .anarchyBtn{position:fixed;top:14px;right:14px;z-index:var(--z-ui);pointer-events:auto;background:transparent;width:64px;height:64px}
+    .anarchyBtn img{width:64px;height:64px;display:block}
+    .anarchyMenu{position:fixed;top:90px;right:14px;display:none;flex-direction:column;padding:12px;background:rgba(10,10,10,0.95);border-radius:12px;z-index:var(--z-ui);pointer-events:auto}
+    .anarchyMenu.open{display:flex}
+    .anarchyMenu a{color:#ffdede;font-size:16px;font-weight:800;padding:10px 14px;border-radius:8px;margin:6px 0}
 
-    /* HEADLINE */
-    #headline{
-      position:fixed; top:42vh; left:50%; transform:translateX(-50%); text-align:center;
-      z-index:var(--z-head); pointer-events:none; width:96%;
-    }
+    .cta{position:fixed;bottom:6vh;left:50%;transform:translateX(-50%);display:flex;gap:16px;z-index:var(--z-ui);pointer-events:auto;align-items:center}
+    .cta a{position:relative;display:inline-block;font-size:18px;padding:12px 22px;border-radius:12px;background:linear-gradient(180deg,#151515,#070707);color:#fff;font-weight:800;transition:transform .12s,box-shadow .12s;will-change:transform,box-shadow}
+    .cta a.steam{--ar:255;--ag:26;--ab:26}
+    .cta a.discord{--ar:114;--ag:137;--ab:218}
+    .cta a:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,0,0,.5)}
+
+    /* --- Headline & blood (hidden by default) --- */
+    #headline{position:fixed;top:42vh;left:50%;transform:translateX(-50%);text-align:center;z-index:var(--z-head);pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:18px}
     #headlineText{
-      font-size:clamp(48px,14vw,136px); line-height:.9; letter-spacing:.12em;
-      opacity:0; will-change:opacity,transform; display:inline-block; position:relative;
-      padding:6px 12px; transform-origin:center;
+      font-size:clamp(48px,14vw,136px);line-height:.9;letter-spacing:.12em;color:#fff;
+      opacity:0; transform:scale(.96); transition:opacity .18s, transform .18s; will-change:opacity,transform;
     }
-
-    /* text fade timeline (keeps your original behavior) */
-    @keyframes textFade{
-      0%,10%{opacity:0}
-      20%,80%{opacity:1}
-      100%{opacity:0}
-    }
-    .fadeText{ animation:textFade var(--text-dur)ms both; }
-
-    /* cinematic slam/pop */
-    @keyframes headlineImpact{
-      0%{ opacity:0; transform: scale(.78) }
-      60%{ opacity:1; transform: scale(1.05) }
-      100%{ transform: scale(1) }
-    }
-    .impact{ animation: headlineImpact 700ms cubic-bezier(.2,.9,.2,1) both; }
-
-    /* short explicit pop used on flash */
-    @keyframes textPop {
-      0%{ transform: scale(1) }
-      30%{ transform: scale(1.14) }
-      60%{ transform: scale(1.06) }
-      100%{ transform: scale(1) }
-    }
-    .text-pop{ animation: textPop 420ms cubic-bezier(.2,.9,.2,1) both; will-change:transform }
-
-    /* glitch (kept but subtle) */
-    @keyframes glitch{ 0%,100%{ clip:rect(0,9999px,0,0) } 20%{ clip:rect(20px,9999px,40px,0) } 40%{ clip:rect(50px,9999px,70px,0) } 60%{ clip:rect(10px,9999px,30px,0) } 80%{ clip:rect(60px,9999px,80px,0) } }
-    .glitch,.glitch::before,.glitch::after{ animation:glitch .6s steps(2) both }
-    .glitch::before,.glitch::after{ content:attr(data-text); position:absolute; inset:0; opacity:.6 }
-    .glitch::before{ color:#ff4b4b; left:2px }
-    .glitch::after{ color:#7fb7ff; left:-2px }
-
-    /* BLOOD CIRCLE */
     #bloodCircle{
-      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(1);
-      opacity:0; width:clamp(200px,40vw,400px); pointer-events:none; z-index:var(--z-blood);
+      width:clamp(200px,40vw,400px); opacity:0; transform:scale(.96); transition:opacity .18s, transform .18s; pointer-events:none;
     }
-    @keyframes circleAnim{ 0%,20%{opacity:0} 25%,75%{opacity:.6} 100%{opacity:0} }
 
-    /* CTA pulse helper for red pop */
-    @keyframes ctaPulse {
-      0%{ transform: scale(1); box-shadow:0 8px 26px rgba(0,0,0,.3) }
-      30%{ transform: scale(1.14); box-shadow:0 30px 80px rgba(255,26,26,.32); filter:saturate(1.1) }
-      70%{ transform: scale(1.06); box-shadow:0 18px 44px rgba(255,26,26,.22) }
-      100%{ transform: scale(1); box-shadow:0 8px 26px rgba(0,0,0,.3) }
-    }
-    .pulse-once{ animation: ctaPulse 420ms cubic-bezier(.2,.9,.2,1) both }
+    /* visible states controlled by JS */
+    .red-phase #colorOverlay{opacity:.28}
+    .red-flash-on #redFlash{opacity:.42}
+    .pop-visible #headlineText{opacity:1;transform:scale(1.14)}
+    .pop-visible #bloodCircle{opacity:.6;transform:scale(1)}
+    .pop-ui .cta a{transform:scale(1.12);box-shadow:0 28px 60px rgba(255,26,26,.22)}
+    .pop-ui .anarchyBtn img{transform:scale(1.12);filter:drop-shadow(0 10px 30px rgba(255,26,26,.35))}
 
-    /* UI pop class toggled during flash */
-    .vfx-active .anarchyBtn img{ transform: scale(1.08); filter: drop-shadow(0 6px 18px rgba(255,26,26,.35)); transition:transform .12s }
-    .vfx-active .cta a{ transform: scale(1.06); box-shadow:0 18px 40px rgba(255,26,26,.18); transition:transform .12s,box-shadow .12s }
-    .vfx-active-short .anarchyBtn img{ transform: scale(1.12) }
-    .vfx-active-short .cta a{ transform: scale(1.12); box-shadow:0 22px 56px rgba(255,26,26,.22) }
-
-    /* responsive mobile logo bigger */
+    /* responsive tweaks */
+    @media (max-width:900px){#logo img{max-width:38vw;max-height:72px}; .anarchyMenu{right:10px;top:86px}}
     @media (max-width:600px){
-      #headline{ top:36vh }
-      #headlineText{ font-size:clamp(34px,10vw,72px) }
-      #bloodCircle{ width:60vw }
-      .cta a{ font-size:16px; padding:10px 16px }
-      #logo img{ max-width:62vw; max-height:110px }
-      .anarchyBtn{ width:56px; height:56px }
+      #headline{top:36vh}
+      #headlineText{font-size:clamp(34px,10vw,72px)}
+      #bloodCircle{width:60vw}
+      .cta a{font-size:16px;padding:10px 16px}
+      #logo img{max-width:62vw;max-height:110px}
+      .anarchyBtn{width:56px;height:56px}
     }
 
     @media (prefers-reduced-motion: reduce){
-      .impact,.text-pop,.glitch,.fadeText,.pulse-once{ animation:none!important }
-      .vfx-active .anarchyBtn img,.vfx-active .cta a{ transform:none; box-shadow:none; filter:none }
+      #smokeVideo{transition:none}
+      #headlineText,#bloodCircle{transition:none}
+      .pop-ui .anarchyBtn img,.pop-ui .cta a{transform:none;box-shadow:none;filter:none}
     }
   </style>
 </head>
 <body>
   <!-- menu -->
   <button id="anarchyBtn" class="anarchyBtn" aria-controls="anarchyMenu" aria-expanded="false" title="Menu">
-    <img src="anarchy.png" alt="Toggle menu"/>
+    <img src="anarchy.png" alt="Toggle menu" />
   </button>
   <nav id="anarchyMenu" class="anarchyMenu" role="menu" aria-hidden="true">
     <a href="rules.html">Rules</a>
@@ -196,162 +102,163 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- CTA & logo -->
+  <!-- logo & CTAs (always present) -->
+  <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro Logo" /></div>
   <div class="cta" role="navigation" aria-label="Primary actions">
-    <a class="steam" href="steam://connect/YOURSERVERIP">JOIN SERVER</a>
-    <a class="discord" href="https://discord.gg/YOURDISCORD" target="_blank" rel="noopener">JOIN COMMUNITY</a>
+    <a class="steam" href="steam://connect/YOURSERVERIP" aria-label="Join the server">JOIN SERVER</a>
+    <a class="discord" href="https://discord.gg/YOURDISCORD" target="_blank" rel="noopener" aria-label="Join Discord">JOIN COMMUNITY</a>
   </div>
-  <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro Logo"/></div>
 
-  <!-- smoke -->
+  <!-- smoke (single video like original) -->
   <div id="smoke-wrap">
-    <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
-      <source src="Smoke.mp4" type="video/mp4"/>
+    <video id="smokeVideo" muted autoplay loop playsinline preload="auto" crossorigin="anonymous">
+      <source src="Smoke.mp4" type="video/mp4" />
     </video>
   </div>
 
   <!-- overlays -->
-  <div id="colorOverlay"></div>
-  <div id="redOverlay"></div>
-  <div class="vfx"><div id="vfxFlicker" class="flicker"></div></div>
+  <div id="colorOverlay" aria-hidden="true"></div>
+  <div id="redFlash" aria-hidden="true"></div>
 
-  <!-- headline & blood -->
-  <div id="headline">
-    <div id="headlineText" class="fadeText" data-text="JOIN THE FIGHT">JOIN THE FIGHT</div>
-    <img id="bloodCircle" src="blood1.png" alt="Blood circle"/>
+  <!-- headline & blood (appear only in red phase) -->
+  <div id="headline" aria-hidden="true">
+    <div id="headlineText" data-text="JOIN THE FIGHT">JOIN THE FIGHT</div>
+    <img id="bloodCircle" src="blood1.png" alt="blood splat" />
   </div>
 
   <script>
     (function(){
-      const S = getComputedStyle(document.documentElement);
-      const cycle  = Number(S.getPropertyValue('--cycle')) || 6000;
-      const txtDur = Number(S.getPropertyValue('--text-dur')) || 3000;
-      const flash  = Number(S.getPropertyValue('--flash-dur')) || 600;
+      const PHASE = Number(getComputedStyle(document.documentElement).getPropertyValue('--phase')) || 3000;
+      const root = document.documentElement;
+      const smoke = document.getElementById('smokeVideo');
+      const colorOverlay = document.getElementById('colorOverlay');
+      const redFlash = document.getElementById('redFlash');
+      const headline = document.getElementById('headlineText');
+      const blood = document.getElementById('bloodCircle');
+      const steamBtn = document.querySelector('.cta a.steam');
+      const discBtn = document.querySelector('.cta a.discord');
+      const menuImg = document.querySelector('.anarchyBtn img');
 
-      const smoke      = document.getElementById('smokeVideo');
-      const colorOvl   = document.getElementById('colorOverlay');
-      const redOvl     = document.getElementById('redOverlay');
-      const textEl     = document.getElementById('headlineText');
-      const circle     = document.getElementById('bloodCircle');
-      const flicker    = document.getElementById('vfxFlicker');
-      const root       = document.documentElement;
-      const steamBtn   = document.querySelector('.cta a.steam');
-      const discordBtn = document.querySelector('.cta a.discord');
+      let isRed = false;
+      let intervalId = null;
+      let popTimer = null;
+      let flashTimer = null;
 
-      let running = false;
-      let phaseToggle = false; // false = normal, true = red phase
+      function startSmoke(){
+        if(!smoke) return;
+        smoke.style.opacity = '.6';
+        smoke.play().catch(()=>{ /* autoplay may be blocked until user interaction */ });
+      }
 
-      function restart(el,name,dur,delay=0){
+      function hidePopElements(){
+        root.classList.remove('pop-visible');
+        if(headline){ headline.style.opacity = 0; headline.style.transform = 'scale(.96)'; }
+        if(blood){ blood.style.opacity = 0; blood.style.transform = 'scale(.96)'; }
+      }
+
+      function showPopElements(){
+        root.classList.add('pop-visible');
+        if(headline){ headline.style.opacity = 1; headline.style.transform = 'scale(1.14)'; }
+        if(blood){ blood.style.opacity = 0.6; blood.style.transform = 'scale(1)'; }
+      }
+
+      function triggerCtaPulse(el){
         if(!el) return;
-        el.style.animation = 'none';
+        el.classList.remove('pulse-once');
         void el.offsetWidth;
-        el.style.animation = `${name} ${dur}ms ${delay}ms both`;
+        el.classList.add('pulse-once');
       }
 
-      function triggerCtaPulse(btn){
-        if(!btn) return;
-        btn.classList.remove('pulse-once');
-        void btn.offsetWidth;
-        btn.classList.add('pulse-once');
+      function enterNormal(){
+        isRed = false;
+        root.classList.remove('red-phase');
+        colorOverlay.style.opacity = '0';
+        redFlash.style.opacity = '0';
+        root.classList.remove('pop-ui');
+        hidePopElements();
       }
 
-      function triggerHeadlinePop(){
-        if(!textEl) return;
-        textEl.classList.remove('text-pop');
-        void textEl.offsetWidth;
-        textEl.classList.add('text-pop');
-      }
+      function enterRed(){
+        isRed = true;
+        root.classList.add('red-phase');
+        colorOverlay.style.opacity = '.28';
 
-      function runPhase(){
-        if(running) return;
-        running = true;
+        // quick screen flash
+        redFlash.style.opacity = '.42';
+        clearTimeout(flashTimer);
+        flashTimer = setTimeout(()=> { redFlash.style.opacity = '0'; }, 120);
 
-        // normal -> red toggle: we want 3s normal, 3s red; cycle variable controls full duration
-        // Implement: start with color overlay hidden; when red-phase, show overlays and pop; after half-cycle revert.
-        const half = cycle / 2;
+        // small delay then show headline + blood + UI pop
+        clearTimeout(popTimer);
+        popTimer = setTimeout(()=> {
+          showPopElements();
+          root.classList.add('pop-ui');
 
-        // Start red-phase sequence:
-        // 1) apply color tint (fade in quickly) and red flash
-        colorOvl.style.opacity = '1';
-        // schedule fade-out of color after text duration (keeps original feel)
-        setTimeout(()=> colorOvl.style.opacity = '0', txtDur);
+          // CTA pulses (stagger)
+          triggerCtaPulse(steamBtn);
+          setTimeout(()=> triggerCtaPulse(discBtn), 90);
 
-        // 2) red flash short animation
-        restart(redOvl,'redFlash',flash);
+          // relax pop-ui slightly before red-phase ends
+          setTimeout(()=> root.classList.remove('pop-ui'), PHASE - 300);
+        }, 80);
 
-        // 3) trigger headline animations
-        restart(textEl,'textFade',txtDur);
-        // small cinematic impact + explicit pop synced to flash
-        textEl.classList.add('impact');
-        // retrigger pop
-        setTimeout(()=> triggerHeadlinePop(), 80);
-
-        // 4) blood circle fade/pulse
-        restart(circle,'circleAnim', Number(S.getPropertyValue('--circle-dur')) || 3000, Number(S.getPropertyValue('--circle-delay')) || 0);
-
-        // 5) flicker
-        if(flicker){ flicker.style.opacity = '1'; setTimeout(()=> flicker.style.opacity = '0', flash + 60); }
-
-        // 6) pop UI (menu/logo/ctas) by toggling root classes for a short window
-        root.classList.add('vfx-active');
-        root.classList.add('vfx-active-short');
-        // remove short pop quickly
-        setTimeout(()=> root.classList.remove('vfx-active-short'), 180);
-        // keep general vfx-active a bit longer to match flash
-        setTimeout(()=> root.classList.remove('vfx-active'), flash + 140);
-
-        // CTA pulses slightly staggered
-        triggerCtaPulse(steamBtn);
-        setTimeout(()=> triggerCtaPulse(discordBtn), 80);
-
-        // ensure animations can retrigger next cycle
+        // hide headline slightly before phase ends for smooth transition
         setTimeout(()=> {
-          textEl.classList.remove('impact');
-          running = false;
-        }, cycle);
+          hidePopElements();
+          colorOverlay.style.opacity = '0';
+        }, PHASE - 220);
       }
 
-      // Menu toggle simple
+      function togglePhase(){
+        if(isRed) enterNormal();
+        else enterRed();
+      }
+
+      // menu toggle simple
       const btn = document.getElementById('anarchyBtn');
       const menu = document.getElementById('anarchyMenu');
-      btn.addEventListener('click', e=>{
-        e.stopPropagation();
-        const open = menu.classList.toggle('open');
-        menu.setAttribute('aria-hidden', String(!open));
-        btn.setAttribute('aria-expanded', String(open));
-      });
-      document.addEventListener('click', e=>{
-        if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
-          menu.classList.remove('open');
-          menu.setAttribute('aria-hidden','true');
-          btn.setAttribute('aria-expanded','false');
-        }
-      });
-
-      // warm the video and start cycle
-      window.addEventListener('DOMContentLoaded',()=>{
-        // try to play smoke; some browsers block autoplay until interaction
-        if(smoke){
-          smoke.play().catch(()=>{ /* autoplay blocked — will play on interaction */ });
-          // slight opacity ensure in case loading was slow
-          smoke.style.opacity = '.6';
-        }
-
-        // Run once immediately, then every cycle
-        runPhase();
-        setInterval(runPhase, cycle);
-      });
-
-      // Respect reduced motion
-      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-      if(prefersReduced.matches){
-        document.documentElement.style.setProperty('--text-dur','800');
-        document.documentElement.style.setProperty('--cycle','3000');
-        // disable heavy transforms
-        if(textEl) textEl.classList.remove('impact','glitch');
-        if(circle) circle.classList.remove('pulseLoop');
-        if(colorOvl) colorOvl.style.transition = 'none';
+      if(btn && menu){
+        btn.addEventListener('click', e=>{
+          e.stopPropagation();
+          const open = menu.classList.toggle('open');
+          menu.setAttribute('aria-hidden', String(!open));
+          btn.setAttribute('aria-expanded', String(open));
+        });
+        document.addEventListener('click', e=>{
+          if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
+            menu.classList.remove('open');
+            menu.setAttribute('aria-hidden','true');
+            btn.setAttribute('aria-expanded','false');
+          }
+        });
       }
+
+      // init
+      window.addEventListener('DOMContentLoaded', ()=>{
+        startSmoke();
+        enterNormal(); // page starts in normal smoke stage with UI visible
+        // start repeating cycle after small warmup
+        setTimeout(()=> {
+          intervalId = setInterval(togglePhase, PHASE);
+          // first toggle occurs after PHASE so initial PHASE = normal
+        }, 160);
+
+        // resume smoke when tab becomes visible
+        document.addEventListener('visibilitychange', ()=> {
+          if(!document.hidden) startSmoke();
+        });
+      });
+
+      // cleanup
+      window.addEventListener('beforeunload', ()=> {
+        clearInterval(intervalId);
+        clearTimeout(popTimer);
+        clearTimeout(flashTimer);
+      });
+
+      // reduced-motion fallback
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+      if(prefersReduced.matches) document.documentElement.style.setProperty('--phase','1500');
     })();
   </script>
 </body>
