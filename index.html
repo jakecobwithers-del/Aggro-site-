@@ -42,24 +42,9 @@
   }
   #logo img { max-width: 30vw; height: auto; }
 
-  /* Menu always above smoke */
-  .anarchyBtn { position: fixed; top: 14px; right: 14px; z-index: 10000; background: none; border: none; }
-  .anarchyBtn img { width: 52px; height: 52px; }
-  .anarchyMenu {
-    position: fixed; top: 76px; right: 14px; z-index: 10000;
-    display: none; flex-direction: column; gap: 8px; padding: 10px;
-    background: rgba(10,10,10,0.95); border-radius: 10px;
-  }
-  .anarchyMenu.open { display: flex; }
-  .anarchyMenu a {
-    font-family: "28Days"; font-weight: 800; color: #ffdede;
-    text-decoration: none; padding: 10px;
-  }
-  .anarchyMenu a:hover { background: rgba(255,16,16,0.08); }
-
   /* Headline stacked */
   #headline {
-    position: fixed; top: 45%; left: 50%;
+    position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
     z-index: 2000;
@@ -69,9 +54,10 @@
   }
   #headline.visible { opacity: 1; }
   #headline div {
-    font-size: clamp(40px, 12vw, 120px); /* bigger headline */
+    font-size: clamp(60px, 16vw, 160px); /* back to big scale */
     letter-spacing: 0.15em;
     line-height: 1.1;
+    white-space: nowrap;
   }
 
   /* Blood sweeps OVER the text */
@@ -81,14 +67,14 @@
     z-index: 3000; /* higher than headline */
     pointer-events: none;
     width: 100%;
-    max-height: 140px;
+    max-height: 160px;
   }
   #bloodTop {
-    top: -20px; left: -100%;
+    top: 0; left: -100%;
     transform: skewY(-3deg) scale(1.05);
   }
   #bloodBottom {
-    bottom: -20px; right: -100%;
+    bottom: 0; right: -100%;
     transform: skewY(3deg) scale(1.05);
   }
   .bloodSweep.showTop { animation: sweepTop 1.5s ease forwards; }
@@ -104,26 +90,41 @@
     100% { opacity: 1; right: 0; }
   }
 
+  /* Call-to-action buttons */
+  .cta {
+    position: fixed; bottom: 8vh; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 20px;
+    z-index: 2000;
+  }
+  .cta a {
+    font-family: "28Days";
+    font-size: 24px;
+    padding: 14px 28px;
+    color: #fff;
+    background: rgba(120,0,0,0.8);
+    border: 2px solid #ff0000;
+    border-radius: 6px;
+    text-decoration: none;
+    text-shadow: 0 0 6px #000;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .cta a:hover {
+    background: rgba(180,0,0,0.95);
+    transform: scale(1.08);
+  }
+
   /* Mobile tweaks */
   @media (max-width: 600px) {
-    #logo { top: 3vh; }
     #logo img { max-width: 50vw; }
-    #headline div { font-size: clamp(28px, 10vw, 60px); }
-    #bloodTop, #bloodBottom { max-height: 90px; }
+    #headline div { font-size: clamp(36px, 14vw, 80px); }
+    .cta { flex-direction: column; gap: 12px; }
+    .cta a { font-size: 18px; padding: 12px 20px; }
+    #bloodTop, #bloodBottom { max-height: 100px; }
   }
 </style>
 </head>
 <body>
-
-<!-- Menu -->
-<button id="anarchyBtn" class="anarchyBtn"><img src="anarchy.png" alt="Menu"></button>
-<nav id="anarchyMenu" class="anarchyMenu">
-  <a href="rules.html">Rules</a>
-  <a href="support.html">Support</a>
-  <a href="donate.html">Donate</a>
-  <a href="killfeed.html">Kill Feed</a>
-  <a href="leaderboard.html">Leaderboard</a>
-</nav>
 
 <!-- Logo -->
 <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
@@ -139,6 +140,12 @@
 <img id="bloodTop" class="bloodSweep" src="blood1.png" alt="">
 <img id="bloodBottom" class="bloodSweep" src="blood1.png" alt="">
 
+<!-- Call-to-action buttons -->
+<div class="cta">
+  <a href="steam://connect/YOURSERVERIP">CONNECT</a>
+  <a href="https://discord.gg/YOURDISCORD">DISCORD</a>
+</div>
+
 <!-- Smoke overlay -->
 <div id="smoke-wrap">
   <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
@@ -152,8 +159,6 @@
   const headline = document.getElementById('headline');
   const bloodTop = document.getElementById('bloodTop');
   const bloodBottom = document.getElementById('bloodBottom');
-  const anarchyBtn = document.getElementById('anarchyBtn');
-  const anarchyMenu = document.getElementById('anarchyMenu');
 
   function runSequence(){
     smoke.classList.add('effect');
@@ -178,17 +183,6 @@
     const t = smoke.currentTime || 0;
     if(prevTime - t > 0.3){ runSequence(); }
     prevTime = t;
-  });
-
-  // Menu toggle
-  anarchyBtn.addEventListener('click', e=>{
-    e.stopPropagation();
-    anarchyMenu.classList.toggle('open');
-  });
-  document.addEventListener('click', e=>{
-    if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
-      anarchyMenu.classList.remove('open');
-    }
   });
 })();
 </script>
