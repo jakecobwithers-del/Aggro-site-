@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Aggro PvP — JOIN THE FIGHT</title>
 <style>
-  /* Font */
   @font-face {
     font-family: "28Days";
     src: url("28%20Days%20Later.ttf") format("truetype"),
@@ -13,7 +12,6 @@
     font-display: swap;
   }
 
-  /* Base */
   html, body {
     margin: 0; height: 100%;
     background: #050505;
@@ -21,7 +19,6 @@
     overflow: hidden;
   }
 
-  /* Smoke sits ABOVE logo/buttons, BELOW headline/blood/menu */
   #smoke-wrap {
     position: fixed; inset: 0;
     z-index: 3000;
@@ -38,20 +35,18 @@
     100% { filter: brightness(0.9) saturate(1.4); }
   }
 
-  /* Logo (behind smoke) */
   #logo {
     position: fixed; top: 6vh; left: 50%;
     transform: translateX(-50%);
-    z-index: 2000; /* under smoke */
+    z-index: 2000;
   }
   #logo img { max-width: 30vw; height: auto; }
 
-  /* CTA buttons (behind smoke) */
   .cta {
     position: fixed; bottom: 8vh; left: 50%;
     transform: translateX(-50%);
     display: flex; gap: 20px;
-    z-index: 2000; /* under smoke */
+    z-index: 2000;
   }
   .cta a {
     font-family: "28Days";
@@ -77,16 +72,15 @@
     border: 2px solid #3a45f5;
   }
 
-  /* Menu button + dropdown (above smoke) */
   .anarchyBtn {
     position: fixed; top: 14px; right: 14px;
-    z-index: 5000; /* above smoke */
+    z-index: 5000;
     background: none; border: none; cursor: pointer;
   }
   .anarchyBtn img { width: 52px; height: 52px; }
   .anarchyMenu {
     position: fixed; top: 76px; right: 14px;
-    z-index: 5000; /* above smoke */
+    z-index: 5000;
     display: none; flex-direction: column; gap: 8px; padding: 10px;
     background: rgba(10,10,10,0.95); border-radius: 10px;
     border: 1px solid rgba(255,0,0,0.3);
@@ -98,12 +92,11 @@
   }
   .anarchyMenu a:hover { background: rgba(255,16,16,0.08); }
 
-  /* Headline stacked (above smoke) */
   #headline {
     position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    z-index: 4500; /* above smoke */
+    z-index: 4500;
     color: #fff;
     text-shadow: 0 0 20px rgba(255,0,0,0.7), 0 0 30px rgba(0,0,0,0.9);
     opacity: 0; transition: opacity 800ms ease;
@@ -116,27 +109,25 @@
     white-space: nowrap;
   }
 
-  /* Blood sweeps inside headline, OVER text */
   .bloodSweep {
     position: absolute;
     left: -120%;
     opacity: 0;
-    z-index: 4700; /* above headline text */
+    z-index: 4700;
     pointer-events: none;
     width: 130%;
     max-height: 130px;
     filter: drop-shadow(0 6px 12px rgba(0,0,0,0.6));
   }
   #bloodTop {
-    top: -60px; /* just above JOIN */
+    top: -60px;
     transform: skewY(-3deg) scale(1.05);
   }
   #bloodBottom {
-    bottom: -60px; /* just below FIGHT */
+    bottom: -60px;
     transform: skewY(3deg) scale(1.05);
   }
 
-  /* Animations (with fade out for polish) */
   .animateTop { animation: sweepTop 1.8s ease forwards; }
   .animateBottom { animation: sweepBottom 1.8s ease forwards; }
   @keyframes sweepTop {
@@ -152,7 +143,6 @@
     100% { opacity: 0; left: 0; }
   }
 
-  /* Mobile tweaks */
   @media (max-width: 600px) {
     #logo img { max-width: 50vw; }
     #headline div { font-size: clamp(36px, 14vw, 90px); }
@@ -165,7 +155,6 @@
 </head>
 <body>
 
-<!-- Menu -->
 <button id="anarchyBtn" class="anarchyBtn"><img src="anarchy.png" alt="Menu"></button>
 <nav id="anarchyMenu" class="anarchyMenu">
   <a href="rules.html">Rules</a>
@@ -175,26 +164,21 @@
   <a href="leaderboard.html">Leaderboard</a>
 </nav>
 
-<!-- Logo (behind smoke) -->
 <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro PvP Logo"></div>
 
-<!-- Headline stacked (above smoke) -->
 <div id="headline">
   <div>JOIN</div>
   <div>THE</div>
   <div>FIGHT</div>
-  <!-- Blood sweeps anchored to headline and over text -->
   <img id="bloodTop" class="bloodSweep" src="blood1.png" alt="">
   <img id="bloodBottom" class="bloodSweep" src="blood1.png" alt="">
 </div>
 
-<!-- CTA buttons (behind smoke) -->
 <div class="cta">
   <a href="steam://connect/YOURSERVERIP" class="steam">JOIN SERVER</a>
   <a href="https://discord.gg/YOURDISCORD" class="discord">JOIN THE COMMUNITY</a>
 </div>
 
-<!-- Smoke overlay -->
 <div id="smoke-wrap">
   <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
     <source src="Smoke.mp4" type="video/mp4">
@@ -210,40 +194,44 @@
   const anarchyBtn = document.getElementById('anarchyBtn');
   const anarchyMenu = document.getElementById('anarchyMenu');
 
-  /* Force-restart CSS animations every loop for consistency */
   function restartAnimation(el, cls){
     el.classList.remove(cls);
-    void el.offsetWidth; // reflow
+    void el.offsetWidth;
     el.classList.add(cls);
   }
 
   function runSequence(){
     smoke.classList.add('effect');
-    // Restart headline fade for a consistent beat
-    headline.classList.remove('visible');
-    void headline.offsetWidth;
-    headline.classList.add('visible');
+        headline.classList.add('visible');
 
-    // Blood sweeps over the text
     restartAnimation(bloodTop, 'animateTop');
-    setTimeout(()=> restartAnimation(bloodBottom, 'animateBottom'), 450);
+    setTimeout(() => restartAnimation(bloodBottom, 'animateBottom'), 450);
+
+    // Remove glitch effect after animation ends
+    setTimeout(() => smoke.classList.remove('effect'), 1800);
   }
 
-  /* Detect the end of the smoke loop by time wrapping */
+  // Detect smoke loop wraparound
   let prevTime = 0;
-  smoke.addEventListener('timeupdate', ()=>{
+  let cooldown = false;
+
+  smoke.addEventListener('timeupdate', () => {
     const t = smoke.currentTime || 0;
-    if(prevTime - t > 0.3){ runSequence(); }
+    if (prevTime - t > 0.3 && !cooldown) {
+      runSequence();
+      cooldown = true;
+      setTimeout(() => cooldown = false, 4000); // Prevent double-triggering
+    }
     prevTime = t;
   });
 
-  /* Menu toggle (always above smoke) */
-  anarchyBtn.addEventListener('click', e=>{
+  // Menu toggle
+  anarchyBtn.addEventListener('click', e => {
     e.stopPropagation();
     anarchyMenu.classList.toggle('open');
   });
-  document.addEventListener('click', e=>{
-    if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')) {
       anarchyMenu.classList.remove('open');
     }
   });
