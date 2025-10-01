@@ -36,18 +36,15 @@
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Smoke background fixed full-coverage */
+    /* Smoke background fixed full-coverage (covers entire viewport at all times) */
     #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
-    /* Ensure video always covers full viewport and remains fixed while scrolling */
     #smoke-bg video{
-      position:absolute;
+      position:fixed;
       left:50%;
       top:50%;
       transform:translate(-50%,-50%);
-      min-width:100vw;
-      min-height:100vh;
-      width:auto;
-      height:auto;
+      width:100vw;
+      height:100vh;
       object-fit:cover;
       opacity:var(--smoke-opacity);
       filter:blur(5px) saturate(1.04) contrast(1.02);
@@ -125,28 +122,31 @@
 
     .goto svg{ width:12px; height:12px; display:block; transform:translateX(-1px); }
 
-    /* Owner chips simplified to names only */
+    /* Owner column: stacked clickable names */
     .owner{
       display:flex;
       flex-direction:column;
-      gap:10px;
+      gap:12px;
     }
     .owner-meta{ color:var(--muted); line-height:1.5; font-size:14px; margin:0; }
-    .staff-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+    .staff-row{ display:flex; flex-direction:column; gap:10px; margin-top:12px; align-items:flex-start; }
     .staff{
-      padding:10px 12px;
-      border-radius:8px;
-      background:rgba(255,255,255,0.02);
+      padding:10px 14px;
+      border-radius:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
       border:1px solid rgba(255,255,255,0.02);
       color:var(--muted);
-      font-size:14px;
-      display:flex;
+      font-size:16px;
+      display:inline-flex;
       align-items:center;
-      justify-content:center;
-      min-width:120px;
-      height:44px;
+      gap:10px;
+      min-width:200px;
+      cursor:pointer;
+      text-decoration:none;
+      transition:transform 120ms ease, box-shadow 120ms ease;
     }
-    .staff b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:14px; }
+    .staff b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:16px; }
+    .staff:hover{ transform:translateX(6px); box-shadow: 0 12px 30px rgba(0,0,0,0.6); }
 
     /* Original "Return to Main Menu" button style (as in rules.html) */
     .back-row{display:flex;justify-content:center;margin-top:12px;}
@@ -171,12 +171,13 @@
     /* Layout adjustments for small screens */
     @media(max-width:720px){
       .goto{ width:100%; justify-content:flex-start; padding-left:12px; }
-      .staff{ min-width:100px; font-size:13px; height:40px; }
+      .staff{ min-width:160px; font-size:15px; }
     }
 
     @media(max-width:520px){
       .title h1{ font-size:clamp(28px,12vw,52px); }
       .card{ padding:16px; }
+      .staff{ min-width:140px; font-size:14px; }
     }
   </style>
 </head>
@@ -234,7 +235,7 @@
         </div>
       </section>
 
-      <!-- Owners simplified -->
+      <!-- Owners stacked and clickable to Discord profiles -->
       <section class="card" aria-labelledby="owners" aria-label="Owners section">
         <h2 id="owners" style="color:#fff;">Owners</h2>
         <p class="owner-meta">
@@ -243,17 +244,17 @@
         </p>
 
         <div class="staff-row" aria-hidden="false">
-          <div class="staff" title="RB Skizza">
+          <a class="staff" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener" aria-label="Open RB Skizza Discord profile">
             <b>RB Skizza</b>
-          </div>
+          </a>
 
-          <div class="staff" title="Slomobob">
+          <a class="staff" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener" aria-label="Open Slomobob Discord profile">
             <b>Slomobob</b>
-          </div>
+          </a>
 
-          <div class="staff" title="Sloppywet">
+          <a class="staff" href="https://discord.com/users/754181442204074025" target="_blank" rel="noopener" aria-label="Open Sloppywet Discord profile">
             <b>Sloppywet</b>
-          </div>
+          </a>
         </div>
       </section>
 
