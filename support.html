@@ -36,9 +36,23 @@
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Smoke background (fixed, blurred, oversized like rules.html) */
+    /* Smoke background fixed full-coverage */
     #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
-    #smoke-bg video{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:160vw;height:160vh;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(5px) saturate(1.04) contrast(1.02);}
+    /* Ensure video always covers full viewport and remains fixed while scrolling */
+    #smoke-bg video{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      min-width:100vw;
+      min-height:100vh;
+      width:auto;
+      height:auto;
+      object-fit:cover;
+      opacity:var(--smoke-opacity);
+      filter:blur(5px) saturate(1.04) contrast(1.02);
+      will-change:transform;
+    }
 
     /* Page layout */
     .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px 120px;box-sizing:border-box;}
@@ -89,7 +103,7 @@
 
     .card p{ margin:0 0 10px 0; color:var(--muted); line-height:1.6; font-size:15px; }
 
-    /* "Go to" pill (small, left previously; here placed at bottom of each card) */
+    /* "Go to" pill */
     .goto {
       display:inline-flex;
       align-items:center;
@@ -111,7 +125,7 @@
 
     .goto svg{ width:12px; height:12px; display:block; transform:translateX(-1px); }
 
-    /* Owner / credits (small chips) */
+    /* Owner chips simplified to names only */
     .owner{
       display:flex;
       flex-direction:column;
@@ -120,18 +134,19 @@
     .owner-meta{ color:var(--muted); line-height:1.5; font-size:14px; margin:0; }
     .staff-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
     .staff{
-      padding:8px 10px;
+      padding:10px 12px;
       border-radius:8px;
       background:rgba(255,255,255,0.02);
       border:1px solid rgba(255,255,255,0.02);
       color:var(--muted);
-      font-size:13px;
+      font-size:14px;
       display:flex;
-      flex-direction:column;
-      gap:4px;
-      min-width:140px;
+      align-items:center;
+      justify-content:center;
+      min-width:120px;
+      height:44px;
     }
-    .staff b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:12px; }
+    .staff b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:14px; }
 
     /* Original "Return to Main Menu" button style (as in rules.html) */
     .back-row{display:flex;justify-content:center;margin-top:12px;}
@@ -156,7 +171,7 @@
     /* Layout adjustments for small screens */
     @media(max-width:720px){
       .goto{ width:100%; justify-content:flex-start; padding-left:12px; }
-      .staff{ min-width:120px; font-size:12px; }
+      .staff{ min-width:100px; font-size:13px; height:40px; }
     }
 
     @media(max-width:520px){
@@ -219,7 +234,7 @@
         </div>
       </section>
 
-      <!-- Owners -->
+      <!-- Owners simplified -->
       <section class="card" aria-labelledby="owners" aria-label="Owners section">
         <h2 id="owners" style="color:#fff;">Owners</h2>
         <p class="owner-meta">
@@ -230,14 +245,14 @@
         <div class="staff-row" aria-hidden="false">
           <div class="staff" title="RB Skizza">
             <b>RB Skizza</b>
-            <span style="color:var(--muted);font-size:13px;">ID: 572334717731602462</span>
-            <small style="color:var(--muted);">Contributor / Staff</small>
           </div>
 
           <div class="staff" title="Slomobob">
             <b>Slomobob</b>
-            <span style="color:var(--muted);font-size:13px;">ID: 842365557486518302</span>
-            <small style="color:var(--muted);">Support / Admin</small>
+          </div>
+
+          <div class="staff" title="Sloppywet">
+            <b>Sloppywet</b>
           </div>
         </div>
       </section>
