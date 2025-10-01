@@ -6,6 +6,7 @@
   <title>Aggro PvP — Server Rules</title>
 
   <style>
+    /* Font (encode spaces in filename) */
     @font-face{
       font-family:'DayZFont';
       src: url('28%20Days%20Later.ttf') format('truetype');
@@ -18,91 +19,250 @@
       --muted:rgba(255,255,255,0.88);
       --button-dark:#070707;
       --button-dark-2:#0e0e0e;
-      --radius:14px;
+      --radius:12px;
       --smoke-opacity:0.66;
+      --max-width:1100px;
     }
 
-    html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial;-webkit-font-smoothing:antialiased;overflow-y:auto;}
-
-    #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
-    #smoke-bg video{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:160vw;height:160vh;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(5px) saturate(1.05) contrast(1.02);mix-blend-mode:screen;}
-
-    .site{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:44px 20px;box-sizing:border-box;}
-    .wrap{width:100%;max-width:1000px;display:flex;flex-direction:column;align-items:center;gap:18px;}
-
-    h1{margin:0;font-family:'DayZFont',sans-serif;font-size:clamp(30px,6.5vw,64px);line-height:0.9;color:#fff;letter-spacing:1.6px;text-transform:uppercase;text-shadow:0 1px 0 rgba(0,0,0,0.8),0 6px 22px rgba(0,0,0,0.6),0 10px 40px rgba(255,59,59,0.05);}
-
-    .btn-grid{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:12px;}
-
-    .rule-btn{
-      appearance:none;display:flex;align-items:center;justify-content:space-between;gap:12px;
-      padding:14px 18px;border-radius:12px;cursor:pointer;
-      background:linear-gradient(180deg,var(--button-dark),var(--button-dark-2));
-      border:2px solid rgba(255,59,59,0.14);
-      box-shadow:inset 0 2px 6px rgba(255,255,255,0.02),inset 0 -8px 18px rgba(0,0,0,0.75),0 10px 30px rgba(0,0,0,0.9);
-      transition:transform .18s,box-shadow .18s;
-      font-weight:800;font-family:'DayZFont',sans-serif;text-align:left;color:var(--accent);
+    html,body{
+      height:100%;
+      margin:0;
+      background:var(--bg);
+      color:#fff;
+      font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-y:auto;
     }
-    .rule-btn:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 18px 48px rgba(0,0,0,0.9);}
-    .rule-btn:active{transform:translateY(-2px) scale(0.995);box-shadow:0 8px 22px rgba(0,0,0,0.9);}
-    .rule-btn:focus{outline:3px solid rgba(255,59,59,0.14);outline-offset:6px;}
 
-    .modal-wrap{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);padding:20px;box-sizing:border-box;}
-    .modal{width:100%;max-width:900px;background:#0a0a0a;border-radius:14px;padding:22px;box-sizing:border-box;border:2px solid rgba(255,59,59,0.08);box-shadow:0 28px 90px rgba(0,0,0,0.9);transform:translateY(18px) scale(0.98);opacity:0;transition:transform .3s,opacity .3s;}
-    .modal.open{transform:translateY(0) scale(1);opacity:1;}
-    .modal h3{margin:0 0 10px;font-family:'DayZFont',sans-serif;color:var(--accent);font-size:22px;}
-    .rules-list{display:flex;flex-direction:column;gap:10px;}
-    .rules-list .item{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;border-left:4px solid rgba(255,59,59,0.16);font-size:15px;color:#fff;}
-    .close-btn{margin-top:16px;background:#000;border:1px solid rgba(255,59,59,0.08);color:var(--accent);padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:800;}
+    /* full smoke background */
+    #smoke-bg{
+      position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; background:#000;
+    }
+    #smoke-bg video{
+      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+      width:160vw; height:160vh; object-fit:cover; opacity:var(--smoke-opacity);
+      filter: blur(5px) saturate(1.04) contrast(1.02); mix-blend-mode:screen;
+    }
 
-    .back-link{grid-column:1/-1;text-align:center;text-decoration:none;font-weight:800;background:#000;border:2px solid rgba(255,59,59,0.14);color:var(--accent);padding:14px;border-radius:12px;box-shadow:inset 0 2px 6px rgba(255,255,255,0.02),inset 0 -8px 18px rgba(0,0,0,0.75),0 10px 30px rgba(0,0,0,0.9);}
+    /* site layout */
+    .site{ position:relative; z-index:2; min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:44px 20px; box-sizing:border-box; }
+    .wrap{ width:100%; max-width:var(--max-width); display:flex; flex-direction:column; align-items:center; gap:18px; box-sizing:border-box; }
+
+    /* Heading (no extra white text) */
+    .heading{ text-align:center; pointer-events:none; margin-top:6px; }
+    h1{
+      margin:0;
+      font-family:'DayZFont', "Segoe UI", sans-serif;
+      font-size: clamp(30px, 6.5vw, 64px);
+      line-height:0.9;
+      color:#fff;
+      letter-spacing:1.6px;
+      text-transform:uppercase;
+      text-shadow: 0 1px 0 rgba(0,0,0,0.85), 0 6px 22px rgba(0,0,0,0.6), 0 10px 40px rgba(255,59,59,0.05);
+    }
+
+    /* Collapsible grid */
+    .coll-grid{ width:100%; display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-top:12px; align-items:start; }
+    @media (max-width:880px){ .coll-grid{ grid-template-columns:1fr; } }
+
+    /* Use details/summary as large 3D buttons */
+    details{
+      background: linear-gradient(180deg,var(--button-dark),var(--button-dark-2));
+      border-radius:12px;
+      padding:0;
+      border:2px solid rgba(255,59,59,0.12);
+      box-shadow:
+        inset 0 2px 6px rgba(255,255,255,0.02),
+        inset 0 -8px 18px rgba(0,0,0,0.75),
+        0 16px 40px rgba(0,0,0,0.9);
+      transition: transform .18s ease, box-shadow .18s ease;
+      overflow:hidden;
+    }
+
+    details[open]{ transform:translateY(-6px); box-shadow:0 28px 60px rgba(0,0,0,0.95); }
+
+    summary{
+      list-style:none;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:16px 18px;
+      cursor:pointer;
+      user-select:none;
+      outline:none;
+    }
+
+    summary .title{ font-family:'DayZFont', "Segoe UI", sans-serif; font-size:18px; color:var(--accent); }
+    summary .chev{ font-size:20px; color:var(--accent); transform:rotate(0deg); transition: transform .18s ease; }
+    details[open] summary .chev{ transform:rotate(90deg); }
+
+    /* panel content that expands */
+    .content{
+      padding:14px 18px 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
+      border-top:1px solid rgba(255,255,255,0.02);
+    }
+
+    .rule-item{
+      display:flex; gap:12px; align-items:flex-start;
+      background:rgba(255,255,255,0.02);
+      padding:12px; border-radius:10px; margin-bottom:10px;
+      border-left:4px solid rgba(255,59,59,0.16);
+      font-size:15px; color:rgba(255,255,255,0.96);
+    }
+
+    .num{
+      min-width:40px; height:40px; display:inline-grid; place-items:center;
+      background:linear-gradient(180deg, rgba(255,59,59,0.14), rgba(255,59,59,0.06));
+      color:var(--accent); font-weight:800; border-radius:8px; border:1px solid rgba(255,59,59,0.06); font-family:"Segoe UI",sans-serif;
+    }
+
+    /* Back to main menu at bottom */
+    .back-row{ width:100%; display:flex; justify-content:center; margin-top:18px; }
+    .back-link{
+      display:inline-block; text-decoration:none; font-weight:800; background:linear-gradient(180deg,var(--button-dark),var(--button-dark-2));
+      border:2px solid rgba(255,59,59,0.14); color:var(--accent); padding:12px 18px; border-radius:12px;
+      box-shadow: inset 0 2px 6px rgba(255,255,255,0.02), inset 0 -8px 18px rgba(0,0,0,0.75), 0 10px 30px rgba(0,0,0,0.9);
+    }
+
+    /* Accessibility focus */
+    summary:focus, .back-link:focus{ outline:3px solid rgba(255,59,59,0.14); outline-offset:6px; }
+
+    /* Ensure details content scrollable on small screens */
+    @media (max-width:520px){
+      .content{ padding:12px; }
+      .rule-item{ padding:10px; }
+    }
   </style>
 </head>
 <body>
 
-  <div id="smoke-bg"><video autoplay loop muted playsinline preload="auto"><source src="Smoke.mp4" type="video/mp4"></video></div>
+  <!-- full smoke background -->
+  <div id="smoke-bg" aria-hidden="true">
+    <video id="bgVideo" autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg" aria-hidden="true">
+      <source src="Smoke.webm" type="video/webm">
+      <source src="Smoke.mp4" type="video/mp4">
+    </video>
+  </div>
 
-  <main class="site">
-    <div class="wrap">
-      <h1>Server Rules</h1>
+  <main class="site" role="main">
+    <div class="wrap" role="region" aria-label="Aggro PvP rules">
+      <header class="heading" aria-hidden="false">
+        <h1>Server Rules</h1>
+      </header>
 
-      <div class="btn-grid">
-        <button class="rule-btn" data-section="general">General</button>
-        <button class="rule-btn" data-section="safezone">Safezone</button>
-        <button class="rule-btn" data-section="base">Base Building</button>
-        <button class="rule-btn" data-section="storage">Base Storage Limit</button>
-        <button class="rule-btn" data-section="raiding">Raiding</button>
-        <a href="index.html" class="back-link">← Return to Main Menu</a>
+      <div class="coll-grid" role="list">
+
+        <details id="general" data-section="general">
+          <summary>
+            <span class="title">General</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
+          <div class="content" role="region" aria-labelledby="general">
+            <div class="rule-item"><div class="num">1</div><div>No external mods, hacks, duping, NVinspect, or glitch movement. Filters and external crosshairs are allowed.</div></div>
+            <div class="rule-item"><div class="num">2</div><div>No alt accounts or stream sniping.</div></div>
+            <div class="rule-item"><div class="num">3</div><div>No combat logging. Wait 10 minutes after PvP before logging or entering safezone unless the fight couldn’t realistically continue.</div></div>
+            <div class="rule-item"><div class="num">4</div><div>If you log into someone else's base or locked room unexpectedly, make a ticket and don’t touch anything—even if it’s your own base post-raid.</div></div>
+            <div class="rule-item"><div class="num">5</div><div>Report bugs. Abusing glitches (including de-rendering bases) will be punished.</div></div>
+          </div>
+        </details>
+
+        <details id="safezone" data-section="safezone">
+          <summary>
+            <span class="title">Safezone</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
+          <div class="content" role="region" aria-labelledby="safezone">
+            <div class="rule-item"><div class="num">1</div><div>Unattended dropped items are free game. Otherwise, don’t touch what’s not yours including vehicles.</div></div>
+            <div class="rule-item"><div class="num">2</div><div>No safezone camping, blocking, following, or abusing protection. If you kill in self-defense entering/leaving, leave their loot.</div></div>
+            <div class="rule-item"><div class="num">3</div><div>Unattended ungaraged vehicles may be deleted after 12 hours.</div></div>
+          </div>
+        </details>
+
+        <details id="base-building" data-section="base-building">
+          <summary>
+            <span class="title">Base Building</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
+          <div class="content" role="region" aria-labelledby="base-building">
+            <div class="rule-item"><div class="num">1</div><div>One main base + one stash base/FOB per player.</div></div>
+            <div class="rule-item"><div class="num">2</div><div>Max 25 code-locked doors/hatches/containers per base.</div></div>
+            <div class="rule-item"><div class="num">3</div><div>All areas of your base must be accessible on foot—no loot rooms via windows only.</div></div>
+            <div class="rule-item"><div class="num">4</div><div>Build realistically—no unsupported structures or more than 2 floor kits out from a structure.</div></div>
+            <div class="rule-item"><div class="num">5</div><div>BBP kits must not overlap in ways that block access or raid tools.</div></div>
+            <div class="rule-item"><div class="num">6</div><div>Mesh and fence kits must be fully constructed.</div></div>
+            <div class="rule-item"><div class="num">7</div><div>On municipal buildings, silos, or radio towers, max 2 floor kits out—don’t block player structures.</div></div>
+            <div class="rule-item"><div class="num">8</div><div>Secure your base. Don’t share codes with untrusted players—no compensation for your mistakes.</div></div>
+            <div class="rule-item"><div class="num">9</div><div><strong style="color:var(--accent)">Note</strong> No base size limit, but don’t abuse it. Staff will notify you if it gets excessive.</div></div>
+          </div>
+        </details>
+
+        <details id="storage" data-section="storage">
+          <summary>
+            <span class="title">Base Storage Limit</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
+          <div class="content" role="region" aria-labelledby="storage">
+            <div class="rule-item"><div class="num">1</div><div>You’re limited to 20 storage kits per base, plus 5 extra per team member.</div></div>
+          </div>
+        </details>
+
+        <details id="raiding" data-section="raiding" style="grid-column:1 / -1">
+          <summary>
+            <span class="title">Raiding</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
+          <div class="content" role="region" aria-labelledby="raiding">
+            <div class="rule-item"><div class="num">1</div><div>Alliances are allowed.</div></div>
+            <div class="rule-item"><div class="num">2</div><div>No despawning, repairing, or modifying bases during active raids.</div></div>
+            <div class="rule-item"><div class="num">3</div><div>Loot can only be dropped if taking the storage kit—don’t despawn unwanted loot.</div></div>
+            <div class="rule-item"><div class="num">4</div><div>No combat logging during raids. If IRL forces you to log, say so—don’t log with combat tag.</div></div>
+            <div class="rule-item"><div class="num">5</div><div>Don’t abuse hologram/kit placement to raid (one ladder on the floor is allowed).</div></div>
+            <div class="rule-item"><div class="num">6</div><div>Glitch methods (fences, punching through windows, missing vehicles, floating entities) are not allowed.</div></div>
+            <div class="rule-item"><div class="num">7</div><div>A raid is considered active for 15 minutes after the last use of explosives or raid tools.</div></div>
+          </div>
+        </details>
+
+      </div>
+
+      <div class="back-row">
+        <a class="back-link" href="index.html">← Return to Main Menu</a>
       </div>
     </div>
   </main>
 
-  <div id="modalWrap" class="modal-wrap">
-    <div id="modal" class="modal">
-      <h3 id="modalTitle"></h3>
-      <div class="rules-list" id="modalRules"></div>
-      <button class="close-btn" id="modalClose">Close</button>
-    </div>
-  </div>
-
   <script>
-    const rulesData = {
-      general:[
-        "No external mods, hacks, duping, NVinspect, or glitch movement. Filters and external crosshairs are allowed.",
-        "No alt accounts or stream sniping.",
-        "No combat logging. Wait 10 minutes after PvP before logging or entering safezone unless the fight couldn’t realistically continue.",
-        "If you log into someone else's base or locked room unexpectedly, make a ticket and don’t touch anything—even if it’s your own base post-raid.",
-        "Report bugs. Abusing glitches (including de-rendering bases) will be punished."
-      ],
-      safezone:[
-        "Unattended dropped items are free game. Otherwise, don’t touch what’s not yours including vehicles.",
-        "No safezone camping, blocking, following, or abusing protection. If you kill in self-defense entering/leaving, leave their loot.",
-        "Unattended ungaraged vehicles may be deleted after 12 hours."
-      ],
-      base:[
-        "One main base + one stash base/FOB per player.",
-        "Max 25 code-locked doors/hatches/containers per base.",
-        "All areas of your base must be accessible on foot—no loot rooms via windows only.",
-        "Build realistically—no unsupported structures or more than two floor kits out from a structure.",
-        "BBP kits must not overlap in ways that block access or raid tools.",
-        "Mesh and
+    (function(){
+      const details = Array.from(document.querySelectorAll('details'));
+      details.forEach(d => {
+        d.addEventListener('toggle', () => {
+          if (!d.open) return;
+          // close others
+          details.forEach(other => { if (other !== d) other.open = false; });
+          // scroll into view enough so the opened content is visible on small screens
+          setTimeout(() => {
+            const rect = d.getBoundingClientRect();
+            if (rect.top < 80) window.scrollBy({ top: rect.top - 72, behavior: 'smooth' });
+          }, 120);
+        });
+
+        // keyboard support on summary
+        const summary = d.querySelector('summary');
+        summary.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); d.open = !d.open; }
+        });
+      });
+
+      // video fallback: hide if fails
+      const vid = document.getElementById('bgVideo');
+      const overlay = document.getElementById('smoke-bg');
+      if (vid) {
+        vid.addEventListener('error', () => { if (overlay) overlay.style.display = 'none'; }, {passive:true});
+        setTimeout(() => { if (vid.readyState === 0 && overlay) overlay.style.display = 'none'; }, 2200);
+      }
+    })();
+  </script>
+</body>
+</html>
