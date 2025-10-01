@@ -25,7 +25,7 @@
       --smoke-opacity:0.78;
       --gap:18px;
       --tab-height:56px;
-      --bottom-safe:160px; /* ensures return button doesn't overlap content on most viewports */
+      --bottom-safe:160px;
     }
 
     html,body{
@@ -216,7 +216,7 @@
         </div>
       </header>
 
-      <!-- Controls: tabs (no owners) + separate owners button -->
+      <!-- Controls: tabs (no owners) + separate Owners button -->
       <div class="controls" role="group" aria-label="Support controls">
         <nav class="tabs" role="tablist" aria-label="Support sections">
           <button class="tab" role="tab" aria-selected="true" aria-controls="panel" id="tab-bug" data-key="bug">Bug Reports</button>
@@ -231,13 +231,13 @@
       <section class="card" id="panel" tabindex="0" aria-live="polite">
         <div id="panel-content">
           <h2>Bug Reports</h2>
-          <p>Seeing lag, exploits, visual glitches, or anything broken? Include exact steps to reproduce, server time, map/location, your platform, and attachments (screenshots or video).</p>
+          <p>Seeing server lag, exploits, or visual bugs? Tell us what you noticed, which server and map, and the approximate server time so staff can investigate.</p>
           <div class="card-footer">
             <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
               <span>Go to</span>
             </a>
-            <span style="color:var(--muted);font-size:13px;">Tip: server lag, exploits, visual bugs, reproduction steps, attachments</span>
+            <span style="color:var(--muted);font-size:13px;">Tip: server lag, exploits, visual bugs, server/map, server time</span>
           </div>
         </div>
       </section>
@@ -272,18 +272,18 @@
       const templates = {
         bug: {
           title: 'Bug Reports',
-          html: `<p>Seeing lag, exploits, visual glitches, or anything broken? Include exact steps to reproduce, server time, map/location, your platform, and attachments (screenshots or video).</p>
+          html: `<p>Seeing server lag, exploits, or visual bugs? Tell us what you noticed, which server and map, and the approximate server time so staff can investigate.</p>
                  <div class="card-footer">
                    <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
                      <span>Go to</span>
                    </a>
-                   <span style="color:var(--muted);font-size:13px;">Tip: server lag, exploits, visual bugs, reproduction steps, attachments</span>
+                   <span style="color:var(--muted);font-size:13px;">Tip: server lag, exploits, visual bugs, server/map, server time</span>
                  </div>`
         },
         suggest: {
           title: 'Suggestions',
-          html: `<p>Got a loot change, mod idea, new feature, or gameplay tweak? Describe the change, why it improves the game, and any balance notes or downsides.</p>
+          html: `<p>Got a loot change, mod idea, new feature, or gameplay tweak? Describe the change, why it improves the game, and any balance notes or downsides; keep it actionable.</p>
                  <div class="card-footer">
                    <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
@@ -294,7 +294,7 @@
         },
         ticket: {
           title: 'Ticket',
-          html: `<p>Tickets are for private help: bans and appeals, account issues, staff requests, payment/donation queries, and other sensitive matters. Include your Discord ID and clear evidence.</p>
+          html: `<p>Tickets are for private support: bans and appeals, account issues, staff requests, payment/donation queries, and other sensitive matters.</p>
                  <div class="card-footer">
                    <a class="goto" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener" aria-label="Go to Ticket channel">
                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
@@ -308,7 +308,6 @@
       function activateTab(tabEl){
         tabs.forEach(t=> t.setAttribute('aria-selected', t===tabEl ? 'true' : 'false'));
         const key = tabEl.dataset.key;
-        // hide owners bubble when switching tabs
         ownersBubble.hidden = true;
         ownersBtn.setAttribute('aria-pressed','false');
         panelContent.style.opacity = '0';
@@ -329,7 +328,7 @@
         });
       });
 
-      // Owners button toggles owners bubble visibility; keep panel visible but slightly dim when owners shown
+      // Owners button toggles owners bubble visibility; keep panel slightly dim when owners shown
       ownersBtn.addEventListener('click', ()=>{
         const isShown = ownersBtn.getAttribute('aria-pressed') === 'true';
         ownersBtn.setAttribute('aria-pressed', String(!isShown));
