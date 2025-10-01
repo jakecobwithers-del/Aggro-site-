@@ -1,222 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Aggro PvP Support</title>
-
-  <style>
-    @font-face {
-      font-family: '28DaysLater';
-      src: url('assets/fonts/28 Days Later.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-
-    :root{
-      --accent:#ff3c3c;
-      --overlay-bg: rgba(0,0,0,0.82);
-      --muted:#bdbdbd;
-      --widget-width:360px;
-    }
-
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0}
-    body{
-      font-family:'28DaysLater', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      color:#fff;
-      background:#000;
-    }
-
-    /* Video background */
-    #smoke-bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;filter:grayscale(6%) contrast(1) brightness(0.45)}
-    .bg-tint{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.65) 60%, rgba(0,0,0,0.85) 100%);pointer-events:none}
-
-    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:4vh 20px}
-    .card{width:100%;max-width:1100px;background:var(--overlay-bg);border-radius:12px;padding:28px;box-shadow:0 10px 40px rgba(0,0,0,0.6);display:grid;grid-template-columns:1fr 380px;gap:22px;align-items:start}
-    @media (max-width:880px){.card{grid-template-columns:1fr;padding:20px;gap:14px}}
-
-    h1{margin:0 0 10px 0;font-size:48px;color:var(--accent);text-shadow:0 6px 18px rgba(0,0,0,0.9);line-height:0.95}
-    .lead{margin:0 0 16px 0;font-size:18px;line-height:1.5;color:#fff;opacity:0.95}
-    ul{margin:0 0 16px 1.1rem;padding:0}
-    li{margin:8px 0;font-size:16px;line-height:1.5}
-
-    .discord-links{background:rgba(255,255,255,0.03);border-left:6px solid var(--accent);padding:14px;border-radius:8px}
-    .discord-title{display:flex;gap:10px;align-items:center;margin:0 0 8px 0;font-size:20px;color:var(--accent)}
-    .small{font-size:13px;color:var(--muted);margin-top:6px}
-    footer{margin-top:12px;font-size:13px;color:var(--muted)}
-
-    .right-col{display:flex;flex-direction:column;gap:14px;align-items:stretch}
-    .discord-iframe{width:100%;max-width:var(--widget-width);min-height:300px;height:320px;border-radius:8px;border:0;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.6)}
-
-    .profiles{display:flex;flex-direction:column;gap:8px;max-width:var(--widget-width)}
-    .profile{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,0.02);padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-    .avatar{width:46px;height:46px;border-radius:6px;background:#222;flex:0 0 46px;overflow:hidden;display:inline-block;object-fit:cover;border:1px solid rgba(255,255,255,0.04)}
-    .profile .meta{display:flex;flex-direction:column;min-width:0}
-    .profile .name{font-size:15px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .profile .tag{font-size:13px;color:var(--muted)}
-    .profile a.link{margin-left:auto;color:var(--accent);text-decoration:underline;font-size:13px}
-
-    .skeleton{background:linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 100%);animation:shine 1.2s linear infinite;border-radius:6px}
-    @keyframes shine{from{background-position:-200px 0} to{background-position:200px 0}}
-    .muted-note{font-size:13px;color:var(--muted);margin-top:8px}
-
-    .channel-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-    .channel-links a{background:rgba(255,255,255,0.04);padding:8px 12px;border-radius:999px;color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,0.02);font-size:14px}
-
-    .bottom-widget{max-width:1100px;margin:18px auto 40px;display:flex;justify-content:center}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Aggro PvP — Friend Avatars</title>
+<style>
+  @font-face{font-family:28DaysLater;src:url('assets/fonts/28DaysLater.ttf') format('truetype');font-display:swap}
+  :root{--accent:#ff3c3c;--muted:#bdbdbd}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:28DaysLater,system-ui,Arial;background:#0b0b0b;color:#fff;min-height:100vh}
+  header{padding:20px;text-align:center}
+  h1{margin:0;color:var(--accent);font-size:28px}
+  .container{max-width:1100px;margin:24px auto;padding:20px;background:rgba(255,255,255,0.03);border-radius:10px}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+  .controls input, .controls select, .controls button, .controls textarea{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.3);color:#fff}
+  .controls input[type="text"]{min-width:180px}
+  .controls textarea{min-width:300px;min-height:80px;max-width:100%;resize:vertical}
+  .grid{display:flex;flex-wrap:wrap;gap:12px}
+  .card{width:calc(25% - 9px);min-width:200px;background:rgba(255,255,255,0.03);padding:12px;border-radius:10px;display:flex;align-items:center;gap:12px}
+  .avatar{width:72px;height:72px;border-radius:10px;background:#111;border:1px solid rgba(255,255,255,0.04);object-fit:cover}
+  .meta{flex:1;min-width:0}
+  .name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sub{font-size:13px;color:var(--muted);margin-top:6px}
+  .actions a{color:var(--accent);text-decoration:underline;font-size:13px}
+  .note{font-size:13px;color:var(--muted);margin-top:12px}
+  @media(max-width:900px){.card{width:calc(50% - 9px)}}
+  @media(max-width:520px){.card{width:100%}.controls{flex-direction:column}}
+  .error{color:#ffbbbb;background:rgba(255,0,0,0.06);padding:8px;border-radius:6px;margin-top:8px}
+</style>
 </head>
 <body>
-  <video id="smoke-bg" autoplay muted loop playsinline>
-    <source src="assets/smoke.mp4" type="video/mp4">
-    Your browser does not support the video background.
-  </video>
-  <div class="bg-tint" aria-hidden="true"></div>
+<header>
+  <h1>Aggro PvP — Friend Avatars (manual)</h1>
+</header>
 
-  <main class="wrap" role="main">
-    <section class="card" aria-labelledby="support-heading">
-      <div>
-        <h1 id="support-heading">SUPPORT & SURVIVAL</h1>
-
-        <p class="lead">If you're still breathing, we've got your back. All official support for Aggro PvP is handled through our Discord channels. Provide as much detail as possible when reporting issues.</p>
-
-        <ul>
-          <li><strong>#ticket</strong> — For direct help and admin support</li>
-          <li><strong>#bug-reports</strong> — Found a glitch, exploit, or issue?</li>
-          <li><strong>#suggestions</strong> — Got ideas to improve the server?</li>
-        </ul>
-
-        <div class="discord-links" aria-labelledby="homage-heading">
-          <div class="discord-title" id="homage-heading">🎖 Homage to Day Z Legends</div>
-          <p class="small">Aggro PvP stands on the shoulders of giants. Huge respect to the creators and visionaries behind Day Z:</p>
-
-          <div class="profiles" id="featured-profiles">
-            <div class="profile skeleton" style="height:60px;"></div>
-            <div class="profile skeleton" style="height:60px;"></div>
-          </div>
-
-          <p class="muted-note">Profiles pulled from your Discord server widget when enabled. If not visible, ensure the Server Widget is enabled and member privacy settings allow display.</p>
-        </div>
-
-        <div style="margin-top:14px">
-          <div class="channel-links" aria-hidden="false">
-            <a id="open-server" href="https://discord.com/channels/1375728051194957874" target="_blank" rel="noopener noreferrer">Open Aggro PvP Server</a>
-            <a id="link-ticket" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer">#ticket</a>
-            <a id="link-bug" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer">#bug-reports</a>
-            <a id="link-suggestions" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer">#suggestions</a>
-          </div>
-        </div>
-
-        <footer>
-          &copy; 2025 Aggro PvP. All rights reserved. Not affiliated with Bohemia Interactive.
-        </footer>
-      </div>
-
-      <aside class="right-col" aria-label="Discord">
-        <iframe id="discord-widget" class="discord-iframe" title="Aggro PvP Discord Widget"
-          src="https://discord.com/widget?id=1375728051194957874&theme=dark"
-          allowtransparency="true"
-          sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
-        </iframe>
-
-        <div style="max-width:var(--widget-width);">
-          <div style="font-size:14px;color:var(--muted);margin-bottom:6px">Direct links to featured members</div>
-          <div id="profiles-list" class="profiles" aria-live="polite">
-            <div class="profile skeleton" style="height:60px;"></div>
-          </div>
-        </div>
-      </aside>
-    </section>
-  </main>
-
-  <div class="bottom-widget">
-    <iframe title="Aggro PvP small widget" src="https://discord.com/widget?id=1375728051194957874&theme=dark" class="discord-iframe" style="height:140px;max-width:720px"></iframe>
+<main class="container" role="main">
+  <div class="controls" aria-label="Add friend">
+    <input id="input-name" type="text" placeholder="Display name (optional)" />
+    <input id="input-id" type="text" placeholder="User ID (numeric)" />
+    <input id="input-discrim" type="text" placeholder="Discriminator (e.g., 1234) — optional" />
+    <input id="input-avatar-hash" type="text" placeholder="Avatar hash (a_... or hex) — optional" />
+    <input id="input-avatar-url" type="text" placeholder="Direct avatar URL (optional)" />
+    <button id="btn-add">Add Friend</button>
+    <button id="btn-clear">Clear All</button>
   </div>
 
-  <script>
-    (function(){
-      const GUILD_ID = '1375728051194957874';
-      const MAX_SHOW = 8;
-      const endpoint = `https://discord.com/api/guilds/${GUILD_ID}/widget.json`;
-      const container = document.getElementById('profiles-list');
-      const featured = document.getElementById('featured-profiles');
+  <div style="margin-bottom:10px">
+    <label style="display:block;font-size:13px;color:var(--muted)">Or paste a JSON array here (example shown below) and click Load JSON</label>
+    <textarea id="json-area" placeholder='[{"id":"123","avatar":"a_hash","username":"Name"}]'></textarea>
+    <div style="margin-top:8px">
+      <button id="btn-load-json">Load JSON</button>
+    </div>
+  </div>
 
-      // Fetch widget.json with retries
-      function fetchWidget(retries = 4, delay = 800){
-        return new Promise((resolve, reject) => {
-          function attempt(n){
-            fetch(endpoint, {cache:'no-store'}).then(r=>{
-              if (!r.ok) throw new Error('widget not available');
-              return r.json();
-            }).then(json => resolve(json)).catch(err=>{
-              if (n > 0) setTimeout(()=>attempt(n-1), delay);
-              else reject(err);
-            });
-          }
-          attempt(retries);
-        });
-      }
+  <div id="errors" class="error" style="display:none"></div>
 
-      fetchWidget().then(data => {
-        const members = Array.isArray(data.members) ? data.members.slice(0, MAX_SHOW) : [];
-        if (!members.length){
-          container.innerHTML = '<div class="small">No visible widget members right now. Members may be offline or hidden by privacy settings.</div>';
-          featured.innerHTML = '<div class="small">No featured members available.</div>';
-          return;
-        }
+  <div id="grid" class="grid" aria-live="polite"></div>
 
-        container.innerHTML = '';
-        featured.innerHTML = '';
+  <div class="note">
+    How to get avatar hash: if you have a profile avatar URL already, the hash is the filename part before extension. If you don't have the hash, supply user ID + discriminator to show Discord default embed avatar.
+    If a friend has a custom avatar and you don't have the hash, ask them to paste their avatar URL or user ID+avatar hash here.
+  </div>
+</main>
 
-        function avatarUrl(m){
-          if (m.avatar && m.id){
-            const isAnimated = m.avatar.startsWith('a_');
-            const ext = isAnimated ? 'gif' : 'png';
-            return `https://cdn.discordapp.com/avatars/${m.id}/${m.avatar}.${ext}?size=128`;
-          }
-          return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="100%" height="100%" fill="%23222"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="%23fff" font-size="48">?</text></svg>';
-        }
+<script>
+(function(){
+  const grid = document.getElementById('grid');
+  const nameIn = document.getElementById('input-name');
+  const idIn = document.getElementById('input-id');
+  const discrimIn = document.getElementById('input-discrim');
+  const hashIn = document.getElementById('input-avatar-hash');
+  const urlIn = document.getElementById('input-avatar-url');
+  const btnAdd = document.getElementById('btn-add');
+  const btnClear = document.getElementById('btn-clear');
+  const jsonArea = document.getElementById('json-area');
+  const btnLoadJson = document.getElementById('btn-load-json');
+  const errors = document.getElementById('errors');
 
-        members.forEach(member=>{
-          const el = document.createElement('div'); el.className = 'profile';
-          const safeName = escapeHtml(member.username);
-          el.innerHTML = `
-            <img class="avatar" src="${avatarUrl(member)}" alt="${safeName} avatar" />
-            <div class="meta"><div class="name">${safeName}</div><div class="tag">${member.status?escapeHtml(member.status):'online'}</div></div>
-            <a class="link" href="https://discord.com/users/${member.id}" target="_blank" rel="noopener noreferrer">View</a>
-          `;
-          container.appendChild(el);
+  const items = []; // { id, avatarHash, username, discriminator, avatarUrl }
 
-          const lower = (member.username||'').toLowerCase();
-          if (lower.includes('rbskizza') || lower.includes('slomobob')) {
-            featured.appendChild(el.cloneNode(true));
-          }
-        });
+  function esc(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-        if (!featured.querySelector('.profile')) {
-          const known = [
-            {id:'', name:'rbskizza'},
-            {id:'', name:'slomobob'}
-          ];
-          featured.innerHTML = '';
-          known.forEach(k=>{
-            const row = document.createElement('div'); row.className = 'profile';
-            row.innerHTML = `<div class="avatar" style="display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px">${k.name.charAt(0)}</div>
-              <div class="meta"><div class="name">${escapeHtml(k.name)}</div><div class="tag">external</div></div>
-              <a class="link" href="${k.id?('https://discord.com/users/'+k.id):('https://discord.com/search?query='+encodeURIComponent(k.name))}" target="_blank" rel="noopener noreferrer">View</a>`;
-            featured.appendChild(row);
-          });
-        }
-      }).catch(err=>{
-        container.innerHTML = '<div class="small">Could not load Discord widget. Ensure Server Widget is enabled and you have permission to view it.</div>';
-        featured.innerHTML = '<div class="small">Could not load widget data.</div>';
-        console.warn('widget error', err);
+  function avatarUrlFromParts(id, hash, discrim){
+    if (hash && id){
+      // choose ext based on hash prefix a_ => gif else png
+      const ext = hash.startsWith('a_') ? 'gif' : 'png';
+      return `https://cdn.discordapp.com/avatars/${id}/${hash}.${ext}?size=256`;
+    }
+    if (id && discrim){
+      const d = parseInt(discrim,10) || 0;
+      const idx = d % 5;
+      return `https://cdn.discordapp.com/embed/avatars/${idx}.png`;
+    }
+    return '';
+  }
+
+  function addItem(obj){
+    // obj: { id, avatarHash, avatarUrl, username, discriminator }
+    const id = obj.id || '';
+    const username = obj.username || (id ? `User ${id}` : 'Unknown');
+    const avatarUrl = obj.avatarUrl || avatarUrlFromParts(obj.id, obj.avatarHash, obj.discriminator) || '';
+    items.push({ id, username, avatarUrl });
+    renderGrid();
+  }
+
+  function renderGrid(){
+    grid.innerHTML = '';
+    errors.style.display = 'none';
+    if (!items.length){
+      grid.innerHTML = '<div style="color:var(--muted);padding:16px">No profiles added yet.</div>';
+      return;
+    }
+    items.forEach(it=>{
+      const card = document.createElement('div'); card.className = 'card';
+      // build avatar element; if avatarUrl empty show placeholder
+      const avatarSrc = it.avatarUrl || blankDataUri(it.username);
+      card.innerHTML = `
+        <img class="avatar" src="${esc(avatarSrc)}" alt="${esc(it.username)} avatar" onerror="this.onerror=null;this.src='${blankDataUri(it.username)}'"/>
+        <div class="meta"><div class="name">${esc(it.username)}</div><div class="sub">${it.id ? 'ID: ' + esc(it.id) : ''}</div></div>
+        <div class="actions"><a href="${it.id?('https://discord.com/users/'+encodeURIComponent(it.id)):'#'}" target="_blank" rel="noopener noreferrer">Profile</a></div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function blankDataUri(name){
+    const initial = (name||'?').trim().charAt(0).toUpperCase();
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><rect width='100%' height='100%' fill='%23222'/><text x='50%' y='55%' font-size='120' fill='%23fff' text-anchor='middle' dominant-baseline='middle'>${initial}</text></svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  }
+
+  btnAdd.addEventListener('click', ()=>{
+    const id = idIn.value.trim();
+    const username = nameIn.value.trim() || (id ? 'User ' + id.slice(-4) : '');
+    const avatarHash = hashIn.value.trim();
+    const avatarUrl = urlIn.value.trim();
+    const discriminator = discrimIn.value.trim();
+    if (!id && !avatarUrl){
+      showError('Provide at least a User ID or direct avatar URL.');
+      return;
+    }
+    const obj = { id: id || '', avatarHash: avatarHash || '', avatarUrl: avatarUrl || '', username: username || '', discriminator: discriminator || '' };
+    addItem(obj);
+    // clear inputs (except name)
+    idIn.value=''; hashIn.value=''; urlIn.value=''; discrimIn.value='';
+  });
+
+  btnClear.addEventListener('click', ()=>{
+    items.length = 0;
+    renderGrid();
+  });
+
+  btnLoadJson.addEventListener('click', ()=>{
+    const raw = jsonArea.value.trim();
+    if (!raw){ showError('Paste a JSON array first'); return; }
+    try{
+      const arr = JSON.parse(raw);
+      if (!Array.isArray(arr)) throw new Error('JSON must be an array of objects');
+      arr.forEach(o=>{
+        // accept keys: id, avatar, avatarHash, avatarUrl, username, discriminator
+        const id = o.id || o.userId || '';
+        const avatarHash = o.avatarHash || o.avatar || o.avatar_hash || '';
+        const avatarUrl = o.avatarUrl || o.avatar_url || '';
+        const username = o.username || o.name || '';
+        const discriminator = o.discriminator || o.discrim || '';
+        addItem({ id, avatarHash, avatarUrl, username, discriminator });
       });
+      jsonArea.value = '';
+    }catch(e){
+      showError('Invalid JSON: ' + e.message);
+    }
+  });
 
-      function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-    })();
-  </script>
+  function showError(msg){
+    errors.style.display='block'; errors.textContent = msg;
+  }
+
+  // initial render
+  renderGrid();
+
+  // Expose for console convenience
+  window.AggroAvatars = {
+    add: addItem,
+    list: ()=>items
+  };
+})();
+</script>
 </body>
 </html>
