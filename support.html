@@ -6,7 +6,7 @@
   <title>Aggro PvP — Support</title>
 
   <style>
-    /* DayZFont */
+    /* DayZFont (same as rules.html) */
     @font-face{
       font-family: 'DayZFont';
       src: url('28 Days Later.ttf') format('truetype');
@@ -36,12 +36,12 @@
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Smoke background (fixed, blurred, oversized) */
+    /* Smoke background (fixed, blurred, oversized like rules.html) */
     #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
     #smoke-bg video{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:160vw;height:160vh;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(5px) saturate(1.04) contrast(1.02);}
 
     /* Page layout */
-    .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px 80px;box-sizing:border-box;}
+    .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px 120px;box-sizing:border-box;}
     .wrap{width:100%;max-width:var(--maxw);display:flex;flex-direction:column;gap:var(--gap);}
 
     /* Title block */
@@ -88,7 +88,7 @@
 
     .card p{ margin:0 0 10px 0; color:var(--muted); line-height:1.6; font-size:15px; }
 
-    /* Left "Go to" pill moved to bottom and smaller */
+    /* "Go to" pill (small, left previously; here placed at bottom of each card) */
     .goto {
       display:inline-flex;
       align-items:center;
@@ -110,20 +110,7 @@
 
     .goto svg{ width:12px; height:12px; display:block; transform:translateX(-1px); }
 
-    /* Channel link simplified */
-    .channel-link{
-      display:inline-block;
-      margin-top:6px;
-      padding:8px 12px;
-      border-radius:8px;
-      background:rgba(255,255,255,0.02);
-      border:1px solid rgba(255,255,255,0.02);
-      color:var(--muted);
-      font-weight:700;
-      text-decoration:none;
-    }
-
-    /* Owner / credits (smaller chips) */
+    /* Owner / credits (small chips) */
     .owner{
       display:flex;
       flex-direction:column;
@@ -145,15 +132,35 @@
     }
     .staff b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:12px; }
 
+    /* Original "Return to Main Menu" button style (as in rules.html) */
+    .back-row{display:flex;justify-content:center;margin-top:12px;}
+    .back-link{
+      text-decoration:none;
+      font-weight:800;
+      background:linear-gradient(180deg,#0b0b0b,#121212);
+      border:2px solid rgba(255,59,59,0.14);
+      color:var(--accent);
+      padding:12px 18px;
+      border-radius:12px;
+      box-shadow:
+        inset 0 2px 6px rgba(255,255,255,0.02),
+        inset 0 -8px 18px rgba(0,0,0,0.75),
+        0 10px 30px rgba(0,0,0,0.9);
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+    }
+    .back-link svg{ transform:translateX(-2px); }
+
     /* Layout adjustments for small screens */
     @media(max-width:720px){
       .goto{ width:100%; justify-content:flex-start; padding-left:12px; }
+      .staff{ min-width:120px; font-size:12px; }
     }
 
     @media(max-width:520px){
       .title h1{ font-size:clamp(28px,12vw,52px); }
       .card{ padding:16px; }
-      .staff{ min-width:120px; font-size:12px; }
     }
   </style>
 </head>
@@ -176,7 +183,6 @@
       <section class="card" aria-labelledby="bug-reports">
         <h2 id="bug-reports">Bug Reports</h2>
         <p>Found a crash, exploit, or anything acting up — include what happened, when, and screenshots or video so staff can reproduce and fix it quickly.</p>
-        <a class="channel-link" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener">Open bug reports on Discord</a>
         <div style="margin-top:12px;">
           <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
@@ -189,7 +195,6 @@
       <section class="card" aria-labelledby="suggestions">
         <h2 id="suggestions">Suggestions</h2>
         <p>Have a gameplay tweak, event idea, or QoL improvement? Post constructive suggestions so the team can review and discuss them.</p>
-        <a class="channel-link" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener">Open suggestions on Discord</a>
         <div style="margin-top:12px;">
           <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
@@ -202,7 +207,6 @@
       <section class="card" aria-labelledby="ticket">
         <h2 id="ticket">Ticket</h2>
         <p>Need private help for bans, appeals, or account issues? Open a ticket and staff will follow up — include your Discord ID and any evidence to speed the process.</p>
-        <a class="channel-link" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener">Open tickets on Discord</a>
         <div style="margin-top:12px;">
           <a class="goto" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener" aria-label="Go to Ticket channel">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
@@ -231,12 +235,9 @@
         </div>
       </section>
 
-      <!-- Bottom back to main menu -->
-      <div style="display:flex;justify-content:center;margin-top:6px;">
-        <a class="goto" href="index.html" aria-label="Return to main menu" style="text-decoration:none;">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-          <span>Go to</span>
-        </a>
+      <!-- Original-style bottom back to main menu -->
+      <div class="back-row">
+        <a class="back-link" href="index.html" aria-label="Return to Main Menu">← Return to Main Menu</a>
       </div>
     </div>
   </main>
