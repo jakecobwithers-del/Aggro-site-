@@ -6,25 +6,22 @@
   <title>Aggro PvP — Server Rules</title>
 
   <style>
-    /* Replace with your font filename (space encoded) */
+    /* Font (encode spaces in filename) */
     @font-face{
-      font-family: 'DayZFont';
+      font-family:'DayZFont';
       src: url('28%20Days%20Later.ttf') format('truetype');
       font-display: swap;
     }
 
     :root{
       --bg:#000;
-      --panel-bg:#070707;
       --accent:#ff3b3b;
       --muted:rgba(255,255,255,0.88);
+      --button-bg: rgba(255,255,255,0.03);
+      --button-hover: rgba(255,255,255,0.04);
+      --glass: rgba(255,255,255,0.02);
       --max-width:980px;
-      --panel-pad:28px;
-      --panel-radius:14px;
-      --smoke-opacity:0.62;
-      /* mask safe area width percentage (center clear area); adjust if your panel width changes */
-      --clear-area-w: min(88vw, 920px);
-      --clear-area-h: clamp(160px, 28vh, 320px);
+      --radius:12px;
     }
 
     html,body{
@@ -35,315 +32,322 @@
       font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
+      -webkit-text-size-adjust:100%;
       overflow-y:auto;
     }
 
-    /* SMOKE: covers viewport top + sides */
-    #smoke-overlay{
-      position:fixed;
-      inset:0;
-      z-index:24;                /* visually above heading but below panel */
-      pointer-events:none;
-      overflow:hidden;
+    /* Full smoke background */
+    #smoke-bg{
+      position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+    }
+    #smoke-bg video{
+      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+      width:160vw; height:160vh; object-fit:cover; opacity:0.6;
+      filter: blur(6px) saturate(1.05) contrast(1.02); mix-blend-mode:screen;
     }
 
-    #smoke-overlay video{
-      position:absolute;
-      left:50%;
-      top:-18%;
-      transform:translateX(-50%);
-      width:150vw;
-      height:140vh;
-      object-fit:cover;
-      opacity:var(--smoke-opacity);
-      mix-blend-mode:screen;
-      filter: blur(6px) saturate(1.05) contrast(1.03);
-      animation:fadeIn 1s ease-in-out both;
-      will-change:transform,opacity;
-    }
-    @keyframes fadeIn{ from{opacity:0} to{opacity:var(--smoke-opacity)} }
+    .site{ position:relative; z-index:2; min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px; box-sizing:border-box; }
 
-    /* Create a responsive rectangular clear hole in the smoke so the center panel is smoke-free.
-       We use an SVG mask via inline SVG in CSS through data URI for widest support and exact rectangle shape. */
-    /* build the SVG mask string dynamically using CSS variables via calc fallback sizing */
-    /* Fallback: for browsers that ignore mask, pointer-events:none on overlay prevents blocking. */
-
-    /* PAGE container above smoke so panel interactive */
-    .page{
-      position:relative;
-      z-index:30; /* panel above smoke */
-      display:flex;
-      justify-content:center;
-      padding:36px 20px 64px;
+    .content{
+      width:100%; max-width:var(--max-width);
+      display:flex; flex-direction:column; gap:18px;
+      align-items:center;
       box-sizing:border-box;
     }
 
-    /* main panel (black plate) */
-    .panel{
-      width:100%;
-      max-width:var(--max-width);
-      background:var(--panel-bg);
-      border-radius:var(--panel-radius);
-      padding:var(--panel-pad);
-      box-sizing:border-box;
-      box-shadow:0 24px 80px rgba(0,0,0,0.75);
-      position:relative;
-      overflow:visible;
-      border:1px solid rgba(255,59,59,0.06);
-    }
-
-    /* decorative red outline outside the plate */
-    .panel::after{
-      content:'';
-      position:absolute;
-      left:-6px; right:-6px; top:-6px; bottom:-6px;
-      border-radius:calc(var(--panel-radius) + 6px);
-      pointer-events:none;
-      box-shadow:0 0 36px rgba(255,59,59,0.04) inset, 0 0 22px rgba(255,59,59,0.02);
-      border:2px solid rgba(255,59,59,0.06);
-      mix-blend-mode:normal;
-    }
-
-    /* Heading pulled into smoke area and responsive size using clamp() */
-    .heading-wrap{
+    .heading{
       text-align:center;
-      margin: calc(-1 * (var(--clear-area-h) / 2 + 6px)) 0 12px; /* pull heading up into smoke region */
       pointer-events:none;
-      position:relative;
+      margin-bottom:6px;
     }
 
-    /* Responsive font scaling so title fits on small screens */
     h1{
       margin:0;
       font-family:'DayZFont', "Segoe UI", sans-serif;
       font-size: clamp(28px, 6.5vw, 56px);
-      line-height:0.92;
-      color:var(--accent);
-      text-transform:uppercase;
+      color:#fff;
+      -webkit-text-stroke: 1.2px rgba(0,0,0,0.7);
       letter-spacing:1.6px;
-      text-shadow: 0 1px 0 rgba(0,0,0,0.6), 0 10px 40px rgba(255,59,59,0.06);
-      position:relative;
-      z-index:23; /* below smoke (24) so smoke overlays heading */
-      -webkit-font-smoothing:antialiased;
+      text-transform:uppercase;
     }
 
-    .lead{
-      margin-top:8px;
-      color:var(--muted);
-      font-size:clamp(12px, 2.2vw, 14px);
-      pointer-events:auto;
-    }
+    .lead{ margin-top:8px; color:var(--muted); font-size:14px; pointer-events:auto; text-align:center; }
 
-    /* Rules grid & collapsibles */
-    .rules{
-      margin-top:16px;
+    /* Button grid */
+    .btn-grid{
+      width:100%;
       display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:18px;
-      align-items:start;
-    }
-    @media (max-width:920px){
-      .rules{ grid-template-columns:1fr; gap:12px; }
-      .heading-wrap{ margin: calc(-1 * (var(--clear-area-h) / 2 + 4px)) 0 10px; }
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:14px;
+      margin-top:8px;
     }
 
-    details{
-      background: rgba(255,255,255,0.02);
-      border-radius:10px;
-      padding:12px;
-      border:1px solid rgba(255,255,255,0.02);
-      transition: transform .18s ease, box-shadow .18s ease;
-    }
-    details[open]{ transform:translateY(-3px); box-shadow:0 8px 30px rgba(0,0,0,0.45); }
-
-    summary{
-      list-style:none;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+    /* Section button style */
+    .rule-btn{
+      -webkit-appearance:none; appearance:none;
+      display:flex; align-items:center; justify-content:space-between;
       gap:12px;
-      padding:6px 4px;
+      background:var(--button-bg);
+      border:1px solid rgba(255,59,59,0.06);
+      padding:14px 16px;
+      border-radius:12px;
       cursor:pointer;
-      user-select:none;
-    }
-    summary .title{ font-family:'DayZFont', "Segoe UI", sans-serif; font-size:18px; color:var(--accent); }
-    summary .chev{ width:34px; height:34px; display:inline-grid; place-items:center; color:var(--accent); transition:transform .18s ease; }
-    details[open] summary .chev{ transform:rotate(90deg); }
-    summary::-webkit-details-marker{ display:none; }
-
-    .rule-list{ margin-top:10px; display:flex; flex-direction:column; gap:12px; }
-    .rule{ display:flex; gap:12px; align-items:flex-start; background:rgba(255,255,255,0.02); padding:12px; border-radius:10px; border-left:4px solid rgba(255,59,59,0.14); font-size:15px; line-height:1.45; color:rgba(255,255,255,0.95); }
-    .num{ min-width:44px; height:44px; display:inline-grid; place-items:center; background:linear-gradient(180deg, rgba(255,59,59,0.14), rgba(255,59,59,0.06)); color:var(--accent); font-weight:800; border-radius:10px; border:1px solid rgba(255,59,59,0.06); }
-
-    .footer{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:18px; flex-wrap:wrap; }
-    a.back{ color:var(--accent); text-decoration:none; font-weight:700; background:#000000cc; padding:8px 14px; border-radius:10px; border:1px solid rgba(255,59,59,0.06); }
-    a.back:hover{text-decoration:underline}
-
-    /* Accessibility */
-    summary:focus, a.back:focus{ outline:3px solid rgba(255,59,59,0.12); outline-offset:4px; border-radius:8px; }
-
-    /* Fallback: ensure smoke never blocks interactions even if mask fails */
-    #smoke-overlay{ pointer-events:none; }
-
-    /* Responsive mask fallback / support: add an SVG mask to the overlay element using background-image (data URI)
-       The mask will punch a centered rectangle equal to --clear-area-w x --clear-area-h.
-       Not all browsers accept CSS variables inside data URIs; this is a best-effort approach.
-       If exact masked hole is required on all browsers, an inline SVG element as sibling would be necessary. */
-
-    /* For browsers that support mask-image with radial-gradient, we can approximate full clear center by a rectangle-like rounded rect.
-       We also shrink the mask on small screens using the clamp/fallback via media query below. */
-
-    /* Using clip-path to approximate a clear center rectangle for modern browsers */
-    #smoke-overlay.clip-hole{
-      -webkit-clip-path: polygon(
-        0 0, 100% 0, 100% calc(50% - var(--clear-area-h)/2),
-        calc(50% + var(--clear-area-w)/2) calc(50% - var(--clear-area-h)/2),
-        calc(50% + var(--clear-area-w)/2) calc(50% + var(--clear-area-h)/2),
-        calc(50% - var(--clear-area-w)/2) calc(50% + var(--clear-area-h)/2),
-        calc(50% - var(--clear-area-w)/2) calc(50% - var(--clear-area-h)/2),
-        0 calc(50% - var(--clear-area-h)/2)
-      );
-      clip-path: polygon(
-        0 0, 100% 0, 100% calc(50% - var(--clear-area-h)/2),
-        calc(50% + var(--clear-area-w)/2) calc(50% - var(--clear-area-h)/2),
-        calc(50% + var(--clear-area-w)/2) calc(50% + var(--clear-area-h)/2),
-        calc(50% - var(--clear-area-w)/2) calc(50% + var(--clear-area-h)/2),
-        calc(50% - var(--clear-area-w)/2) calc(50% - var(--clear-area-h)/2),
-        0 calc(50% - var(--clear-area-h)/2)
-      );
+      color:var(--muted);
+      transition:transform .12s ease, background .12s ease, box-shadow .12s ease;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+      font-weight:700;
+      font-family:'DayZFont', "Segoe UI", sans-serif;
+      text-align:left;
     }
 
-    /* On very small screens, reduce clear area height so heading doesn't overflow */
-    @media (max-width:420px){
-      :root{ --clear-area-h: 120px; --clear-area-w: 92vw; }
-      .heading-wrap{ margin: calc(-1 * (var(--clear-area-h) / 2 + 6px)) 0 10px; }
+    .rule-btn:hover{ background:var(--button-hover); transform:translateY(-3px); }
+    .rule-btn:active{ transform:translateY(-1px); }
+    .rule-btn .title{ font-size:16px; color:var(--accent); }
+    .rule-btn .hint{ font-size:13px; color:rgba(255,255,255,0.75); font-weight:600; }
+
+    /* Modal (panel) */
+    .modal-wrap{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:60;
+      padding:24px;
+      box-sizing:border-box;
+      background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.75));
     }
 
+    .modal{
+      width:100%;
+      max-width:820px;
+      background: linear-gradient(180deg,#050505,#0b0b0b);
+      border-radius:12px;
+      padding:22px;
+      box-sizing:border-box;
+      box-shadow:0 30px 80px rgba(0,0,0,0.8);
+      border:1px solid rgba(255,59,59,0.06);
+      transform:translateY(12px);
+      opacity:0;
+      transition: transform .22s ease, opacity .22s ease;
+    }
+
+    .modal.open{ transform:translateY(0); opacity:1; }
+    .modal h3{ margin:0 0 6px; font-family:'DayZFont', "Segoe UI", sans-serif; color:var(--accent); font-size:20px; }
+    .modal p{ margin:0 0 12px; color:var(--muted); line-height:1.5; font-size:15px; }
+
+    .rules-list{ display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+    .rules-list .item{
+      background:rgba(255,255,255,0.02);
+      padding:12px; border-radius:10px; border-left:4px solid rgba(255,59,59,0.14);
+      font-size:15px; color:rgba(255,255,255,0.95);
+    }
+
+    .modal-footer{ display:flex; justify-content:space-between; gap:12px; margin-top:16px; align-items:center; flex-wrap:wrap; }
+    .close-btn{
+      background:#000; border:1px solid rgba(255,59,59,0.06); color:var(--accent);
+      padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700;
+    }
+
+    .back-link{ color:var(--muted); text-decoration:none; font-weight:700; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); background:var(--glass); }
+
+    /* show modal */
+    .modal-wrap.show{ display:flex; }
+
+    /* Accessible focus */
+    .rule-btn:focus, .close-btn:focus, .back-link:focus{ outline:3px solid rgba(255,59,59,0.12); outline-offset:4px; }
+
+    @media (max-width:520px){
+      .modal{ padding:16px; border-radius:10px; }
+      .rule-btn{ padding:12px; border-radius:10px; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Smoke overlay (we will add the clip-hole class in JS to enable mask where supported) -->
-  <div id="smoke-overlay" aria-hidden="true">
+  <!-- smoke background -->
+  <div id="smoke-bg" aria-hidden="true">
     <video id="smokeVideo" autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg" aria-hidden="true">
       <source src="Smoke.webm" type="video/webm">
       <source src="Smoke.mp4?v=1" type="video/mp4">
     </video>
   </div>
 
-  <div class="page" role="main">
-    <article class="panel" role="article" aria-labelledby="rules-title">
-
-      <div class="heading-wrap" aria-hidden="false">
-        <h1 id="rules-title">Server Rules</h1>
-        <div class="lead">Aggro PvP is not for the weak. Read the rules. Survive the fight.</div>
+  <main class="site" role="main">
+    <div class="content" role="region" aria-label="Aggro PvP rules chooser">
+      <div class="heading">
+        <h1>Server Rules</h1>
+        <div class="lead">Aggro PvP is not for the weak. Tap a section to view its rules.</div>
       </div>
 
-      <div class="rules" role="list">
-        <details id="general" open>
-          <summary><span class="title">General</span><span class="chev" aria-hidden="true">›</span></summary>
-          <div class="rule-list" role="list">
-            <div class="rule"><div class="num">1</div><div>No external mods, hacks, duping, NVinspect, or glitch movement. Filters and external crosshairs are allowed.</div></div>
-            <div class="rule"><div class="num">2</div><div>No alt accounts or stream sniping.</div></div>
-            <div class="rule"><div class="num">3</div><div>No combat logging. Wait 10 minutes after PvP before logging or entering safezone unless the fight couldn’t realistically continue.</div></div>
-            <div class="rule"><div class="num">4</div><div>If you log into someone else's base or locked room unexpectedly, make a ticket and don’t touch anything—even if it’s your own base post-raid.</div></div>
-            <div class="rule"><div class="num">5</div><div>Report bugs. Abusing glitches (including de-rendering bases) will be punished.</div></div>
-          </div>
-        </details>
+      <div class="btn-grid" role="list">
+        <button class="rule-btn" data-section="general" aria-controls="modal" aria-expanded="false" role="button">
+          <span class="title">General</span>
+          <span class="hint">View</span>
+        </button>
 
-        <details id="safezone">
-          <summary><span class="title">Safezone</span><span class="chev" aria-hidden="true">›</span></summary>
-          <div class="rule-list" role="list">
-            <div class="rule"><div class="num">1</div><div>Unattended dropped items are free game. Otherwise, don’t touch what’s not yours including vehicles.</div></div>
-            <div class="rule"><div class="num">2</div><div>No safezone camping, blocking, following, or abusing protection. If you kill in self-defense entering/leaving, leave their loot.</div></div>
-            <div class="rule"><div class="num">3</div><div>Unattended ungaraged vehicles may be deleted after 12 hours.</div></div>
-          </div>
-        </details>
+        <button class="rule-btn" data-section="safezone" aria-controls="modal" aria-expanded="false" role="button">
+          <span class="title">Safezone</span>
+          <span class="hint">View</span>
+        </button>
 
-        <details id="base-building">
-          <summary><span class="title">Base Building</span><span class="chev" aria-hidden="true">›</span></summary>
-          <div class="rule-list" role="list">
-            <div class="rule"><div class="num">1</div><div>One main base + one stash base/FOB per player.</div></div>
-            <div class="rule"><div class="num">2</div><div>Max 25 code-locked doors/hatches/containers per base.</div></div>
-            <div class="rule"><div class="num">3</div><div>All areas of your base must be accessible on foot—no loot rooms via windows only.</div></div>
-            <div class="rule"><div class="num">4</div><div>Build realistically—no unsupported structures or more than two floor kits out from a structure.</div></div>
-            <div class="rule"><div class="num">5</div><div>BBP kits must not overlap in ways that block access or raid tools.</div></div>
-          </div>
-        </details>
+        <button class="rule-btn" data-section="base-building" aria-controls="modal" aria-expanded="false" role="button">
+          <span class="title">Base Building</span>
+          <span class="hint">View</span>
+        </button>
 
-        <details id="storage">
-          <summary><span class="title">Base Storage Limit</span><span class="chev" aria-hidden="true">›</span></summary>
-          <div class="rule-list" role="list">
-            <div class="rule"><div class="num">1</div><div>You’re limited to 20 storage kits per base, plus 5 extra per team member.</div></div>
-          </div>
-        </details>
+        <button class="rule-btn" data-section="storage" aria-controls="modal" aria-expanded="false" role="button">
+          <span class="title">Base Storage Limit</span>
+          <span class="hint">View</span>
+        </button>
 
-        <details id="raiding" style="grid-column:1 / -1">
-          <summary><span class="title">Raiding</span><span class="chev" aria-hidden="true">›</span></summary>
-          <div class="rule-list" role="list">
-            <div class="rule"><div class="num">1</div><div>Alliances are allowed.</div></div>
-            <div class="rule"><div class="num">2</div><div>No despawning, repairing, or modifying bases during active raids.</div></div>
-            <div class="rule"><div class="num">3</div><div>Loot can only be dropped if taking the storage kit—don’t despawn unwanted loot.</div></div>
-            <div class="rule"><div class="num">4</div><div>No combat logging during raids. If IRL forces you to log, say so—don’t log with combat tag.</div></div>
-            <div class="rule"><div class="num">5</div><div>Don’t abuse hologram/kit placement to raid (one ladder on the floor is allowed).</div></div>
-            <div class="rule"><div class="num">6</div><div>Glitch methods (fences, punching through windows, missing vehicles, floating entities) are not allowed.</div></div>
-            <div class="rule"><div class="num">7</div><div>A raid is considered active for 15 minutes after the last use of explosives or raid tools.</div></div>
-          </div>
-        </details>
-
+        <button class="rule-btn" data-section="raiding" aria-controls="modal" aria-expanded="false" role="button">
+          <span class="title">Raiding</span>
+          <span class="hint">View</span>
+        </button>
       </div>
 
-      <div class="footer" role="contentinfo">
-        <a class="back" href="index.html">← Return to Main Page</a>
+      <div style="width:100%; display:flex; justify-content:center; margin-top:8px;">
+        <a class="back-link" href="index.html">← Return to Main Page</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- modal (single shared modal) -->
+  <div id="modalWrap" class="modal-wrap" role="dialog" aria-modal="true" aria-hidden="true">
+    <div id="modal" class="modal" role="document" tabindex="-1" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Section</h3>
+      <p id="modalDesc">Rules</p>
+
+      <div class="rules-list" id="modalRules" role="list"></div>
+
+      <div class="modal-footer">
         <div style="color:rgba(255,255,255,0.65);font-size:13px;">Last updated: v1</div>
+        <button class="close-btn" id="modalClose">Close</button>
       </div>
-
-    </article>
+    </div>
   </div>
 
   <script>
     (function(){
-      const overlay = document.getElementById('smoke-overlay');
-      const vid = document.getElementById('smokeVideo');
+      const sections = {
+        general: {
+          title: 'General',
+          desc: 'Core server expectations.',
+          rules: [
+            'No external mods, hacks, duping, NVinspect, or glitch movement. Filters and external crosshairs are allowed.',
+            'No alt accounts or stream sniping.',
+            'No combat logging. Wait 10 minutes after PvP before logging or entering safezone unless the fight couldn’t realistically continue.',
+            'If you log into someone else\\'s base or locked room unexpectedly, make a ticket and don’t touch anything—even if it’s your own base post-raid.',
+            'Report bugs. Abusing glitches (including de-rendering bases) will be punished.'
+          ]
+        },
+        safezone: {
+          title: 'Safezone',
+          desc: 'Safezone behaviour.',
+          rules: [
+            'Unattended dropped items are free game. Otherwise, don’t touch what’s not yours including vehicles.',
+            'No safezone camping, blocking, following, or abusing protection. If you kill in self-defense entering/leaving, leave their loot.',
+            'Unattended ungaraged vehicles may be deleted after 12 hours.'
+          ]
+        },
+        'base-building': {
+          title: 'Base Building',
+          desc: 'Construction rules.',
+          rules: [
+            'One main base + one stash base/FOB per player.',
+            'Max 25 code-locked doors/hatches/containers per base.',
+            'All areas of your base must be accessible on foot—no loot rooms via windows only.',
+            'Build realistically—no unsupported structures or more than two floor kits out from a structure.',
+            'BBP kits must not overlap in ways that block access or raid tools.',
+            'Mesh and fence kits must be fully constructed.',
+            'On municipal buildings, silos, or radio towers, max two floor kits out—don’t block player structures.',
+            'Secure your base. Don’t share codes with untrusted players—no compensation for your mistakes.',
+            'Note: No base size limit, but don’t abuse it. Staff will notify you if it gets excessive.'
+          ]
+        },
+        storage: {
+          title: 'Base Storage Limit',
+          desc: 'Inventory caps.',
+          rules: ['You’re limited to 20 storage kits per base, plus 5 extra per team member.']
+        },
+        raiding: {
+          title: 'Raiding',
+          desc: 'Raid rules and etiquette.',
+          rules: [
+            'Alliances are allowed.',
+            'No despawning, repairing, or modifying bases during active raids.',
+            'Loot can only be dropped if taking the storage kit—don’t despawn unwanted loot.',
+            'No combat logging during raids. If IRL forces you to log, say so—don’t log with combat tag.',
+            'Don’t abuse hologram/kit placement to raid (one ladder on the floor is allowed).',
+            'Glitch methods (fences, punching through windows, missing vehicles, floating entities) are not allowed.',
+            'A raid is considered active for 15 minutes after the last use of explosives or raid tools.'
+          ]
+        }
+      };
 
-      // Try enabling clip-hole mask where supported
-      try {
-        // Feature-detect clip-path support
-        const supportsClip = CSS.supports('clip-path','polygon(0 0, 100% 0, 100% 100%)');
-        if (supportsClip) overlay.classList.add('clip-hole');
-      } catch(e){ /* ignore */ }
+      const btns = document.querySelectorAll('.rule-btn');
+      const modalWrap = document.getElementById('modalWrap');
+      const modal = document.getElementById('modal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalDesc = document.getElementById('modalDesc');
+      const modalRules = document.getElementById('modalRules');
+      const modalClose = document.getElementById('modalClose');
+      let lastFocused = null;
 
-      // Hide overlay if video errors or fails to load
-      function hideOverlay(){ overlay.classList.add('overlay-hidden'); }
-      if (vid){
-        vid.addEventListener('error', hideOverlay, {passive:true});
-        setTimeout(()=>{ if (vid.readyState === 0) hideOverlay(); }, 2200);
+      function openModal(key){
+        const s = sections[key];
+        if (!s) return;
+        modalTitle.textContent = s.title;
+        modalDesc.textContent = s.desc;
+        modalRules.innerHTML = '';
+        s.rules.forEach((r, i) => {
+          const div = document.createElement('div');
+          div.className = 'item';
+          div.setAttribute('role','listitem');
+          div.innerHTML = `<strong style="color:${getComputedStyle(document.documentElement).getPropertyValue('--accent')};margin-right:8px;">${i+1}.</strong> ${r}`;
+          modalRules.appendChild(div);
+        });
+
+        modalWrap.classList.add('show');
+        modal.classList.add('open');
+        modalWrap.setAttribute('aria-hidden','false');
+        lastFocused = document.activeElement;
+        modal.setAttribute('tabindex','-1');
+        modal.focus();
       }
-      // Safety: ensure overlay never blocks pointer events
-      overlay.style.pointerEvents = 'none';
 
-      // Only allow one details open at a time
-      const details = Array.from(document.querySelectorAll('details'));
-      details.forEach(d => {
-        d.addEventListener('toggle', () => {
-          if (!d.open) return;
-          details.forEach(o => { if (o !== d) o.open = false; });
+      function closeModal(){
+        modalWrap.classList.remove('show');
+        modal.classList.remove('open');
+        modalWrap.setAttribute('aria-hidden','true');
+        if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+      }
+
+      btns.forEach(b=>{
+        b.addEventListener('click', e=>{
+          const key = b.getAttribute('data-section');
+          openModal(key);
+        });
+        b.addEventListener('keydown', e=>{
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); b.click(); }
         });
       });
 
-      // keyboard support for summary
-      document.querySelectorAll('summary').forEach(s => {
-        s.addEventListener('keydown', e => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); s.parentElement.open = !s.parentElement.open; }
-        });
+      modalClose.addEventListener('click', closeModal);
+      modalWrap.addEventListener('click', e=>{
+        if (e.target === modalWrap) closeModal();
+      });
+      document.addEventListener('keydown', e=>{
+        if (e.key === 'Escape') closeModal();
       });
 
-      // If mobile orientation changes or window resizes, force a repaint to keep clips aligned
-      let resizeTimer;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(()=> { document.body.style.transform = 'translateZ(0)'; setTimeout(()=>document.body.style.transform=''); }, 80);
-      });
+      // video fallback: hide video element if fails
+      const vid = document.getElementById('smokeVideo');
+      if (vid){
+        vid.addEventListener('error', ()=>{ document.getElementById('smoke-bg').style.display='none'; }, {passive:true});
+        setTimeout(()=> { if (vid.readyState === 0) document.getElementById('smoke-bg').style.display='none'; }, 2500);
+      }
     })();
   </script>
 </body>
