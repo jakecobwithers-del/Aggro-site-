@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+l<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -30,149 +30,200 @@
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* full-bleed video background */
+    /* Smoke background container (tint removed) */
     #smoke-bg{
       position:fixed;
       inset:0;
-      width:100vw;height:100vh;
-      object-fit:cover;
-      z-index:-9999;
+      z-index:-1;
       pointer-events:none;
+      overflow:hidden;
+      background:#000;
+    }
+    #smoke-bg video{
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:auto;
+      height:120%;
+      min-width:100%;
+      min-height:100%;
+      transform:translate(-50%,-50%);
+      object-fit:cover;
       filter:brightness(0.5) contrast(1);
-      background:#000 center/cover no-repeat;
+      display:block;
+      pointer-events:none;
     }
-    .bg-tint{position:fixed;inset:0;z-index:-9998;background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.7));pointer-events:none}
-    body.no-video{background-image:url('smoke.jpg');background-size:cover;background-position:center}
 
-    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px;position:relative;z-index:1}
-    .card{width:100%;max-width:var(--card-w);background:var(--overlay);border-radius:12px;padding:36px;box-shadow:0 10px 40px rgba(0,0,0,0.7);border:1px solid rgba(255,60,60,0.06)}
-    @media(max-width:880px){.card{padding:22px}}
+    /* page content sits above the video */
+    .page{position:relative;z-index:1;min-height:100vh}
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px}
+    .card{width:100%;max-width:1000px;background:var(--overlay);border-radius:12px;padding:36px;box-shadow:0 10px 40px rgba(0,0,0,0.7);border:1px solid rgba(255,60,60,0.06)}
 
-    h1{margin:0 0 12px 0;font-size:48px;color:var(--accent);text-shadow:0 6px 20px rgba(0,0,0,0.9);line-height:0.95;text-align:center}
-    .lead{margin:0 0 18px 0;font-size:16px;color:#fff;opacity:0.98;text-align:center}
+    header{margin-bottom:18px;text-align:center}
+    header h1{margin:0;font-size:48px;color:var(--accent);font-weight:900;letter-spacing:0.5px}
 
-    .section{margin-top:16px}
-    .section h2{font-size:20px;color:var(--accent);margin:12px 0;border-bottom:1px solid rgba(255,60,60,0.12);padding-bottom:8px}
+    .grid{display:block}
+    .channel{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .num{width:44px;color:var(--accent);font-weight:800;text-align:center}
+    .desc{font-size:15px;color:#fff}
 
-    .item{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
-    .item .num{width:44px;text-align:center;color:var(--accent);font-weight:800;font-size:18px}
-    .item .text{font-size:15px;line-height:1.45}
-    .item .text a{color:#fff;text-decoration:underline;font-weight:800}
+    .owners{margin-top:18px;display:flex;flex-direction:column;gap:8px}
+    .owner{display:flex;align-items:center;gap:12px}
+    .owner .avatar{width:48px;height:48px;border-radius:8px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+    .owner .label{font-weight:800}
 
-    /* owners: minimal lines only */
-    .owners{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-    .owner{display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03)}
-    .owner .avatar{width:56px;height:56px;border-radius:8px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;border:1px solid rgba(255,255,255,0.04);background-size:cover;background-position:center}
-    .owner .label{font-weight:800;font-size:15px;color:#fff}
+    .back{display:block;text-align:center;margin-top:22px;color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:8px;width:max-content;margin-left:auto;margin-right:auto}
 
-    .back-btn{display:inline-block;margin-top:22px;padding:10px 14px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;text-decoration:none;font-weight:700;display:block;width:max-content;margin-left:auto;margin-right:auto}
-
-    @media(max-width:600px){
-      h1{font-size:34px}
-      .item .text{font-size:14px}
-      .owner .avatar{width:48px;height:48px;font-size:16px}
-    }
+    body.no-video .page{background-image:url('smoke-poster.jpg');background-size:cover;background-position:center}
+    @media(max-width:600px){ header h1{font-size:34px} .card{padding:22px} .owner .avatar{width:40px;height:40px} }
   </style>
 </head>
 <body>
-  <video id="smoke-bg" autoplay muted loop playsinline preload="auto" poster="smoke.jpg">
-    <source src="smoke.webm" type="video/webm">
-    <source src="smoke.mp4" type="video/mp4">
-  </video>
-  <div class="bg-tint" aria-hidden="true"></div>
+  <!-- Smoke background (no tint element) -->
+  <div id="smoke-bg" aria-hidden="true">
+    <video autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg">
+      <source src="Smoke.webm" type="video/webm">
+      <source src="Smoke.mp4" type="video/mp4">
+    </video>
+  </div>
 
-  <main class="wrap" role="main">
-    <section class="card" aria-labelledby="support-title">
-      <h1 id="support-title">SUPPORT</h1>
-      <p class="lead">Report bugs, open tickets, or drop suggestions in the Discord channels below — we monitor them regularly.</p>
+  <main class="page" role="main">
+    <div class="wrap">
+      <section class="card" aria-labelledby="support-title">
+        <header role="banner" aria-label="Aggro PvP">
+          <h1 id="support-title">Support</h1>
+        </header>
 
-      <div class="section" aria-labelledby="channels-heading">
-        <h2 id="channels-heading">DISCORD CHANNELS</h2>
-
-        <div class="item">
-          <div class="num">1</div>
-          <div class="text">
-            <a href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer">#bug-reports</a>
-            — Report game-breaking bugs, exploits, or crashes. Include steps to reproduce and screenshots/logs when available.
-          </div>
-        </div>
-
-        <div class="item">
-          <div class="num">2</div>
-          <div class="text">
-            <a href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer">#suggestions</a>
-            — Post balance ideas, feature requests, or server improvement suggestions for community feedback.
-          </div>
-        </div>
-
-        <div class="item">
-          <div class="num">3</div>
-          <div class="text">
-            <a href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer">#ticket</a>
-            — Open a private support ticket for account help, bans/appeals, or direct admin assistance.
-          </div>
-        </div>
-      </div>
-
-      <div class="section" aria-labelledby="owners-heading">
-        <h2 id="owners-heading">SERVER OWNERS</h2>
-
-        <div class="owners">
-          <div class="owner">
-            <div class="avatar" id="av-572334">R</div>
-            <div class="label">RB Skizza — Owner</div>
+        <section class="grid" role="list">
+          <div class="channel" role="listitem">
+            <div class="num">1</div>
+            <div class="desc"><a href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer">#bug-reports</a> — Report bugs or exploits.</div>
           </div>
 
-          <div class="owner">
-            <div class="avatar" id="av-842365">S</div>
-            <div class="label">Slomobob — Co Owner</div>
+          <div class="channel" role="listitem">
+            <div class="num">2</div>
+            <div class="desc"><a href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer">#suggestions</a> — Post ideas and feedback.</div>
           </div>
-        </div>
-      </div>
 
-      <a class="back-btn" href="index.html" role="button">← Back to menu</a>
-    </section>
+          <div class="channel" role="listitem">
+            <div class="num">3</div>
+            <div class="desc"><a href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer">#ticket</a> — Open a private ticket for support.</div>
+          </div>
+
+          <div class="owners" role="group" aria-labelledby="owners-heading">
+            <h2 id="owners-heading" style="color:var(--accent);margin:12px 0 6px 0;font-size:18px">Server Owners</h2>
+
+            <div class="owner">
+              <div class="avatar" id="av-572334">R</div>
+              <div class="label">RB Skizza — Owner</div>
+            </div>
+
+            <div class="owner">
+              <div class="avatar" id="av-842365">S</div>
+              <div class="label">Slomobob — Co Owner</div>
+            </div>
+          </div>
+
+          <a class="back" href="index.html">← Back to menu</a>
+        </section>
+      </section>
+    </div>
   </main>
 
   <script>
     (function(){
-      const vid = document.getElementById('smoke-bg');
+      const vid = document.querySelector('#smoke-bg video');
       let played = false;
-      vid.addEventListener('playing', ()=> played = true);
-      vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
-      setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 700);
+      if (vid){
+        vid.addEventListener('playing', ()=> played = true);
+        vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
+        setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 700);
+      } else {
+        document.body.classList.add('no-video');
+      }
 
-      function embedAvatarUrl(id){ return `https://cdn.discordapp.com/embed/avatars/${Number(id) % 5}.png`; }
-      async function testHead(url){ try{ const r = await fetch(url, { method:'HEAD', cache:'no-store' }); return r.ok; } catch(e){ return false; } }
+      async function testHead(url){ try{ const r = await fetch(url, { method:'HEAD', cache:'no-store' }); return r.ok; }catch(e){return false;} }
       async function applyAvatar(elId, id){
         const el = document.getElementById(elId);
         if (!el) return;
-        const candidates = [
-          `https://cdn.discordapp.com/avatars/${id}.png`,
+        const list = [
           `https://cdn.discordapp.com/avatars/${id}.webp`,
+          `https://cdn.discordapp.com/avatars/${id}.png`,
           `https://cdn.discordapp.com/avatars/${id}.jpg`
         ];
-        let found = null;
-        for (const c of candidates){ if (await testHead(c)){ found = c; break; } }
-        const url = found || embedAvatarUrl(id);
-        el.style.backgroundImage = `url(${url})`;
-        el.textContent = '';
+        for (const url of list){
+          if (await testHead(url)){ el.style.backgroundImage = `url(${url})`; el.textContent=''; return; }
+        }
+      }
+      applyAvatar('av-572334','572334717731602462').catch(()=>{});
+      applyAvatar('av-842365','842365557486518302').catch(()=>{});
+    })();
+  </script>
+</body>
+</html>
+``` <section class="grid" role="list">
+          <div class="channel" role="listitem">
+            <div class="num">1</div>
+            <div class="desc"><a href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer">#bug-reports</a> — Report bugs or exploits.</div>
+          </div>
+
+          <div class="channel" role="listitem">
+            <div class="num">2</div>
+            <div class="desc"><a href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer">#suggestions</a> — Post ideas and feedback.</div>
+          </div>
+
+          <div class="channel" role="listitem">
+            <div class="num">3</div>
+            <div class="desc"><a href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer">#ticket</a> — Open a private ticket for support.</div>
+          </div>
+
+          <div class="owners" role="group" aria-labelledby="owners-heading">
+            <h2 id="owners-heading" style="color:var(--accent);margin:12px 0 6px 0;font-size:18px">Server Owners</h2>
+
+            <div class="owner">
+              <div class="avatar" id="av-572334">R</div>
+              <div class="label">RB Skizza — Owner</div>
+            </div>
+
+            <div class="owner">
+              <div class="avatar" id="av-842365">S</div>
+              <div class="label">Slomobob — Co Owner</div>
+            </div>
+          </div>
+
+          <a class="back" href="index.html">← Back to menu</a>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const vid = document.querySelector('#smoke-bg video');
+      let played = false;
+      if (vid){
+        vid.addEventListener('playing', ()=> played = true);
+        vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
+        setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 700);
+      } else {
+        document.body.classList.add('no-video');
       }
 
-      applyAvatar('av-572334', '572334717731602462').catch(()=>{});
-      applyAvatar('av-842365', '842365557486518302').catch(()=>{});
-
-      (async function diag(){
-        const files = ['smoke.mp4','smoke.webm','smoke.jpg'];
-        for (const f of files){
-          try{
-            const r = await fetch(f, { method:'HEAD', cache:'no-store' });
-            console.log(f, '→', r.status, 'content-type:', r.headers.get('content-type'));
-          }catch(e){
-            console.log(f, '→ HEAD failed', e && e.message);
-          }
+      async function testHead(url){ try{ const r = await fetch(url, { method:'HEAD', cache:'no-store' }); return r.ok; }catch(e){return false;} }
+      async function applyAvatar(elId, id){
+        const el = document.getElementById(elId);
+        if (!el) return;
+        const list = [
+          `https://cdn.discordapp.com/avatars/${id}.webp`,
+          `https://cdn.discordapp.com/avatars/${id}.png`,
+          `https://cdn.discordapp.com/avatars/${id}.jpg`
+        ];
+        for (const url of list){
+          if (await testHead(url)){ el.style.backgroundImage = `url(${url})`; el.textContent=''; return; }
         }
-      })();
+      }
+      applyAvatar('av-572334','572334717731602462').catch(()=>{});
+      applyAvatar('av-842365','842365557486518302').catch(()=>{});
     })();
   </script>
 </body>
