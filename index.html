@@ -48,50 +48,26 @@
       transform:translateZ(0);transition:transform .18s cubic-bezier(.2,.9,.3,1),box-shadow .18s;
       position:relative;overflow:visible;border:2px solid rgba(255,255,255,0.03);
     }
-
-    /* small bevel highlight */
-    .btn::before{
-      content:"";position:absolute;inset:2px;border-radius:calc(var(--cta-radius) - 2px);
-      background:var(--highlight);mix-blend-mode:overlay;pointer-events:none;
-      opacity:.35;
-    }
-
-    /* icon style */
-    .btn .icon{
-      width:28px;height:28px;display:inline-block;flex:0 0 28px;
-    }
-
-    /* Steam variant */
+    .btn::before{content:"";position:absolute;inset:2px;border-radius:calc(var(--cta-radius) - 2px);background:var(--highlight);mix-blend-mode:overlay;pointer-events:none;opacity:.35}
+    .btn .icon{width:28px;height:28px;display:inline-block;flex:0 0 28px}
     .btn.steam{ background:linear-gradient(180deg,#111,#050505); border-color:rgba(255,255,255,0.04) }
     .btn.steam .badge{ background:linear-gradient(180deg,#ff6b6b,#ff2a2a); padding:4px 8px;border-radius:8px;font-size:12px;font-weight:800 }
-
-    /* Discord variant */
     .btn.discord{ background:linear-gradient(180deg,#23263a,#0f1220); border-color:rgba(255,255,255,0.03) }
     .btn.discord .badge{ background:linear-gradient(180deg,#7289da,#4962c8); padding:4px 8px;border-radius:8px;font-size:12px;font-weight:800 }
-
-    /* hover / focus / active states */
     .btn:hover{ transform:translateY(-6px) scale(1.01); box-shadow:0 20px 40px rgba(0,0,0,0.75) }
     .btn:active{ transform:translateY(-2px) scale(.995); box-shadow:0 6px 18px rgba(0,0,0,0.85) }
     .btn:focus{ outline:3px solid rgba(255,255,255,0.06); outline-offset:4px }
-
-    /* smaller screens: stack */
-    @media (max-width:620px){
-      .cta{flex-direction:column;gap:12px;bottom:6vh}
-      .btn{min-width:220px;width:88vw}
-      #logo img{max-width:60vw}
-    }
+    @media (max-width:620px){ .cta{flex-direction:column;gap:12px;bottom:6vh} .btn{min-width:220px;width:88vw} #logo img{max-width:60vw} }
 
     /* SMOKE VIDEO */
     #smoke-wrap{position:fixed;inset:0;pointer-events:none;z-index:var(--z-smoke)}
-    #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:.6;transition:filter .35s linear}
-    /* fallback when using filter tint (applied to body.use-filter) */
-    body.use-filter #smokeVideo{ filter: brightness(.8) saturate(1.15) contrast(1.05) }
-    body.use-filter #smokeVideo.tinted{ filter: brightness(.6) saturate(1.4) contrast(1.05) sepia(.18) hue-rotate(-10deg) saturate(1.7) }
+    #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:.9;transition:filter .35s linear,opacity .35s linear}
+    /* default tint fallback: non-problem devices rely on mix-blend color overlay */
+    #colorOverlay{position:fixed;inset:0;background:var(--red);mix-blend-mode:color;opacity:0.18;transition:opacity var(--text-dur)ms ease-in-out;z-index:var(--z-color);pointer-events:none}
 
-    /* COLOR OVERLAY (desktop / non-problematic) */
-    #colorOverlay{
-      position:fixed;inset:0;background:var(--red);mix-blend-mode:color;opacity:0;transition:opacity var(--text-dur)ms ease-in-out;z-index:var(--z-color);pointer-events:none
-    }
+    /* When using filter mode (iPad), we alter video filter and show a semi-transparent non-mix overlay to guarantee visible red */
+    body.use-filter #colorOverlay{ mix-blend-mode:normal; background:rgba(255,26,26,0.14); opacity:1; pointer-events:none }
+    body.use-filter #smokeVideo{ filter: brightness(.7) contrast(1.05) saturate(1.4) sepia(.18) hue-rotate(-8deg) opacity:0.95 }
 
     /* RED FLASH (keeps original) */
     #redOverlay{position:fixed;inset:0;background:var(--red);mix-blend-mode:screen;opacity:0;z-index:var(--z-vfx);pointer-events:none;animation-fill-mode:both}
@@ -117,10 +93,7 @@
     @keyframes circleAnim{0%,20%{opacity:0}25%,75%{opacity:.6}100%{opacity:0}}
 
     /* accessibility: reduced motion */
-    @media (prefers-reduced-motion:reduce){
-      *{animation-duration:0.001ms !important; transition:none !important}
-      .btn:hover,.btn:active{transform:none;box-shadow:none}
-    }
+    @media (prefers-reduced-motion:reduce){ *{animation-duration:0.001ms !important; transition:none !important} .btn:hover,.btn:active{transform:none;box-shadow:none} }
   </style>
 </head>
 <body>
@@ -139,9 +112,7 @@
 
   <!-- CTA & logo -->
   <div class="cta" role="navigation" aria-label="Primary actions">
-    <!-- Steam button: uses steam:// protocol but also safe fallback -->
     <a class="btn steam" id="steamBtn" href="steam://connect/YOURSERVERIP" role="button" aria-label="Join server on Steam">
-      <!-- inline SVG steam icon (small, simple) -->
       <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
         <circle cx="6.5" cy="13.5" r="2.4" fill="#fff" opacity="0.9"/>
         <circle cx="16.5" cy="7.5" r="2.4" fill="#fff" opacity="0.9"/>
@@ -152,9 +123,7 @@
       <span class="badge" aria-hidden="true" style="margin-left:8px;background:#ff4b4b;color:#fff;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:900">LIVE</span>
     </a>
 
-    <!-- Discord button: opens link -->
     <a class="btn discord" id="discordBtn" href="https://discord.gg/YOURDISCORD" role="button" aria-label="Join our Discord">
-      <!-- inline Discord glyph -->
       <svg class="icon" viewBox="0 0 71 55" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
         <path d="M20 20c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4zM51 20c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4z" fill="#fff"/>
       </svg>
@@ -198,48 +167,53 @@
     const smoke = document.getElementById('smokeVideo');
     let running = false;
 
-    /* Utility to restart CSS animation */
     function restart(el,name,dur,delay=0){
       el.style.animation = 'none';
       void el.offsetWidth;
       el.style.animation = `${name} ${dur}ms ${delay}ms both`;
     }
 
-    /* Detect iPad / iOS WebKit where mix-blend-mode color/screen can produce bad results.
-       We use a conservative sniff: iPad (navigator.platform) or iOS with touch and WebKit.
-       If detected, body.use-filter gets added and we'll tint the video via filter rather than overlay mix-blend-mode.
-    */
     function detectiPadLike(){
       const ua = navigator.userAgent || navigator.vendor || '';
-      const isIpad = /iPad/.test(ua);
+      const isIpadUA = /iPad/.test(ua);
       const isIOS = /iPhone|iPod/.test(ua);
-      // newer iPadOS may present as Mac, so detect touch + maxTouchPoints
       const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 1;
-      const isSafari = /AppleWebKit/.test(ua) && !/CriOS|FxiOS|OPiOS/.test(ua);
-      return (isIpad || (isIOS || (isTouch && isSafari)));
+      const isWebKit = /AppleWebKit/.test(ua) && !/CriOS|FxiOS|OPiOS/.test(ua);
+      return (isIpadUA || isIOS || (isTouch && isWebKit));
     }
 
-    /* If iPad-like detected, use filter tint approach to avoid mix-blend artifacts */
     function setupTintMode(){
       if(detectiPadLike()){
         document.body.classList.add('use-filter');
+        // ensure color overlay remains visible but non-mix to guarantee tint
+        colorOvl.style.opacity = '1';
+      } else {
+        document.body.classList.remove('use-filter');
+        colorOvl.style.opacity = '0.18';
       }
     }
 
     function applyTintOnVideo(on){
-      // when on==true we apply an additional tinted class to the video to make it redder,
-      // we also avoid using colorOverlay mix-blend by keeping its opacity at 0 on these devices
       if(document.body.classList.contains('use-filter')){
         if(on){
           smoke.classList.add('tinted');
-          colorOvl.style.opacity = '0';
+          // colorOvl is a normal semi-transparent layer to boost visibility
+          colorOvl.style.background = 'rgba(255,26,26,0.14)';
+          colorOvl.style.mixBlendMode = 'normal';
+          colorOvl.style.opacity = '1';
         } else {
           smoke.classList.remove('tinted');
+          colorOvl.style.opacity = '0';
         }
       } else {
-        // non-problem devices: use original color overlay
-        if(on) colorOvl.style.opacity = '1';
-        else colorOvl.style.opacity = '0';
+        if(on){
+          // non-problem devices: use mix-blend-mode color overlay
+          colorOvl.style.background = 'var(--red)';
+          colorOvl.style.mixBlendMode = 'color';
+          colorOvl.style.opacity = '0.18';
+        } else {
+          colorOvl.style.opacity = '0';
+        }
       }
     }
 
@@ -247,29 +221,23 @@
       if(running) return;
       running = true;
 
-      // 1) colorBlend tint or video filter
       applyTintOnVideo(true);
       setTimeout(()=> applyTintOnVideo(false), txtDur);
 
-      // 2) red flash (keeps original approach)
       restart(redOvl,'redFlash',flash);
 
-      // 3) text fade + glitch
       restart(textEl,'textFade',txtDur);
       textEl.classList.remove('glitch');
       setTimeout(()=> textEl.classList.add('glitch'),200);
 
-      // 4) blood fade
       restart(circle,'circleAnim', +S.getPropertyValue('--circle-dur'), +S.getPropertyValue('--circle-delay'));
 
-      // 5) flicker (brief)
       flicker.style.opacity = '1';
       setTimeout(()=> flicker.style.opacity = '0', flash);
 
       setTimeout(()=> running = false, cycle);
     }
 
-    /* Menu toggle */
     document.getElementById('anarchyBtn').addEventListener('click', e=>{
       e.stopPropagation();
       const menu = document.getElementById('anarchyMenu');
@@ -283,17 +251,11 @@
       }
     });
 
-    /* Steam fallback: if steam:// fails on this platform, open a fallback link after short delay.
-       We attach click handler to attempt steam protocol, then fallback to a safe web link.
-    */
     const steamBtn = document.getElementById('steamBtn');
     if(steamBtn){
       steamBtn.addEventListener('click', function(e){
-        // keep default behavior, but also provide a safe fallback for browsers that block steam://
-        const fallback = 'https://store.steampowered.com/'; // replace with server landing if you have one
-        // Attempt to open steam protocol, but if not possible user stays on page; no heavy logic to avoid async issues.
+        const fallback = 'https://store.steampowered.com/';
         setTimeout(()=> {
-          // If user agent is mobile where steam protocol is often blocked, open fallback in new tab
           if(/Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent)) {
             window.open(fallback, '_blank');
           }
@@ -303,12 +265,14 @@
 
     window.addEventListener('DOMContentLoaded', ()=>{
       setupTintMode();
-      // ensure video visibility; some mobile browsers require re-play
       if(smoke && smoke.paused){
         smoke.play().catch(()=>{/* ignore autoplay block */});
       }
       run();
       setInterval(run, cycle);
+      // re-run detection on visibility change or resize (some iPads switch UA)
+      window.addEventListener('resize', setupTintMode);
+      document.addEventListener('visibilitychange', ()=> { if(!document.hidden) setupTintMode(); });
     });
   })();
   </script>
