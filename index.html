@@ -24,9 +24,9 @@
       --z-blood: 3500;
       --z-head: 3000;
       --z-color: 2500;     /* red-tint overlay */
-      --z-smoke: 2000;
-      --z-cta: 4000;       /* moved above smoke */
-      --z-logo: 4100;      /* logo slightly above CTA for balance */
+      --z-cta: 4000;       /* CTAs above smoke */
+      --z-smoke: 2000;     /* smoke layer */
+      --z-logo: 1500;      /* logo placed behind smoke (lower than --z-smoke) */
     }
 
     *,*::before,*::after { box-sizing: border-box }
@@ -70,7 +70,7 @@
       background:transparent;
     }
 
-    /* CTA & LOGO (moved above smoke) */
+    /* CTA (above smoke) */
     .cta {
       position:fixed; bottom:8vh; left:50%;
       transform:translateX(-50%);
@@ -102,7 +102,7 @@
       mix-blend-mode:overlay; pointer-events:none; z-index:1;
     }
     .cta .btn::after{
-      /* base shadow under button to enhance depth */
+      /* base shadow under button */
       content:""; position:absolute; left:8px; right:8px; bottom:-14px; height:18px;
       background: radial-gradient(closest-side, rgba(0,0,0,0.6), rgba(0,0,0,0.12));
       filter: blur(10px); z-index:-1; transition: transform .16s;
@@ -150,11 +150,11 @@
     }
     .cta .btn:hover .shine { opacity:1; transform: translateX(24%) }
 
-    /* logo sits slightly above CTAs */
-    #logo { position:fixed; top:6vh; left:50%; transform:translateX(-50%); z-index:var(--z-logo); pointer-events:auto; transition: transform .18s, filter .18s; }
+    /* LOGO placed behind smoke */
+    #logo { position:fixed; top:6vh; left:50%; transform:translateX(-50%); z-index:var(--z-logo); pointer-events:none; transition: transform .18s, filter .18s; opacity:0.98 }
     #logo img { max-width:30vw; height:auto; display:block; filter: drop-shadow(0 12px 22px rgba(0,0,0,0.7)); }
 
-    /* SMOKE VIDEO (unchanged) */
+    /* SMOKE VIDEO above logo */
     #smoke-wrap {
       position:fixed; inset:0;
       pointer-events:none;
@@ -165,7 +165,7 @@
       object-fit:cover; opacity:.6;
     }
 
-    /* LIGHT RED TINT OVERLAY (unchanged) */
+    /* LIGHT RED TINT OVERLAY */
     #colorOverlay {
       position:fixed; inset:0;
       background:var(--red);
@@ -176,7 +176,7 @@
       pointer-events:none;
     }
 
-    /* RED FLASH (unchanged) */
+    /* RED FLASH */
     #redOverlay {
       position:fixed; inset:0;
       background:var(--red);
@@ -193,7 +193,7 @@
       100% { opacity:0 }
     }
 
-    /* KEEP all headline/blood behavior identical to original */
+    /* HEADLINE / BLOOD (unchanged) */
     #headline {
       position:fixed; top:42vh; left:50%;
       transform:translateX(-50%);
@@ -240,13 +240,12 @@
       100%    { opacity:0 }
     }
 
-    /* responsive tweaks */
+    /* responsive */
     @media (max-width:620px){
       .cta { flex-direction:column; gap:12px; bottom:6vh }
       .cta .btn { min-width:86vw; width:auto; padding:0 16px }
       #logo img { max-width:60vw }
     }
-
     @media (prefers-reduced-motion:reduce){
       * { animation-duration:0.001ms !important; transition:none !important }
       .cta .btn:hover, .cta .btn:active { transform:none; box-shadow:none }
@@ -268,7 +267,7 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- CTA & logo (buttons now above smoke) -->
+  <!-- CTA (above smoke) -->
   <div class="cta" role="navigation" aria-label="Primary actions">
     <a id="steamBtn" class="btn steam" href="steam://connect/YOURSERVERIP" role="button" aria-label="Join server on Steam">
       <span class="shine" aria-hidden="true"></span>
@@ -292,9 +291,10 @@
     </a>
   </div>
 
+  <!-- logo behind smoke -->
   <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro Logo"/></div>
 
-  <!-- smoke (unchanged) -->
+  <!-- smoke (above logo) -->
   <div id="smoke-wrap">
     <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
       <source src="Smoke.mp4" type="video/mp4"/>
