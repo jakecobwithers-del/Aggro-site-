@@ -6,9 +6,9 @@
   <title>Aggro PvP — Support</title>
 
   <style>
-    /* single font-face matching rules.html (relative paths) */
+    /* font (site root) */
     @font-face{
-      font-family: '28DaysLater';
+      font-family:'28DaysLater';
       src: url('28%20Days%20Later.ttf') format('truetype'), url('28DaysLater.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
@@ -18,77 +18,76 @@
     :root{
       --accent:#ff3c3c;
       --muted:#bdbdbd;
-      --overlay:rgba(0,0,0,0.82);
+      --overlay:rgba(0,0,0,0.72);
       --card-w:1000px;
     }
 
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0}
+    html,body{height:100%;margin:0;background:#000}
     body{
       font-family:'28DaysLater', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
       color:#fff;
-      background:#000;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Video background (relative paths, same behavior as your rules.html) */
+    /* full-bleed video: put it underneath everything and force cover the viewport */
     #smoke-bg{
       position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
+      top:0;left:0;right:0;bottom:0;
+      width:100vw;height:100vh;
       object-fit:cover;
-      z-index:-3;
-      filter:brightness(0.45) contrast(1);
+      z-index:-9999; /* far behind to avoid stacking issues */
+      pointer-events:none;
+      filter:brightness(0.5) contrast(1);
       background:#000 center/cover no-repeat;
     }
+
+    /* tint sits above video but under content */
     .bg-tint{
-      position:fixed;
-      inset:0;
-      z-index:-2;
-      background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.75));
+      position:fixed;inset:0;z-index:-9998;
+      background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.7));
       pointer-events:none;
     }
 
-    /* fallback when video fails — identical approach to rules.html */
+    /* fallback if video cannot play */
     body.no-video{background-image:url('smoke.jpg');background-size:cover;background-position:center}
 
-    /* layout matching rules style */
-    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px}
-    .card{width:100%;max-width:var(--card-w);background:var(--overlay);border-radius:12px;padding:32px;box-shadow:0 10px 40px rgba(0,0,0,0.7);border:1px solid rgba(255,60,60,0.06)}
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px;position:relative;z-index:1}
+    .card{width:100%;max-width:var(--card-w);background:var(--overlay);border-radius:12px;padding:36px;box-shadow:0 10px 40px rgba(0,0,0,0.7);border:1px solid rgba(255,60,60,0.06)}
     @media(max-width:880px){.card{padding:22px}}
 
-    h1{margin:0 0 18px 0;font-size:48px;color:var(--accent);text-shadow:0 6px 18px rgba(0,0,0,0.9);line-height:0.95;text-align:center}
-    .lead{margin:0 0 18px 0;font-size:18px;line-height:1.45;color:#fff;opacity:0.98;text-align:center}
+    h1{margin:0 0 12px 0;font-size:48px;color:var(--accent);text-shadow:0 6px 20px rgba(0,0,0,0.9);line-height:0.95;text-align:center}
+    .lead{margin:0 0 18px 0;font-size:16px;color:#fff;opacity:0.98;text-align:center}
 
-    .section{margin-top:10px}
-    .section h2{font-size:22px;color:var(--accent);margin:18px 0 12px 0;border-bottom:1px solid rgba(255,60,60,0.12);padding-bottom:8px}
+    .section{margin-top:16px}
+    .section h2{font-size:20px;color:var(--accent);margin:12px 0;border-bottom:1px solid rgba(255,60,60,0.12);padding-bottom:8px}
 
     .item{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
     .item .num{width:44px;text-align:center;color:var(--accent);font-weight:800;font-size:18px}
-    .item .text{font-size:16px;line-height:1.5}
+    .item .text{font-size:15px;line-height:1.45}
     .item .text a{color:#fff;text-decoration:underline;font-weight:800}
 
-    .nameplates{display:flex;flex-direction:column;gap:12px;margin-top:8px}
-    .nameplate{display:flex;gap:12px;align-items:center;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03)}
-    .np-avatar{width:64px;height:64px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:24px;border:1px solid rgba(255,255,255,0.04);background-size:cover;background-position:center}
-    .np-meta{display:flex;flex-direction:column;min-width:0}
-    .np-name{font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .np-actions{margin-left:auto}
-    .np-actions a{color:var(--accent);text-decoration:underline;font-weight:700}
+    /* owners block (names + short honour text) */
+    .owners{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+    .owner{display:flex;gap:12px;align-items:center;padding:12px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03)}
+    .owner .avatar{width:64px;height:64px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;border:1px solid rgba(255,255,255,0.04);background-size:cover;background-position:center}
+    .owner .meta{display:flex;flex-direction:column}
+    .owner .name{font-weight:900;font-size:16px;color:#fff}
+    .owner .blurb{font-size:13px;color:var(--muted);margin-top:4px;max-width:70ch}
 
     .back-btn{display:inline-block;margin-top:22px;padding:10px 14px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;text-decoration:none;font-weight:700;display:block;width:max-content;margin-left:auto;margin-right:auto}
 
     @media(max-width:600px){
-      h1{font-size:36px}
-      .item .text{font-size:15px}
-      .np-avatar{width:56px;height:56px}
+      h1{font-size:34px}
+      .item .text{font-size:14px}
+      .owner{padding:10px}
+      .owner .avatar{width:56px;height:56px;font-size:18px}
     }
   </style>
 </head>
 <body>
-  <!-- exact placement and relative paths like rules.html -->
+  <!-- video and tint (relative paths like rules.html) -->
   <video id="smoke-bg" autoplay muted loop playsinline preload="auto" poster="smoke.jpg">
     <source src="smoke.webm" type="video/webm">
     <source src="smoke.mp4" type="video/mp4">
@@ -98,7 +97,7 @@
   <main class="wrap" role="main">
     <section class="card" aria-labelledby="support-title">
       <h1 id="support-title">SUPPORT</h1>
-      <p class="lead">If you're still breathing, we've got your back. Report bugs, open tickets, or drop suggestions in the Discord channels below — we monitor them regularly.</p>
+      <p class="lead">Report bugs, open tickets, or drop suggestions in the Discord channels below — we monitor them regularly.</p>
 
       <div class="section" aria-labelledby="channels-heading">
         <h2 id="channels-heading">DISCORD CHANNELS</h2>
@@ -128,20 +127,24 @@
         </div>
       </div>
 
-      <div class="section" aria-labelledby="community-heading">
-        <h2 id="community-heading">COMMUNITY</h2>
+      <div class="section" aria-labelledby="owners-heading">
+        <h2 id="owners-heading">SERVER OWNERS</h2>
 
-        <div class="nameplates" id="plates">
-          <div class="nameplate" data-userid="572334717731602462" data-display="RB Skizza">
-            <div class="np-avatar" aria-hidden="true">R</div>
-            <div class="np-meta"><div class="np-name">RB Skizza</div></div>
-            <div class="np-actions"><a class="profile-link" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener noreferrer">View</a></div>
+        <div class="owners">
+          <div class="owner">
+            <div class="avatar" id="av-572334">R</div>
+            <div class="meta">
+              <div class="name">RB Skizza</div>
+              <div class="blurb">Server founder and lead admin — committed to fair play, regular updates, and keeping the community safe and fun.</div>
+            </div>
           </div>
 
-          <div class="nameplate" data-userid="842365557486518302" data-display="Slomobob">
-            <div class="np-avatar" aria-hidden="true">S</div>
-            <div class="np-meta"><div class="np-name">Slomobob</div></div>
-            <div class="np-actions"><a class="profile-link" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener noreferrer">View</a></div>
+          <div class="owner">
+            <div class="avatar" id="av-842365">S</div>
+            <div class="meta">
+              <div class="name">Slomobob</div>
+              <div class="blurb">Head of community and events — designs server events, oversees balance, and handles player support with care.</div>
+            </div>
           </div>
         </div>
       </div>
@@ -152,42 +155,49 @@
 
   <script>
     (function(){
-      // identical playback/fallback logic used in rules.html
+      // same fallback logic as rules.html: try play, on error set no-video so poster/background displays
       const vid = document.getElementById('smoke-bg');
       let played = false;
       vid.addEventListener('playing', ()=> played = true);
       vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
-      setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 900);
+      // attempt play (some browsers require interaction, this is best-effort)
+      setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 700);
 
-      // optional diagnostic console logs (same style as rules)
+      // load owner avatars best-effort (use embed fallback if exact avatar not available)
+      function embedAvatarUrl(id){ return `https://cdn.discordapp.com/embed/avatars/${Number(id) % 5}.png`; }
+      async function testHead(url){ try{ const r = await fetch(url, { method:'HEAD', cache:'no-store' }); return r.ok; } catch(e){ return false; } }
+
+      async function applyAvatar(elId, id){
+        const el = document.getElementById(elId);
+        if (!el) return;
+        const candidates = [
+          `https://cdn.discordapp.com/avatars/${id}.png`,
+          `https://cdn.discordapp.com/avatars/${id}.webp`,
+          `https://cdn.discordapp.com/avatars/${id}.jpg`
+        ];
+        let found = null;
+        for (const c of candidates){ if (await testHead(c)){ found = c; break; } }
+        const url = found || embedAvatarUrl(id);
+        el.style.backgroundImage = `url(${url})`;
+        el.textContent = '';
+      }
+
+      // apply avatars for owners (ids from your data)
+      applyAvatar('av-572334', '572334717731602462').catch(()=>{});
+      applyAvatar('av-842365', '842365557486518302').catch(()=>{});
+
+      // diagnostic logging (open console to inspect)
       (async function diag(){
         const files = ['smoke.mp4','smoke.webm','smoke.jpg'];
         for (const f of files){
           try{
             const r = await fetch(f, { method:'HEAD', cache:'no-store' });
-            console.log(f, 'HEAD', r.status, 'content-type:', r.headers.get('content-type'));
+            console.log(f, '→', r.status, 'content-type:', r.headers.get('content-type'));
           }catch(e){
-            console.log(f, 'HEAD request failed', e && e.message);
+            console.log(f, '→ HEAD failed', e && e.message);
           }
         }
       })();
-
-      // nameplate avatar best-effort (no bottom text)
-      function embedAvatarUrl(id){ return `https://cdn.discordapp.com/embed/avatars/${Number(id) % 5}.png`; }
-      async function testHead(url){ try{ const res = await fetch(url, { method:'HEAD', cache:'no-store' }); return res.ok; } catch(e){ return false; } }
-      async function setAvatarForPlate(plate){
-        const id = plate.getAttribute('data-userid');
-        const avatarEl = plate.querySelector('.np-avatar');
-        const candidates = [`https://cdn.discordapp.com/avatars/${id}.png`,`https://cdn.discordapp.com/avatars/${id}.webp`,`https://cdn.discordapp.com/avatars/${id}.jpg`];
-        let found = null;
-        for (const c of candidates){ if (await testHead(c)){ found = c; break; } }
-        const url = found || embedAvatarUrl(id);
-        avatarEl.style.backgroundImage = `url(${url})`;
-        avatarEl.textContent = '';
-        const link = plate.querySelector('.profile-link');
-        if (link) link.href = `https://discord.com/users/${id}`;
-      }
-      document.querySelectorAll('.nameplate').forEach(p=>{ setAvatarForPlate(p).catch(()=>{/*ignore*/}); });
     })();
   </script>
 </body>
