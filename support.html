@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Template — Aggro PvP</title>
+  <title>Aggro PvP — Page</title>
 
   <style>
     /* DayZFont same as rules.html */
@@ -16,13 +16,13 @@
     :root{
       --bg:#000;
       --accent:#ff3b3b;
-      --card-bg:linear-gradient(180deg,#070707,#0f0f0f);
+      --card-bg-start:#070707;
+      --card-bg-end:#0f0f0f;
       --card-border:rgba(255,59,59,0.12);
       --card-radius:12px;
       --max-width:900px;
       --pad:20px;
       --smoke-opacity:0.66;
-      --nav-height:64px;
     }
 
     html,body{
@@ -35,7 +35,7 @@
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Smoke background (fixed like rules.html) */
+    /* Smoke background (fixed, blurred, oversized like rules.html) */
     #smoke-bg{
       position:fixed;
       inset:0;
@@ -57,36 +57,7 @@
       filter: blur(5px) saturate(1.04) contrast(1.02);
     }
 
-    /* Top navigation / main menu row */
-    .top-nav{
-      position:fixed;
-      inset:16px auto auto 16px;
-      z-index:3;
-      display:flex;
-      gap:12px;
-      align-items:center;
-      pointer-events:auto;
-    }
-
-    .nav-btn{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:10px 14px;
-      border-radius:12px;
-      background:linear-gradient(180deg,#0b0b0b,#121212);
-      border:2px solid rgba(255,59,59,0.12);
-      color:var(--accent);
-      text-decoration:none;
-      font-weight:800;
-      box-shadow:
-        inset 0 2px 6px rgba(255,255,255,0.02),
-        0 10px 30px rgba(0,0,0,0.9);
-    }
-
-    .nav-btn:hover{ transform:translateY(-2px); transition:transform .12s ease; }
-
-    /* Page container over smoke */
+    /* Page container sits above smoke */
     .page{
       position:relative;
       z-index:2;
@@ -94,7 +65,7 @@
       display:flex;
       align-items:flex-start;
       justify-content:center;
-      padding:8vh 20px 80px;
+      padding:6vh 20px 80px;
       box-sizing:border-box;
     }
 
@@ -106,7 +77,7 @@
       gap:18px;
     }
 
-    /* White page title */
+    /* Large white page title using DayZFont */
     .site-title{
       margin:0 0 6px 0;
       font-family:'DayZFont', sans-serif;
@@ -123,7 +94,7 @@
     /* Black pad / card */
     .card{
       border-radius:var(--card-radius);
-      background:var(--card-bg);
+      background:linear-gradient(180deg,var(--card-bg-start),var(--card-bg-end));
       border:2px solid var(--card-border);
       box-shadow:
         inset 0 2px 6px rgba(255,255,255,0.02),
@@ -145,7 +116,7 @@
 
     .card p{ margin:0; color:rgba(255,255,255,0.92); line-height:1.6; font-size:15px; }
 
-    /* Back / main menu row at bottom (mirrors rules.html back link treatment) */
+    /* Back row at bottom — same treatment as rules.html */
     .back-row{
       display:flex;
       justify-content:center;
@@ -175,24 +146,16 @@
     @media (max-width:520px){
       .site-title{ font-size:clamp(22px,10vw,36px); }
       .card{ padding:14px; }
-      .top-nav{ inset:12px 12px auto 12px; }
     }
   </style>
 </head>
 <body>
-  <!-- Smoke background (same filenames as rules.html) -->
+  <!-- Smoke background files should match rules.html -->
   <div id="smoke-bg" aria-hidden="true">
     <video autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg">
       <source src="Smoke.webm" type="video/webm">
       <source src="Smoke.mp4" type="video/mp4">
     </video>
-  </div>
-
-  <!-- Top main menu (add or edit links as needed) -->
-  <div class="top-nav" role="navigation" aria-label="Main menu">
-    <a class="nav-btn" href="index.html" title="Main Menu">Main Menu</a>
-    <a class="nav-btn" href="rules.html" title="Rules">Rules</a>
-    <a class="nav-btn" href="support.html" title="Support">Support</a>
   </div>
 
   <main class="page" role="main">
@@ -201,25 +164,18 @@
         <h1 class="site-title">Page Title</h1>
       </header>
 
-      <!-- Example black pad section with red heading -->
       <section class="card" aria-labelledby="section-1-title">
         <h2 id="section-1-title">Section Heading</h2>
-        <p>
-          Replace this text with your content. Use additional .card sections to build a rules or support page that matches rules.html layout.
-        </p>
+        <p>Replace this text with your content. Duplicate .card sections for additional blocks to match rules.html layout.</p>
       </section>
 
       <section class="card" aria-labelledby="section-2-title">
         <h2 id="section-2-title">Another Heading</h2>
-        <p>
-          Embed Discord widgets, accordions, or any content here. The smoke background and top menu match rules.html visual treatment.
-        </p>
+        <p>Use this area for embeds, lists, or instructions.</p>
       </section>
 
-      <!-- Bottom back / navigation row -->
       <div class="back-row">
         <a class="back-link" href="index.html" aria-label="Return to main menu">
-          <!-- simple arrow that follows site style -->
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
             <path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path>
           </svg>
