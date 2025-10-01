@@ -1,125 +1,294 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Aggro PvP — Server Rules</title>
+
   <style>
-    @font-face{
-      font-family:'DayZFont';
+    /* Custom font (filename with space url-encoded) */
+    @font-face {
+      font-family: 'DayZFont';
       src: url('28%20Days%20Later.ttf') format('truetype');
-      font-display:swap;
+      font-display: swap;
     }
 
     :root{
-      --page-bg:#000;
-      --panel-bg:linear-gradient(180deg, #050505, #0a0a0a);
-      --accent:#ff3b3b;
-      --muted:rgba(255,255,255,0.85);
-      --plate-edge:rgba(255,59,59,0.06);
-      --radius:14px;
-      --max-width:980px;
+      --bg: #000;
+      --panel-bg: #080808;                /* pitch black plate under rules */
+      --panel-edge: linear-gradient(90deg, rgba(255,59,59,0.0), rgba(255,59,59,0.18), rgba(255,59,59,0.0));
+      --accent: #ff3b3b;
+      --muted: rgba(255,255,255,0.88);
+      --radius: 14px;
+      --max-width: 980px;
     }
 
-    html,body{height:100%;margin:0;background:var(--page-bg);color:#fff;font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial;-webkit-font-smoothing:antialiased;overflow-y:auto;}
+    /* Base */
+    html,body{
+      height:100%;
+      margin:0;
+      background:var(--bg);
+      color:#fff;
+      font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-y:auto;
+    }
 
-    /* SMOKE: covers top + sides of viewport; pointer-events:none so it never blocks interaction */
-    #smoke-overlay{position:fixed;inset:0;z-index:25;pointer-events:none;overflow:hidden}
+    /* SMOKE overlay: covers top + sides visually.
+       pointer-events:none ensures it never blocks scrolling or clicks.
+       z-index is between heading and page panel so heading appears under the smoke. */
+    #smoke-overlay{
+      position:fixed;
+      inset:0;
+      z-index:25;
+      pointer-events:none;
+      overflow:hidden;
+    }
+
     #smoke-overlay video{
       position:absolute;
       left:50%;
       top:-18%;
       transform:translateX(-50%);
-      width:150vw;
+      width:150vw;    /* stretched so smoke runs down sides */
       height:140vh;
       object-fit:cover;
-      opacity:0.58;
+      opacity:0.6;
       mix-blend-mode:screen;
-      filter:blur(6px) saturate(1.05) contrast(1.02);
-      animation:fadeInSmoke .9s ease-in-out both;
+      filter: blur(6px) saturate(1.05) contrast(1.02);
+      animation:fadeInSmoke 1.0s ease-in-out both;
     }
-    @keyframes fadeInSmoke{from{opacity:0}to{opacity:0.58}}
 
-    /* Page layout */
-    .page{position:relative;z-index:30;display:flex;justify-content:center;padding:36px 20px 60px;box-sizing:border-box}
+    @keyframes fadeInSmoke{ from{opacity:0} to{opacity:0.6} }
 
-    /* Panel sits above smoke so its background is clean and readable */
+    /* SITE LAYOUT: panel sits above smoke so its body is smoke-free and fully interactive */
+    .page{
+      position:relative;
+      z-index:30; /* above smoke so panel content is clear and clickable */
+      display:flex;
+      justify-content:center;
+      padding:40px 20px 60px;
+      box-sizing:border-box;
+    }
+
+    /* Black plate with subtle red stroke for cool look */
     .panel{
       width:100%;
       max-width:var(--max-width);
       background:var(--panel-bg);
       border-radius:var(--radius);
-      padding:30px;
+      padding:34px;
       box-sizing:border-box;
-      box-shadow:0 20px 60px rgba(0,0,0,0.7);
-      border:1px solid var(--plate-edge);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.75);
       position:relative;
       overflow:visible;
+      /* red outline using pseudo element below */
     }
 
-    /* Heading is pulled up so it visually intersects the smoke, but heading z-index is below the smoke */
-    .heading-wrap{ text-align:center; margin:-64px 0 8px; pointer-events:none; position:relative; }
+    /* Outline pseudo-element */
+    .panel::before{
+      content:'';
+      position:absolute;
+      inset:0;
+      border-radius:calc(var(--radius) + 2px);
+      padding:2px;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,0));
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask:
+        linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      box-shadow: 0 0 0 2px rgba(255,59,59,0.06) inset, 0 0 30px rgba(255,59,59,0.03);
+      pointer-events:none;
+    }
+
+    /* Heading area pulled into the smoke region.
+       Heading must be visually under the smoke, so give it a lower z-index than smoke */
+    .heading-wrap{
+      text-align:center;
+      margin: -64px 0 10px; /* pulls title up into smoke area */
+      pointer-events:none;
+    }
+
     h1{
       margin:0;
-      font-family:'DayZFont', "Segoe UI", sans-serif;
-      font-size:60px;
+      font-family: 'DayZFont', "Segoe UI", sans-serif;
+      font-size:62px;
       line-height:0.9;
       color:var(--accent);
-      letter-spacing:1.8px;
       text-transform:uppercase;
-      text-shadow:0 1px 0 rgba(0,0,0,0.6), 0 18px 60px rgba(255,59,59,0.06);
+      letter-spacing:1.8px;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.6), 0 18px 60px rgba(255,59,59,0.06);
       position:relative;
-      z-index:24; /* BELOW smoke (25) so smoke overlays the heading */
+      z-index:24; /* lower than smoke (25) so smoke overlays the heading subtly */
       -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
-    .lead{margin-top:10px;color:var(--muted);font-size:14px;pointer-events:auto}
 
-    /* Rules grid and layout */
-    .rules{margin-top:18px;display:grid;grid-template-columns:repeat(2,1fr);gap:20px;align-items:start}
-    @media (max-width:920px){ h1{font-size:40px} .rules{grid-template-columns:1fr; gap:14px} .heading-wrap{margin:-44px 0 8px} #smoke-overlay video{top:-8%} }
+    .lead{
+      margin-top:8px;
+      font-size:14px;
+      color:var(--muted);
+      pointer-events:auto;
+    }
 
-    /* Collapsible sections (accessible) */
-    details{background:rgba(255,255,255,0.02);border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.02);transition:transform .18s,box-shadow .18s;}
-    details[open]{box-shadow:0 12px 30px rgba(0,0,0,0.45);transform:translateY(-3px)}
-    summary{list-style:none;display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:4px 6px;user-select:none;outline:none}
-    summary .title{font-family:'DayZFont', "Segoe UI",sans-serif;font-size:18px;color:var(--accent);letter-spacing:.8px}
-    summary .chev{width:32px;height:32px;display:inline-grid;place-items:center;color:var(--accent);transition:transform .2s ease}
-    details[open] summary .chev{transform:rotate(90deg)}
-    summary::-webkit-details-marker{display:none}
+    /* RULES GRID */
+    .rules{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:20px;
+      align-items:start;
+    }
 
-    .rule-list{margin-top:12px;display:flex;flex-direction:column;gap:12px;padding-right:6px}
-    .rule{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;border-left:4px solid rgba(255,59,59,0.14);font-size:15px;line-height:1.45;color:rgba(255,255,255,0.95)}
-    .num{min-width:44px;height:44px;display:inline-grid;place-items:center;background:linear-gradient(180deg, rgba(255,59,59,0.14), rgba(255,59,59,0.06));color:var(--accent);font-weight:800;border-radius:10px;border:1px solid rgba(255,59,59,0.06);font-family:"Segoe UI",sans-serif}
-    .note{font-weight:800;color:var(--accent)}
+    @media (max-width:920px){
+      .rules{ grid-template-columns: 1fr; gap:14px; }
+      h1{ font-size:40px; }
+      .heading-wrap{ margin:-44px 0 8px; }
+      #smoke-overlay video{ top:-8%; width:140vw; }
+    }
 
-    .footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px;flex-wrap:wrap}
-    a.back{color:var(--accent);text-decoration:none;font-weight:700;background:#000000cc;padding:8px 14px;border-radius:10px;border:1px solid rgba(255,59,59,0.06)}
+    /* Collapsible sections: accessible via details/summary */
+    details{
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
+      border-radius:10px;
+      padding:12px;
+      border:1px solid rgba(255,255,255,0.02);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    details[open]{ transform:translateY(-3px); box-shadow:0 12px 30px rgba(0,0,0,0.45); }
+
+    summary{
+      list-style:none;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:4px 6px;
+      cursor:pointer;
+      user-select:none;
+      outline:none;
+    }
+
+    summary .title{
+      font-family:'DayZFont', "Segoe UI", sans-serif;
+      font-size:18px;
+      color:var(--accent);
+      letter-spacing:0.8px;
+    }
+
+    /* Chevron */
+    summary .chev{
+      width:34px;
+      height:34px;
+      display:inline-grid;
+      place-items:center;
+      color:var(--accent);
+      transition: transform .2s ease;
+      font-weight:800;
+    }
+    details[open] summary .chev{ transform: rotate(90deg); }
+
+    summary::-webkit-details-marker{ display:none; }
+
+    .rule-list{
+      margin-top:12px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      padding-right:6px;
+    }
+
+    .rule{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      background: rgba(255,255,255,0.02);
+      padding:12px;
+      border-radius:10px;
+      border-left:4px solid rgba(255,59,59,0.14);
+      font-size:15px;
+      line-height:1.45;
+      color:rgba(255,255,255,0.95);
+    }
+
+    .num{
+      min-width:44px;
+      height:44px;
+      display:inline-grid;
+      place-items:center;
+      background: linear-gradient(180deg, rgba(255,59,59,0.14), rgba(255,59,59,0.06));
+      color:var(--accent);
+      font-weight:800;
+      border-radius:10px;
+      border:1px solid rgba(255,59,59,0.06);
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    .note{ font-weight:800; color:var(--accent); }
+
+    /* footer */
+    .footer{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+
+    a.back{
+      color:var(--accent);
+      text-decoration:none;
+      font-weight:700;
+      background:#000000cc;
+      padding:8px 14px;
+      border-radius:10px;
+      border:1px solid rgba(255,59,59,0.06);
+    }
     a.back:hover{text-decoration:underline}
 
-    /* Hide if video fails */
-    .overlay-hidden{display:none !important}
+    /* Accessibility: visible focus */
+    summary:focus, a.back:focus {
+      outline: 3px solid rgba(255,59,59,0.12);
+      outline-offset: 4px;
+      border-radius:8px;
+    }
+
+    /* Hide overlay if video fails */
+    .overlay-hidden{ display:none !important; }
   </style>
 </head>
 <body>
 
-  <!-- SMOKE overlay: top and sides visually; pointer-events:none ensures page interaction unaffected -->
+  <!-- Smoke overlay: top + sides. pointer-events:none keeps page interactive.
+       Use optimized webm/mp4 sources and poster as you prefer. -->
   <div id="smoke-overlay" aria-hidden="true">
-    <video autoplay loop muted playsinline preload="auto" id="smokeVideo" aria-hidden="true">
+    <video id="smokeVideo" autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg" aria-hidden="true">
+      <source src="Smoke.webm" type="video/webm">
       <source src="Smoke.mp4?v=1" type="video/mp4">
     </video>
   </div>
 
   <div class="page" role="main">
-    <article class="panel" aria-labelledby="rules-title">
+    <article class="panel" role="article" aria-labelledby="rules-title">
 
+      <!-- Heading pulled into the smoke area and visually under smoke -->
       <div class="heading-wrap" aria-hidden="false">
         <h1 id="rules-title">Server Rules</h1>
         <div class="lead">Aggro PvP is not for the weak. Read the rules. Survive the fight.</div>
       </div>
 
+      <!-- Rules grid: collapsible sections -->
       <div class="rules" role="list">
+
         <details id="general" open>
-          <summary><span class="title">General</span><span class="chev" aria-hidden="true">›</span></summary>
+          <summary>
+            <span class="title">General</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
           <div class="rule-list" role="list">
             <div class="rule"><div class="num">1</div><div>No external mods, hacks, duping, NVinspect, or glitch movement. Filters and external crosshairs are allowed.</div></div>
             <div class="rule"><div class="num">2</div><div>No alt accounts or stream sniping.</div></div>
@@ -130,7 +299,10 @@
         </details>
 
         <details id="safezone">
-          <summary><span class="title">Safezone</span><span class="chev" aria-hidden="true">›</span></summary>
+          <summary>
+            <span class="title">Safezone</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
           <div class="rule-list" role="list">
             <div class="rule"><div class="num">1</div><div>Unattended dropped items are free game. Otherwise, don’t touch what’s not yours including vehicles.</div></div>
             <div class="rule"><div class="num">2</div><div>No safezone camping, blocking, following, or abusing protection. If you kill in self-defense entering/leaving, leave their loot.</div></div>
@@ -139,7 +311,10 @@
         </details>
 
         <details id="base-building">
-          <summary><span class="title">Base Building</span><span class="chev" aria-hidden="true">›</span></summary>
+          <summary>
+            <span class="title">Base Building</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
           <div class="rule-list" role="list">
             <div class="rule"><div class="num">1</div><div>One main base + one stash base/FOB per player.</div></div>
             <div class="rule"><div class="num">2</div><div>Max 25 code-locked doors/hatches/containers per base.</div></div>
@@ -154,14 +329,20 @@
         </details>
 
         <details id="storage">
-          <summary><span class="title">Base Storage Limit</span><span class="chev" aria-hidden="true">›</span></summary>
+          <summary>
+            <span class="title">Base Storage Limit</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
           <div class="rule-list" role="list">
             <div class="rule"><div class="num">1</div><div>You’re limited to 20 storage kits per base, plus 5 extra per team member.</div></div>
           </div>
         </details>
 
         <details id="raiding" style="grid-column:1 / -1">
-          <summary><span class="title">Raiding</span><span class="chev" aria-hidden="true">›</span></summary>
+          <summary>
+            <span class="title">Raiding</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
           <div class="rule-list" role="list">
             <div class="rule"><div class="num">1</div><div>Alliances are allowed.</div></div>
             <div class="rule"><div class="num">2</div><div>No despawning, repairing, or modifying bases during active raids.</div></div>
@@ -179,6 +360,7 @@
         <a class="back" href="index.html">← Return to Main Page</a>
         <div style="color:rgba(255,255,255,0.65);font-size:13px;">Last updated: v1</div>
       </div>
+
     </article>
   </div>
 
@@ -187,11 +369,15 @@
       const vid = document.getElementById('smokeVideo');
       const overlay = document.getElementById('smoke-overlay');
 
-      function hideOverlay(){ overlay.classList.add('overlay-hidden'); }
-      if (vid){ vid.addEventListener('error', hideOverlay, {passive:true}); setTimeout(()=>{ if (vid.readyState===0) hideOverlay(); }, 2200); }
-      if (overlay) overlay.style.pointerEvents = 'none';
+      // Hide overlay if video fails to avoid ugly fallback
+      function hideOverlay(){ if (overlay) overlay.classList.add('overlay-hidden'); }
+      if (vid){
+        vid.addEventListener('error', hideOverlay, {passive:true});
+        setTimeout(() => { if (vid.readyState === 0) hideOverlay(); }, 2200);
+      }
+      if (overlay) overlay.style.pointerEvents = 'none'; // extra safety
 
-      // ensure only one details open at a time
+      // Only allow one details open at a time
       const details = Array.from(document.querySelectorAll('details'));
       details.forEach(d => {
         d.addEventListener('toggle', () => {
@@ -200,10 +386,13 @@
         });
       });
 
-      // summary keyboard toggle
+      // Keyboard support for summary toggling
       document.querySelectorAll('summary').forEach(s => {
-        s.addEventListener('keydown', e => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); s.parentElement.open = !s.parentElement.open; }
+        s.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            s.parentElement.open = !s.parentElement.open;
+          }
         });
       });
     })();
