@@ -1,228 +1,246 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Aggro PvP — Support</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Aggro PvP — Support</title>
 
-  <style>
-    @font-face{
-      font-family:'28DaysLater';
-      src: url('28%20Days%20Later.ttf') format('truetype'), url('28DaysLater.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
+<style>
+  /* font - expect file in site root or same folder */
+  @font-face{
+    font-family: '28DaysLater';
+    src: url('28%20Days%20Later.ttf') format('truetype'), url('28DaysLater.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
 
-    :root{
-      --accent:#ff3c3c;
-      --card-w:1100px;
-      --card-overlay:rgba(0,0,0,0.55);
-    }
+  :root{
+    --accent:#ff3c3c;      /* main red */
+    --slab-bg:#0b0b0b;     /* black slab */
+    --slab-edge:rgba(255,60,60,0.06);
+    --muted:#e9e9e9;       /* white/near-white text */
+    --card-w:980px;
+  }
 
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:#000}
-    body{
-      font-family:'28DaysLater', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      color:#fff;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#000;font-family:'28DaysLater',system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--muted);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  a{color:inherit}
 
-    /* smoke container behind everything */
-    #smoke-bg{position:fixed;inset:0;z-index:-9999;pointer-events:none;overflow:hidden;background:#000}
-    #smoke-bg video{
-      position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-      min-width:100%;min-height:100%;width:auto;height:120%;object-fit:cover;
-      filter:brightness(0.55) contrast(1);pointer-events:none;display:block;
-    }
+  /* full-bleed smoke video behind everything */
+  #smoke-bg{position:fixed;inset:0;z-index:-9999;pointer-events:none;overflow:hidden;background:#000}
+  #smoke-bg video{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    min-width:100%;min-height:100%;width:auto;height:120%;object-fit:cover;
+    filter:brightness(0.45) contrast(1);
+    pointer-events:none;display:block;
+  }
 
-    /* page/card layered above smoke — semi-opaque like rules page */
-    main.page{position:relative;z-index:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px}
-    .card{
-      width:100%;max-width:var(--card-w);
-      background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));
-      border-radius:14px;padding:42px;border:1px solid rgba(255,60,60,0.06);
-      box-shadow:0 18px 60px rgba(0,0,0,0.65);
-    }
+  /* page layout - center slab like the rules page */
+  main.page{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px;z-index:0}
+  .slab{
+    width:100%;max-width:var(--card-w);
+    background:linear-gradient(180deg, rgba(0,0,0,0.88), rgba(0,0,0,0.90));
+    border:1px solid var(--slab-edge);
+    border-radius:14px;
+    padding:28px;
+    box-shadow:0 18px 60px rgba(0,0,0,0.65);
+    backdrop-filter: none;
+  }
 
-    header h1{
-      margin:0 0 6px 0;font-size:56px;line-height:0.9;color:#fff;text-align:center;
-      text-shadow:0 10px 40px rgba(0,0,0,0.9),0 2px 8px rgba(0,0,0,0.6);
-    }
-    .sub{margin:0 0 20px 0;text-align:center;color:rgba(255,255,255,0.95);font-size:16px}
+  /* heading area */
+  .slab header{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:18px}
+  .slab h1{
+    font-size:44px;
+    color:#fff; /* white heading text */
+    letter-spacing:0.6px;
+    line-height:0.92;
+    text-shadow:0 10px 30px rgba(0,0,0,0.9);
+  }
+  .slab p.lead{
+    color:rgba(255,255,255,0.95);
+    font-size:14px;
+    opacity:0.96;
+  }
 
-    .sections{display:grid;grid-template-columns:1fr;gap:18px;margin-top:8px}
-    .channels{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:10px;padding:18px;border:1px solid rgba(255,255,255,0.03)}
-    .channel{display:flex;gap:14px;align-items:flex-start;padding:10px 4px}
-    .num{width:48px;text-align:center;color:var(--accent);font-weight:900;font-size:18px}
-    .txt{font-size:15px;line-height:1.45;color:#fff}
-    .txt a{color:#fff;text-decoration:underline;font-weight:800}
+  /* menu list (slab content) */
+  .menu{
+    margin-top:6px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
 
-    .owners{margin-top:6px;display:flex;flex-direction:column;gap:12px}
-    .owner{display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
-    .avatar{width:56px;height:56px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px}
-    .label{font-weight:900;color:#fff;font-size:15px}
+  .menu-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+    border:1px solid rgba(255,255,255,0.03);
+    padding:14px 16px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .menu-item:active{transform:translateY(1px)}
+  .menu-item:hover{box-shadow:0 6px 18px rgba(0,0,0,0.6)}
 
-    .back{display:block;margin:18px auto 0;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);color:#fff;text-decoration:none;width:max-content}
+  .menu-item .left{
+    display:flex;align-items:center;gap:12px;min-width:0
+  }
+  .badge{
+    width:56px;height:56px;border-radius:8px;background:var(--slab-bg);display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:900;font-size:18px;border:1px solid rgba(255,255,255,0.03)
+  }
+  .meta{display:flex;flex-direction:column;min-width:0}
+  .meta .title{font-weight:900;color:#fff;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .meta .subtitle{font-size:13px;color:rgba(255,255,255,0.82);margin-top:4px}
 
-    /* fallback when no playable video found: use poster image as page background */
-    body.no-video main.page{background-image:url('smoke-poster.jpg');background-size:cover;background-position:center}
-    @media(max-width:880px){ .card{padding:28px} header h1{font-size:42px} .avatar{width:48px;height:48px;font-size:18px} }
-    @media(max-width:520px){ .card{padding:20px} header h1{font-size:34px} }
-  </style>
+  .arrow{
+    width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:900;font-size:18px;
+    border:1px solid rgba(255,60,60,0.08);background:rgba(255,60,60,0.03)
+  }
+
+  /* expanded content (hidden by default) */
+  .expand{max-height:0;overflow:hidden;transition:max-height .28s ease;padding:0 4px}
+  .expand.open{padding:10px 12px;margin-top:8px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.02);max-height:600px}
+
+  .expand p{color:rgba(255,255,255,0.92);font-size:14px;line-height:1.45;margin:0}
+
+  /* return button styled red text on transparent background */
+  .return{
+    display:inline-block;margin-top:18px;padding:10px 14px;border-radius:8px;
+    color:var(--accent);border:1px solid rgba(255,60,60,0.08);background:transparent;font-weight:900;text-decoration:none;
+  }
+
+  /* mobile tweaks */
+  @media(max-width:720px){
+    .slab{padding:18px;border-radius:12px}
+    .badge{width:48px;height:48px;font-size:16px}
+    .menu-item{padding:12px}
+    .slab h1{font-size:36px}
+  }
+</style>
 </head>
 <body>
-  <!-- smoke container (video element will be injected or source chosen in JS) -->
-  <div id="smoke-bg" aria-hidden="true"></div>
+  <!-- smoke background -->
+  <div id="smoke-bg" aria-hidden="true">
+    <video autoplay muted loop playsinline preload="auto" poster="smoke-poster.jpg">
+      <source src="Smoke.webm" type="video/webm">
+      <source src="Smoke.mp4" type="video/mp4">
+    </video>
+  </div>
 
   <main class="page" role="main">
-    <section class="card" role="region" aria-labelledby="support-title">
-      <header role="banner">
+    <section class="slab" role="region" aria-labelledby="support-title">
+      <header>
         <h1 id="support-title">SUPPORT</h1>
-        <p class="sub">If something's up, report it below. We handle bugs, tickets and suggestions in Discord.</p>
+        <p class="lead">Report bugs, open tickets, or get help — use the Discord channels below.</p>
       </header>
 
-      <div class="sections">
-        <div class="channels" role="list" aria-labelledby="channels-heading">
-          <h2 id="channels-heading" style="color:var(--accent);margin:0 0 8px 0;font-size:18px">DISCORD CHANNELS</h2>
-
-          <div class="channel" role="listitem">
-            <div class="num">1</div>
-            <div class="txt"><a href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer">#bug-reports</a> — Report critical bugs, exploits, or crashes.</div>
-          </div>
-
-          <div class="channel" role="listitem">
-            <div class="num">2</div>
-            <div class="txt"><a href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer">#suggestions</a> — Balance ideas and feedback.</div>
-          </div>
-
-          <div class="channel" role="listitem">
-            <div class="num">3</div>
-            <div class="txt"><a href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer">#ticket</a> — Open a private ticket for account help or appeals.</div>
-          </div>
-        </div>
-
-        <div>
-          <h2 style="color:var(--accent);margin:8px 0 6px 0;font-size:18px">SERVER OWNERS</h2>
-          <div class="owners" role="group" aria-labelledby="owners-heading">
-            <div class="owner">
-              <div class="avatar" id="av-572334">R</div>
-              <div class="label">RB Skizza — Owner</div>
-            </div>
-
-            <div class="owner">
-              <div class="avatar" id="av-842365">S</div>
-              <div class="label">Slomobob — Co Owner</div>
+      <nav class="menu" role="navigation" aria-label="Support menu">
+        <div class="menu-item" data-target="g">
+          <div class="left">
+            <div class="badge">G</div>
+            <div class="meta">
+              <div class="title">GENERAL</div>
+              <div class="subtitle">Basic server behaviour and guidelines</div>
             </div>
           </div>
+          <div class="arrow">›</div>
         </div>
+        <div id="g" class="expand" aria-hidden="true">
+          <p>Keep chat civil. No cheating, no exploits. Follow staff directions in game and on Discord.</p>
+        </div>
+
+        <div class="menu-item" data-target="s">
+          <div class="left">
+            <div class="badge">S</div>
+            <div class="meta">
+              <div class="title">SAFEZONE</div>
+              <div class="subtitle">Rules for safezones and protected areas</div>
+            </div>
+          </div>
+          <div class="arrow">›</div>
+        </div>
+        <div id="s" class="expand" aria-hidden="true">
+          <p>Safezones are non-combat. No raiding or building inside safezones. Respect NPCs and shops.</p>
+        </div>
+
+        <div class="menu-item" data-target="b">
+          <div class="left">
+            <div class="badge">B</div>
+            <div class="meta">
+              <div class="title">BASE BUILDING</div>
+              <div class="subtitle">Construction, snapping and footprint limits</div>
+            </div>
+          </div>
+          <div class="arrow">›</div>
+        </div>
+        <div id="b" class="expand" aria-hidden="true">
+          <p>Follow allowed footprint rules. No blocking spawn areas. Don’t grief other players' structures.</p>
+        </div>
+
+        <div class="menu-item" data-target="l">
+          <div class="left">
+            <div class="badge">L</div>
+            <div class="meta">
+              <div class="title">BASE STORAGE LIMIT</div>
+              <div class="subtitle">Storage caps and how to request exceptions</div>
+            </div>
+          </div>
+          <div class="arrow">›</div>
+        </div>
+        <div id="l" class="expand" aria-hidden="true">
+          <p>Storage limits apply per-base. If you need extra space, open a ticket with build screenshots.</p>
+        </div>
+
+        <div class="menu-item" data-target="r">
+          <div class="left">
+            <div class="badge">R</div>
+            <div class="meta">
+              <div class="title">RAIDING</div>
+              <div class="subtitle">Raid windows, loot rules and acceptable tactics</div>
+            </div>
+          </div>
+          <div class="arrow">›</div>
+        </div>
+        <div id="r" class="expand" aria-hidden="true">
+          <p>Raids allowed during designated windows. No offline wiping. Follow loot split rules on the forums.</p>
+        </div>
+      </nav>
+
+      <div style="display:flex;justify-content:center">
+        <a class="return" href="index.html">← Return to Main Menu</a>
       </div>
-
-      <a class="back" href="index.html">← Back to menu</a>
     </section>
   </main>
 
-  <script>
-    (function(){
-      // ordered candidate video filenames (case-sensitive)
-      const candidates = [
-        { src: 'Smoke.mp4', type: 'video/mp4' },
-        { src: 'Smoke.webm', type: 'video/webm' },
-        { src: 'smoke.mp4', type: 'video/mp4' },
-        { src: 'smoke.webm', type: 'video/webm' }
-      ];
+<script>
+  // simple expand/collapse behaviour — accessible and minimal
+  document.querySelectorAll('.menu-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      const target = item.getAttribute('data-target');
+      const panel = document.getElementById(target);
+      if (!panel) return;
+      const open = panel.classList.toggle('open');
+      panel.setAttribute('aria-hidden', !open);
+    });
+    // keyboard support
+    item.tabIndex = 0;
+    item.addEventListener('keydown', e=>{
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }
+    });
+  });
 
-      // minimal HEAD tester; may be blocked cross-origin but works for same-origin files
-      async function exists(url){
-        try{
-          const r = await fetch(url, { method: 'HEAD', cache: 'no-store' });
-          return r && r.ok && (r.status === 200 || r.status === 206);
-        }catch(e){
-          return false;
-        }
-      }
-
-      // choose first available candidate; if none, set no-video class to show poster fallback
-      (async function chooseVideo(){
-        const container = document.getElementById('smoke-bg');
-        let picked = null;
-        for (const c of candidates){
-          if (await exists(c.src)){
-            picked = c;
-            break;
-          }
-        }
-
-        if (!picked){
-          document.body.classList.add('no-video');
-          return;
-        }
-
-        const vid = document.createElement('video');
-        vid.id = 'smoke-vid';
-        vid.autoplay = true;
-        vid.muted = true;
-        vid.loop = true;
-        vid.playsInline = true;
-        vid.preload = 'auto';
-        vid.poster = 'smoke-poster.jpg';
-
-        const srcEl = document.createElement('source');
-        srcEl.src = picked.src;
-        srcEl.type = picked.type;
-        vid.appendChild(srcEl);
-
-        // append a second candidate as fallback when same-origin HEAD succeeded for first but browser might prefer another codec
-        const alt = candidates.find(c=>c.src !== picked.src && c.type !== picked.type);
-        if (alt) {
-          const altEl = document.createElement('source');
-          altEl.src = alt.src;
-          altEl.type = alt.type;
-          vid.appendChild(altEl);
-        }
-
-        container.appendChild(vid);
-
-        // attempt to play and handle failures
-        let played = false;
-        vid.addEventListener('playing', ()=> played = true);
-        vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
-        setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 700);
-      })();
-
-      // load owner avatars best-effort
-      async function testHead(url){
-        try{ const r = await fetch(url, { method:'HEAD', cache:'no-store' }); return r && r.ok; } catch(e){ return false; }
-      }
-      async function applyAvatar(elId, id){
-        const el = document.getElementById(elId);
-        if (!el) return;
-        const list = [
-          `https://cdn.discordapp.com/avatars/${id}.webp`,
-          `https://cdn.discordapp.com/avatars/${id}.png`,
-          `https://cdn.discordapp.com/avatars/${id}.jpg`
-        ];
-        for (const u of list){
-          if (await testHead(u)){ el.style.backgroundImage = `url(${u})`; el.textContent=''; return; }
-        }
-      }
-      applyAvatar('av-572334','572334717731602462').catch(()=>{});
-      applyAvatar('av-842365','842365557486518302').catch(()=>{});
-
-      // optional diagnostics — open console to inspect if video still not visible
-      (async function diag(){
-        const urls = ['Smoke.mp4','Smoke.webm','smoke.mp4','smoke.webm','smoke-poster.jpg'];
-        for (const u of urls){
-          try{
-            const r = await fetch(u, { method:'HEAD', cache:'no-store' });
-            console.log(u, '→', r.status, 'type:', r.headers.get('content-type'));
-          }catch(e){
-            console.log(u, '→ HEAD failed', e && e.message);
-          }
-        }
-      })();
-    })();
-  </script>
+  // playback fallback: if video doesn't start, fall back to poster background
+  (function(){
+    const vid = document.querySelector('#smoke-bg video');
+    if (!vid) { document.body.classList.add('no-video'); return; }
+    let played = false;
+    vid.addEventListener('playing', ()=> played = true);
+    vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
+    setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 700);
+  })();
+</script>
 </body>
 </html>
