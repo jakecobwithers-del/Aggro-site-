@@ -6,7 +6,7 @@
   <title>Template — Aggro PvP</title>
 
   <style>
-    /* Match rules.html font */
+    /* DayZFont same as rules.html */
     @font-face{
       font-family: 'DayZFont';
       src: url('28 Days Later.ttf') format('truetype');
@@ -15,13 +15,14 @@
 
     :root{
       --bg:#000;
-      --accent:#ff3b3b;           /* red accent for headings/buttons */
+      --accent:#ff3b3b;
       --card-bg:linear-gradient(180deg,#070707,#0f0f0f);
       --card-border:rgba(255,59,59,0.12);
       --card-radius:12px;
       --max-width:900px;
       --pad:20px;
       --smoke-opacity:0.66;
+      --nav-height:64px;
     }
 
     html,body{
@@ -34,7 +35,7 @@
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Smoke background (fixed, blurred, oversized like rules.html) */
+    /* Smoke background (fixed like rules.html) */
     #smoke-bg{
       position:fixed;
       inset:0;
@@ -56,7 +57,36 @@
       filter: blur(5px) saturate(1.04) contrast(1.02);
     }
 
-    /* Page container that sits above smoke */
+    /* Top navigation / main menu row */
+    .top-nav{
+      position:fixed;
+      inset:16px auto auto 16px;
+      z-index:3;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      pointer-events:auto;
+    }
+
+    .nav-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:12px;
+      background:linear-gradient(180deg,#0b0b0b,#121212);
+      border:2px solid rgba(255,59,59,0.12);
+      color:var(--accent);
+      text-decoration:none;
+      font-weight:800;
+      box-shadow:
+        inset 0 2px 6px rgba(255,255,255,0.02),
+        0 10px 30px rgba(0,0,0,0.9);
+    }
+
+    .nav-btn:hover{ transform:translateY(-2px); transition:transform .12s ease; }
+
+    /* Page container over smoke */
     .page{
       position:relative;
       z-index:2;
@@ -64,7 +94,7 @@
       display:flex;
       align-items:flex-start;
       justify-content:center;
-      padding:6vh 20px;
+      padding:8vh 20px 80px;
       box-sizing:border-box;
     }
 
@@ -76,7 +106,7 @@
       gap:18px;
     }
 
-    /* Large white page title using DayZFont */
+    /* White page title */
     .site-title{
       margin:0 0 6px 0;
       font-family:'DayZFont', sans-serif;
@@ -90,7 +120,7 @@
         0 12px 40px rgba(255,59,59,0.04);
     }
 
-    /* Black pad / card used as section header container */
+    /* Black pad / card */
     .card{
       border-radius:var(--card-radius);
       background:var(--card-bg);
@@ -102,7 +132,7 @@
       padding:var(--pad);
     }
 
-    /* Red heading text on the black pad */
+    /* Red heading on black pad */
     .card h2{
       margin:0 0 8px 0;
       font-family:'DayZFont', sans-serif;
@@ -113,41 +143,56 @@
       text-shadow: 0 4px 18px rgba(0,0,0,0.6);
     }
 
-    /* Body text inside card */
-    .card p{
-      margin:0;
-      color:rgba(255,255,255,0.92);
-      line-height:1.6;
-      font-size:15px;
+    .card p{ margin:0; color:rgba(255,255,255,0.92); line-height:1.6; font-size:15px; }
+
+    /* Back / main menu row at bottom (mirrors rules.html back link treatment) */
+    .back-row{
+      display:flex;
+      justify-content:center;
+      margin-top:6px;
+      gap:12px;
     }
 
-    /* Small utility: red outline button that matches site treatment */
-    .btn-outline{
-      display:inline-block;
-      margin-top:12px;
-      padding:10px 14px;
-      border:2px solid var(--accent);
-      color:var(--accent);
-      border-radius:8px;
+    .back-link{
       text-decoration:none;
       font-weight:800;
-      background:transparent;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.6), 0 0 18px rgba(255,59,59,0.04);
+      background:linear-gradient(180deg,#0b0b0b,#121212);
+      border:2px solid rgba(255,59,59,0.14);
+      color:var(--accent);
+      padding:12px 18px;
+      border-radius:12px;
+      box-shadow:
+        inset 0 2px 6px rgba(255,255,255,0.02),
+        inset 0 -8px 18px rgba(0,0,0,0.75),
+        0 10px 30px rgba(0,0,0,0.9);
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
     }
+
+    .back-link svg{ transform:translateX(-2px); }
 
     @media (max-width:520px){
       .site-title{ font-size:clamp(22px,10vw,36px); }
       .card{ padding:14px; }
+      .top-nav{ inset:12px 12px auto 12px; }
     }
   </style>
 </head>
 <body>
-  <!-- Smoke background files should match the ones in your repo -->
+  <!-- Smoke background (same filenames as rules.html) -->
   <div id="smoke-bg" aria-hidden="true">
     <video autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg">
       <source src="Smoke.webm" type="video/webm">
       <source src="Smoke.mp4" type="video/mp4">
     </video>
+  </div>
+
+  <!-- Top main menu (add or edit links as needed) -->
+  <div class="top-nav" role="navigation" aria-label="Main menu">
+    <a class="nav-btn" href="index.html" title="Main Menu">Main Menu</a>
+    <a class="nav-btn" href="rules.html" title="Rules">Rules</a>
+    <a class="nav-btn" href="support.html" title="Support">Support</a>
   </div>
 
   <main class="page" role="main">
@@ -156,23 +201,31 @@
         <h1 class="site-title">Page Title</h1>
       </header>
 
-      <!-- Black pad section with red heading -->
+      <!-- Example black pad section with red heading -->
       <section class="card" aria-labelledby="section-1-title">
         <h2 id="section-1-title">Section Heading</h2>
         <p>
-          This is a template card. Replace this paragraph with whatever content you need.
-          Use multiple cards stacked vertically to create the same layout as rules.html.
+          Replace this text with your content. Use additional .card sections to build a rules or support page that matches rules.html layout.
         </p>
-        <a class="btn-outline" href="#">Primary Action</a>
       </section>
 
-      <!-- Additional black pad -->
       <section class="card" aria-labelledby="section-2-title">
         <h2 id="section-2-title">Another Heading</h2>
         <p>
-          Use these cards for collapsibles, Discord widget embeds, support instructions, or lists of rules.
+          Embed Discord widgets, accordions, or any content here. The smoke background and top menu match rules.html visual treatment.
         </p>
       </section>
+
+      <!-- Bottom back / navigation row -->
+      <div class="back-row">
+        <a class="back-link" href="index.html" aria-label="Return to main menu">
+          <!-- simple arrow that follows site style -->
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
+            <path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path>
+          </svg>
+          Return to Main Menu
+        </a>
+      </div>
     </div>
   </main>
 </body>
