@@ -6,22 +6,20 @@
   <title>Aggro PvP — Server Rules</title>
 
   <style>
-    /* DayZ font — replace filename/path if needed (space URL-encoded) */
     @font-face{
-      font-family: 'DayZFont';
+      font-family:'DayZFont';
       src: url('28%20Days%20Later.ttf') format('truetype');
       font-display: swap;
     }
 
     :root{
-      --bg: #000;
-      --accent: #ff3b3b;
-      --muted: rgba(255,255,255,0.88);
-      --card-dark: #070707;
-      --card-dark-2: #0f0f0f;
-      --radius: 12px;
-      --smoke-opacity: 0.66;
-      --max-width: 1100px;
+      --bg:#000;
+      --accent:#ff3b3b;
+      --card-dark:#070707;
+      --card-dark-2:#0f0f0f;
+      --radius:12px;
+      --smoke-opacity:0.66;
+      --max-width:900px;
     }
 
     html,body{
@@ -29,13 +27,12 @@
       margin:0;
       background:var(--bg);
       color:#fff;
-      font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
+      font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial;
       -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
       overflow-x:hidden;
     }
 
-    /* Full-screen smoke background */
+    /* Smoke background */
     #smoke-bg{
       position:fixed;
       inset:0;
@@ -54,10 +51,9 @@
       object-fit:cover;
       opacity:var(--smoke-opacity);
       filter: blur(5px) saturate(1.04) contrast(1.02);
-      will-change:transform,opacity;
     }
 
-    /* Page content above smoke */
+    /* Content wrapper */
     .page{
       position:relative;
       z-index:2;
@@ -65,140 +61,117 @@
       padding:40px 20px;
       display:flex;
       justify-content:center;
-      align-items:flex-start;
-      box-sizing:border-box;
     }
-
     .wrap{
       width:100%;
       max-width:var(--max-width);
       display:flex;
       flex-direction:column;
       gap:18px;
-      box-sizing:border-box;
     }
 
     /* Heading */
-    header { text-align:center; pointer-events:none; }
+    header{text-align:center;}
     h1{
       margin:0;
-      font-family: 'DayZFont', "Segoe UI", sans-serif;
-      font-size: clamp(28px, 6.5vw, 64px);
-      line-height:0.95;
+      font-family:'DayZFont',sans-serif;
+      font-size:clamp(28px,6vw,60px);
       color:#fff;
       text-transform:uppercase;
       letter-spacing:1.6px;
-      text-shadow:
-        0 1px 0 rgba(0,0,0,0.85),
-        0 8px 28px rgba(0,0,0,0.6),
-        0 12px 40px rgba(255,59,59,0.05);
-      -webkit-font-smoothing:antialiased;
+      text-shadow:0 1px 0 rgba(0,0,0,0.85),
+                  0 8px 28px rgba(0,0,0,0.6),
+                  0 12px 40px rgba(255,59,59,0.05);
     }
 
-    /* Grid of collapsibles */
+    /* Stacked collapsibles */
     .grid{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
+      display:flex;
+      flex-direction:column;
       gap:16px;
       margin-top:6px;
     }
-    @media (max-width:920px){ .grid{ grid-template-columns:1fr } }
 
-    /* Native details/summary styled as 3D cards */
     details{
       border-radius:var(--radius);
-      overflow:visible;
-      background: linear-gradient(180deg,var(--card-dark),var(--card-dark-2));
+      background:linear-gradient(180deg,var(--card-dark),var(--card-dark-2));
       border:2px solid rgba(255,59,59,0.12);
-      box-shadow:
-        inset 0 2px 6px rgba(255,255,255,0.02),
-        inset 0 -8px 18px rgba(0,0,0,0.75),
-        0 12px 30px rgba(0,0,0,0.9);
-      transition: transform .16s ease, box-shadow .16s ease;
+      box-shadow:inset 0 2px 6px rgba(255,255,255,0.02),
+                 inset 0 -8px 18px rgba(0,0,0,0.75),
+                 0 12px 30px rgba(0,0,0,0.9);
+      transition:transform .16s ease, box-shadow .16s ease;
     }
-    details[open]{ transform:translateY(-6px); box-shadow:0 28px 64px rgba(0,0,0,0.95); }
+    details[open]{transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,0.9);}
 
     summary{
       list-style:none;
       display:flex;
-      align-items:center;
       justify-content:space-between;
-      gap:12px;
+      align-items:center;
       padding:14px 16px;
       cursor:pointer;
-      user-select:none;
-      font-family:'DayZFont', "Segoe UI", sans-serif;
+      font-family:'DayZFont',sans-serif;
       font-weight:800;
       color:var(--accent);
-      border-radius:var(--radius);
     }
-    summary::-webkit-details-marker{ display:none; }
+    summary::-webkit-details-marker{display:none;}
+    .chev{transition:transform .2s;}
+    details[open] .chev{transform:rotate(90deg);}
 
-    .title{ font-size:16px; color:var(--accent); }
-    .chev{ font-size:18px; color:var(--accent); transition: transform .14s ease; }
-    details[open] .chev{ transform:rotate(90deg); }
-
-    /* Panel content */
     .panel{
       padding:14px 16px 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
-      border-top:1px solid rgba(255,255,255,0.03);
-      border-radius: 0 0 var(--radius) var(--radius);
+      background:rgba(255,255,255,0.02);
+      border-top:1px solid rgba(255,255,255,0.05);
     }
 
     .rule{
       display:flex;
       gap:12px;
-      align-items:flex-start;
-      background: rgba(255,255,255,0.02);
+      margin-bottom:10px;
+      background:rgba(255,255,255,0.02);
       padding:12px;
       border-radius:10px;
       border-left:4px solid rgba(255,59,59,0.16);
-      margin-bottom:10px;
-      color:rgba(255,255,255,0.96);
       font-size:15px;
-      line-height:1.45;
+      color:rgba(255,255,255,0.96);
     }
-
     .num{
       min-width:40px;
       height:40px;
-      display:inline-grid;
+      display:grid;
       place-items:center;
-      background:linear-gradient(180deg, rgba(255,59,59,0.14), rgba(255,59,59,0.06));
+      background:linear-gradient(180deg,rgba(255,59,59,0.14),rgba(255,59,59,0.06));
       color:var(--accent);
       font-weight:800;
       border-radius:8px;
       border:1px solid rgba(255,59,59,0.06);
-      font-family:"Segoe UI",sans-serif;
     }
 
     /* Back link */
-    .back-row{ display:flex; justify-content:center; margin-top:12px; }
+    .back-row{display:flex;justify-content:center;margin-top:12px;}
     .back-link{
-      display:inline-block;
       text-decoration:none;
       font-weight:800;
-      background: linear-gradient(180deg,var(--card-dark),var(--card-dark-2));
+      background:linear-gradient(180deg,var(--card-dark),var(--card-dark-2));
       border:2px solid rgba(255,59,59,0.14);
       color:var(--accent);
       padding:12px 18px;
       border-radius:12px;
-      box-shadow:
-        inset 0 2px 6px rgba(255,255,255,0.02),
-        inset 0 -8px 18px rgba(0,0,0,0.75),
-        0 10px 30px rgba(0,0,0,0.9);
+      box-shadow:inset 0 2px 6px rgba(255,255,255,0.02),
+                 inset 0 -8px 18px rgba(0,0,0,0.75),
+                 0 10px 30px rgba(0,0,0,0.9);
     }
 
+    /* Mobile spacing */
     @media (max-width:520px){
-      .rule{ padding:10px; font-size:14px; }
       summary{ padding:12px 14px; }
+      .rule{ padding:10px; font-size:14px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Fullscreen smoke background -->
+  <!-- Smoke background -->
   <div id="smoke-bg" aria-hidden="true">
     <video autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg">
       <source src="Smoke.webm" type="video/webm">
@@ -215,9 +188,10 @@
 
       <section class="grid" role="list">
 
-        <details id="general" open>
+        <!-- General -->
+        <details id="general">
           <summary>
-            <span class="title">General</span>
+            <span>General</span>
             <span class="chev" aria-hidden="true">›</span>
           </summary>
           <div class="panel" role="region" aria-labelledby="general">
@@ -229,9 +203,10 @@
           </div>
         </details>
 
+        <!-- Safezone -->
         <details id="safezone">
           <summary>
-            <span class="title">Safezone</span>
+            <span>Safezone</span>
             <span class="chev" aria-hidden="true">›</span>
           </summary>
           <div class="panel" role="region" aria-labelledby="safezone">
@@ -241,9 +216,10 @@
           </div>
         </details>
 
+        <!-- Base building -->
         <details id="base-building">
           <summary>
-            <span class="title">Base Building</span>
+            <span>Base Building</span>
             <span class="chev" aria-hidden="true">›</span>
           </summary>
           <div class="panel" role="region" aria-labelledby="base-building">
@@ -259,9 +235,10 @@
           </div>
         </details>
 
+        <!-- Storage -->
         <details id="storage">
           <summary>
-            <span class="title">Base Storage Limit</span>
+            <span>Base Storage Limit</span>
             <span class="chev" aria-hidden="true">›</span>
           </summary>
           <div class="panel" role="region" aria-labelledby="storage">
@@ -269,9 +246,10 @@
           </div>
         </details>
 
-        <details id="raiding" style="grid-column:1 / -1">
+        <!-- Raiding -->
+        <details id="raiding">
           <summary>
-            <span class="title">Raiding</span>
+            <span>Raiding</span>
             <span class="chev" aria-hidden="true">›</span>
           </summary>
           <div class="panel" role="region" aria-labelledby="raiding">
@@ -290,28 +268,8 @@
       <div class="back-row">
         <a class="back-link" href="index.html">← Return to Main Menu</a>
       </div>
+
     </div>
   </main>
-
-  <script>
-    // Small JS: ensure only one native details open at a time (simple, unobtrusive)
-    (function(){
-      const details = Array.from(document.querySelectorAll('details'));
-      details.forEach(d => {
-        d.addEventListener('toggle', () => {
-          if (!d.open) return;
-          details.forEach(other => { if (other !== d) other.open = false; });
-        });
-      });
-
-      // Video fallback: hide background if video fails
-      const vid = document.querySelector('#smoke-bg video');
-      const wrap = document.getElementById('smoke-bg');
-      if (vid) {
-        vid.addEventListener('error', ()=> { if (wrap) wrap.style.display = 'none'; }, {passive:true});
-        setTimeout(()=> { if (vid.readyState === 0 && wrap) wrap.style.display = 'none'; }, 2200);
-      }
-    })();
-  </script>
 </body>
 </html>
