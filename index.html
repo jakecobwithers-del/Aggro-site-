@@ -1,280 +1,317 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Aggro PvP — JOIN THE FIGHT</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aggro PvP — Server Rules</title>
+
   <style>
+    /* DayZ font — replace filename/path if needed (space URL-encoded) */
+    @font-face{
+      font-family: 'DayZFont';
+      src: url('28%20Days%20Later.ttf') format('truetype');
+      font-display: swap;
+    }
+
     :root{
-      --bg:#050505;
-      --red:#ff1a1a;
-      --cycle:4000;
-      --text-dur:3000;
-      --flash-dur:600;
-      --circle-dur:3000;
-      --z-menu:6000; --z-vfx:4500; --z-blood:3500;
-      --z-head:3000; --z-color:2500; --z-smoke:2000;
-      --z-cta:1000; --z-logo:1000;
-      --cta-height:56px;
-      --cta-radius:12px;
+      --bg: #000;
+      --accent: #ff3b3b;
+      --muted: rgba(255,255,255,0.88);
+      --card-dark: #070707;
+      --card-dark-2: #0f0f0f;
+      --radius: 12px;
+      --smoke-opacity: 0.66;
+      --max-width: 1100px;
     }
 
-    *,*::before,*::after{box-sizing:border-box}
-    html,body{height:100%;width:100%;margin:0;padding:0;background:var(--bg);overflow:hidden;color:#fff;font-family:"28Days",sans-serif}
-    @font-face{font-family:"28Days";src:url("28%20Days%20Later.ttf") format("truetype");font-display:swap}
-    button,a{background:none;border:none;cursor:pointer;font-family:inherit;text-decoration:none;color:inherit}
-
-    /* MENU */
-    .anarchyBtn{position:fixed;top:14px;right:14px;z-index:var(--z-menu);pointer-events:auto}
-    .anarchyBtn img{width:64px;height:64px;display:block}
-    .anarchyMenu{position:fixed;top:90px;right:14px;display:none;flex-direction:column;padding:12px;background:rgba(10,10,10,0.95);border-radius:12px;z-index:var(--z-menu);pointer-events:auto}
-    .anarchyMenu.open{display:flex}
-    .anarchyMenu a{color:#ffdede;font-size:16px;font-weight:800;padding:10px 14px}
-
-    /* LOGO / CTA placement */
-    #logo{position:fixed;top:6vh;left:50%;transform:translateX(-50%);z-index:var(--z-logo);pointer-events:auto}
-    #logo img{max-width:30vw;height:auto;display:block}
-    .cta{position:fixed;bottom:8vh;left:50%;transform:translateX(-50%);display:flex;gap:18px;z-index:var(--z-cta);pointer-events:auto}
-
-    /* 3D CTA buttons */
-    .cta .btn {
-      --base:#0b0b0b;
-      --edge:#060606;
-      --highlight:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
-      display:inline-flex;align-items:center;gap:12px;justify-content:center;
-      height:var(--cta-height);min-width:220px;padding:0 22px;border-radius:var(--cta-radius);
-      background:linear-gradient(180deg,var(--base),var(--edge));color:#fff;font-weight:900;letter-spacing:.06em;
-      box-shadow:0 12px 30px rgba(0,0,0,0.8), 0 2px 0 rgba(0,0,0,0.6) inset;
-      transform:translateZ(0);transition:transform .18s cubic-bezier(.2,.9,.3,1),box-shadow .18s;
-      position:relative;overflow:visible;border:2px solid rgba(255,255,255,0.03);
+    html,body{
+      height:100%;
+      margin:0;
+      background:var(--bg);
+      color:#fff;
+      font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
     }
-    .btn::before{content:"";position:absolute;inset:2px;border-radius:calc(var(--cta-radius) - 2px);background:var(--highlight);mix-blend-mode:overlay;pointer-events:none;opacity:.35}
-    .btn .icon{width:28px;height:28px;display:inline-block;flex:0 0 28px}
-    .btn.steam{ background:linear-gradient(180deg,#111,#050505); border-color:rgba(255,255,255,0.04) }
-    .btn.steam .badge{ background:linear-gradient(180deg,#ff6b6b,#ff2a2a); padding:4px 8px;border-radius:8px;font-size:12px;font-weight:800 }
-    .btn.discord{ background:linear-gradient(180deg,#23263a,#0f1220); border-color:rgba(255,255,255,0.03) }
-    .btn.discord .badge{ background:linear-gradient(180deg,#7289da,#4962c8); padding:4px 8px;border-radius:8px;font-size:12px;font-weight:800 }
-    .btn:hover{ transform:translateY(-6px) scale(1.01); box-shadow:0 20px 40px rgba(0,0,0,0.75) }
-    .btn:active{ transform:translateY(-2px) scale(.995); box-shadow:0 6px 18px rgba(0,0,0,0.85) }
-    .btn:focus{ outline:3px solid rgba(255,255,255,0.06); outline-offset:4px }
-    @media (max-width:620px){ .cta{flex-direction:column;gap:12px;bottom:6vh} .btn{min-width:220px;width:88vw} #logo img{max-width:60vw} }
 
-    /* SMOKE VIDEO */
-    #smoke-wrap{position:fixed;inset:0;pointer-events:none;z-index:var(--z-smoke)}
-    #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:.9;transition:filter .35s linear,opacity .35s linear}
-    /* default tint fallback: non-problem devices rely on mix-blend color overlay */
-    #colorOverlay{position:fixed;inset:0;background:var(--red);mix-blend-mode:color;opacity:0.18;transition:opacity var(--text-dur)ms ease-in-out;z-index:var(--z-color);pointer-events:none}
+    /* Full-screen smoke background */
+    #smoke-bg{
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      overflow:hidden;
+      background:#000;
+    }
+    #smoke-bg video{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      width:160vw;
+      height:160vh;
+      object-fit:cover;
+      opacity:var(--smoke-opacity);
+      filter: blur(5px) saturate(1.04) contrast(1.02);
+      will-change:transform,opacity;
+    }
 
-    /* When using filter mode (iPad), we alter video filter and show a semi-transparent non-mix overlay to guarantee visible red */
-    body.use-filter #colorOverlay{ mix-blend-mode:normal; background:rgba(255,26,26,0.14); opacity:1; pointer-events:none }
-    body.use-filter #smokeVideo{ filter: brightness(.7) contrast(1.05) saturate(1.4) sepia(.18) hue-rotate(-8deg) opacity:0.95 }
+    /* Page content above smoke */
+    .page{
+      position:relative;
+      z-index:2;
+      min-height:100vh;
+      padding:40px 20px;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      box-sizing:border-box;
+    }
 
-    /* RED FLASH (keeps original) */
-    #redOverlay{position:fixed;inset:0;background:var(--red);mix-blend-mode:screen;opacity:0;z-index:var(--z-vfx);pointer-events:none;animation-fill-mode:both}
-    @keyframes redFlash{0%{opacity:0}10%{opacity:.4}30%{opacity:0}100%{opacity:0}}
+    .wrap{
+      width:100%;
+      max-width:var(--max-width);
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      box-sizing:border-box;
+    }
 
-    /* VFX flicker placeholder */
-    .vfx{position:fixed;inset:0;pointer-events:none;z-index:var(--z-vfx)}
-    .vfx .flicker{position:absolute;inset:0;mix-blend-mode:screen;opacity:0}
+    /* Heading */
+    header { text-align:center; pointer-events:none; }
+    h1{
+      margin:0;
+      font-family: 'DayZFont', "Segoe UI", sans-serif;
+      font-size: clamp(28px, 6.5vw, 64px);
+      line-height:0.95;
+      color:#fff;
+      text-transform:uppercase;
+      letter-spacing:1.6px;
+      text-shadow:
+        0 1px 0 rgba(0,0,0,0.85),
+        0 8px 28px rgba(0,0,0,0.6),
+        0 12px 40px rgba(255,59,59,0.05);
+      -webkit-font-smoothing:antialiased;
+    }
 
-    /* HEADLINE */
-    #headline{position:fixed;top:42vh;left:50%;transform:translateX(-50%);text-align:center;z-index:var(--z-head);pointer-events:none}
-    #headlineText{font-size:clamp(48px,14vw,136px);line-height:.9;letter-spacing:.12em;opacity:0;will-change:opacity}
-    @keyframes textFade{0%,10%{opacity:0}20%,80%{opacity:1}100%{opacity:0}}
-    .fadeText{animation:textFade var(--text-dur)ms both}
-    @keyframes glitch{0%,100%{clip:rect(0,9999px,0,0)}20%{clip:rect(20px,9999px,40px,0)}40%{clip:rect(50px,9999px,70px,0)}60%{clip:rect(10px,9999px,30px,0)}80%{clip:rect(60px,9999px,80px,0)}}
-    .glitch,.glitch::before,.glitch::after{animation:glitch .6s steps(2) both}
-    .glitch::before,.glitch::after{content:attr(data-text);position:absolute;inset:0;mix-blend-mode:screen;opacity:.6}
-    .glitch::before{color:#ff4b4b;left:2px}
-    .glitch::after{color:#7fb7ff;left:-2px}
+    /* Grid of collapsibles */
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:16px;
+      margin-top:6px;
+    }
+    @media (max-width:920px){ .grid{ grid-template-columns:1fr } }
 
-    /* BLOOD CIRCLE */
-    #bloodCircle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(1);opacity:0;width:clamp(200px,40vw,400px);pointer-events:none;z-index:var(--z-blood);animation-fill-mode:both}
-    @keyframes circleAnim{0%,20%{opacity:0}25%,75%{opacity:.6}100%{opacity:0}}
+    /* Native details/summary styled as 3D cards */
+    details{
+      border-radius:var(--radius);
+      overflow:visible;
+      background: linear-gradient(180deg,var(--card-dark),var(--card-dark-2));
+      border:2px solid rgba(255,59,59,0.12);
+      box-shadow:
+        inset 0 2px 6px rgba(255,255,255,0.02),
+        inset 0 -8px 18px rgba(0,0,0,0.75),
+        0 12px 30px rgba(0,0,0,0.9);
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+    details[open]{ transform:translateY(-6px); box-shadow:0 28px 64px rgba(0,0,0,0.95); }
 
-    /* accessibility: reduced motion */
-    @media (prefers-reduced-motion:reduce){ *{animation-duration:0.001ms !important; transition:none !important} .btn:hover,.btn:active{transform:none;box-shadow:none} }
+    summary{
+      list-style:none;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      cursor:pointer;
+      user-select:none;
+      font-family:'DayZFont', "Segoe UI", sans-serif;
+      font-weight:800;
+      color:var(--accent);
+      border-radius:var(--radius);
+    }
+    summary::-webkit-details-marker{ display:none; }
+
+    .title{ font-size:16px; color:var(--accent); }
+    .chev{ font-size:18px; color:var(--accent); transition: transform .14s ease; }
+    details[open] .chev{ transform:rotate(90deg); }
+
+    /* Panel content */
+    .panel{
+      padding:14px 16px 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
+      border-top:1px solid rgba(255,255,255,0.03);
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    .rule{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      background: rgba(255,255,255,0.02);
+      padding:12px;
+      border-radius:10px;
+      border-left:4px solid rgba(255,59,59,0.16);
+      margin-bottom:10px;
+      color:rgba(255,255,255,0.96);
+      font-size:15px;
+      line-height:1.45;
+    }
+
+    .num{
+      min-width:40px;
+      height:40px;
+      display:inline-grid;
+      place-items:center;
+      background:linear-gradient(180deg, rgba(255,59,59,0.14), rgba(255,59,59,0.06));
+      color:var(--accent);
+      font-weight:800;
+      border-radius:8px;
+      border:1px solid rgba(255,59,59,0.06);
+      font-family:"Segoe UI",sans-serif;
+    }
+
+    /* Back link */
+    .back-row{ display:flex; justify-content:center; margin-top:12px; }
+    .back-link{
+      display:inline-block;
+      text-decoration:none;
+      font-weight:800;
+      background: linear-gradient(180deg,var(--card-dark),var(--card-dark-2));
+      border:2px solid rgba(255,59,59,0.14);
+      color:var(--accent);
+      padding:12px 18px;
+      border-radius:12px;
+      box-shadow:
+        inset 0 2px 6px rgba(255,255,255,0.02),
+        inset 0 -8px 18px rgba(0,0,0,0.75),
+        0 10px 30px rgba(0,0,0,0.9);
+    }
+
+    @media (max-width:520px){
+      .rule{ padding:10px; font-size:14px; }
+      summary{ padding:12px 14px; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- menu -->
-  <button id="anarchyBtn" class="anarchyBtn" aria-controls="anarchyMenu" aria-expanded="false">
-    <img src="anarchy.png" alt="Toggle menu"/>
-  </button>
-  <nav id="anarchyMenu" class="anarchyMenu" role="menu">
-    <a href="rules.html">Rules</a>
-    <a href="support.html">Support</a>
-    <a href="donate.html">Donate</a>
-    <a href="killfeed.html">Kill Feed</a>
-    <a href="leaderboard.html">Leaderboard</a>
-  </nav>
-
-  <!-- CTA & logo -->
-  <div class="cta" role="navigation" aria-label="Primary actions">
-    <a class="btn steam" id="steamBtn" href="steam://connect/YOURSERVERIP" role="button" aria-label="Join server on Steam">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="6.5" cy="13.5" r="2.4" fill="#fff" opacity="0.9"/>
-        <circle cx="16.5" cy="7.5" r="2.4" fill="#fff" opacity="0.9"/>
-        <path d="M7.9 12.3l6.2-3.6" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
-        <path d="M10.9 15.1l4.9-2.9" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
-      </svg>
-      <span style="font-size:15px">JOIN SERVER</span>
-      <span class="badge" aria-hidden="true" style="margin-left:8px;background:#ff4b4b;color:#fff;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:900">LIVE</span>
-    </a>
-
-    <a class="btn discord" id="discordBtn" href="https://discord.gg/YOURDISCORD" role="button" aria-label="Join our Discord">
-      <svg class="icon" viewBox="0 0 71 55" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 20c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4zM51 20c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4z" fill="#fff"/>
-      </svg>
-      <span style="font-size:15px">JOIN COMMUNITY</span>
-      <span class="badge" aria-hidden="true" style="margin-left:8px;background:linear-gradient(180deg,#5b8df0,#344eaf);color:#fff;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:900">CHAT</span>
-    </a>
-  </div>
-
-  <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro Logo"/></div>
-
-  <!-- smoke -->
-  <div id="smoke-wrap">
-    <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
-      <source src="Smoke.mp4" type="video/mp4"/>
+  <!-- Fullscreen smoke background -->
+  <div id="smoke-bg" aria-hidden="true">
+    <video autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg">
+      <source src="Smoke.webm" type="video/webm">
+      <source src="Smoke.mp4" type="video/mp4">
     </video>
   </div>
 
-  <!-- overlays -->
-  <div id="colorOverlay" aria-hidden="true"></div>
-  <div id="redOverlay" aria-hidden="true"></div>
-  <div class="vfx"><div id="vfxFlicker" class="flicker" aria-hidden="true"></div></div>
+  <main class="page" role="main">
+    <div class="wrap">
 
-  <!-- headline & blood -->
-  <div id="headline">
-    <div id="headlineText" class="fadeText" data-text="JOIN THE FIGHT">JOIN THE FIGHT</div>
-    <img id="bloodCircle" src="blood1.png" alt="Blood circle"/>
-  </div>
+      <header role="banner" aria-label="Aggro PvP">
+        <h1>Server Rules</h1>
+      </header>
+
+      <section class="grid" role="list">
+
+        <details id="general" open>
+          <summary>
+            <span class="title">General</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
+          <div class="panel" role="region" aria-labelledby="general">
+            <div class="rule"><div class="num">1</div><div>No external mods, hacks, duping, NVinspect, or glitch movement. Filters and external crosshairs are allowed.</div></div>
+            <div class="rule"><div class="num">2</div><div>No alt accounts or stream sniping.</div></div>
+            <div class="rule"><div class="num">3</div><div>No combat logging. Wait 10 minutes after PvP before logging or entering safezone unless the fight couldn’t realistically continue.</div></div>
+            <div class="rule"><div class="num">4</div><div>If you log into someone else's base or locked room unexpectedly, make a ticket and don’t touch anything—even if it’s your own base post-raid.</div></div>
+            <div class="rule"><div class="num">5</div><div>Report bugs. Abusing glitches (including de-rendering bases) will be punished.</div></div>
+          </div>
+        </details>
+
+        <details id="safezone">
+          <summary>
+            <span class="title">Safezone</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
+          <div class="panel" role="region" aria-labelledby="safezone">
+            <div class="rule"><div class="num">1</div><div>Unattended dropped items are free game. Otherwise, don’t touch what’s not yours including vehicles.</div></div>
+            <div class="rule"><div class="num">2</div><div>No safezone camping, blocking, following, or abusing protection. If you kill in self-defense entering/leaving, leave their loot.</div></div>
+            <div class="rule"><div class="num">3</div><div>Unattended ungaraged vehicles may be deleted after 12 hours.</div></div>
+          </div>
+        </details>
+
+        <details id="base-building">
+          <summary>
+            <span class="title">Base Building</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
+          <div class="panel" role="region" aria-labelledby="base-building">
+            <div class="rule"><div class="num">1</div><div>One main base + one stash base/FOB per player.</div></div>
+            <div class="rule"><div class="num">2</div><div>Max 25 code-locked doors/hatches/containers per base.</div></div>
+            <div class="rule"><div class="num">3</div><div>All areas of your base must be accessible on foot—no loot rooms via windows only.</div></div>
+            <div class="rule"><div class="num">4</div><div>Build realistically—no unsupported structures or more than two floor kits out from a structure.</div></div>
+            <div class="rule"><div class="num">5</div><div>BBP kits must not overlap in ways that block access or raid tools.</div></div>
+            <div class="rule"><div class="num">6</div><div>Mesh and fence kits must be fully constructed.</div></div>
+            <div class="rule"><div class="num">7</div><div>On municipal buildings, silos, or radio towers, max two floor kits out—don’t block player structures.</div></div>
+            <div class="rule"><div class="num">8</div><div>Secure your base. Don’t share codes with untrusted players—no compensation for your mistakes.</div></div>
+            <div class="rule"><div class="num">9</div><div><strong style="color:var(--accent)">Note</strong> No base size limit, but don’t abuse it. Staff will notify you if it gets excessive.</div></div>
+          </div>
+        </details>
+
+        <details id="storage">
+          <summary>
+            <span class="title">Base Storage Limit</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
+          <div class="panel" role="region" aria-labelledby="storage">
+            <div class="rule"><div class="num">1</div><div>You’re limited to 20 storage kits per base, plus 5 extra per team member.</div></div>
+          </div>
+        </details>
+
+        <details id="raiding" style="grid-column:1 / -1">
+          <summary>
+            <span class="title">Raiding</span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
+          <div class="panel" role="region" aria-labelledby="raiding">
+            <div class="rule"><div class="num">1</div><div>Alliances are allowed.</div></div>
+            <div class="rule"><div class="num">2</div><div>No despawning, repairing, or modifying bases during active raids.</div></div>
+            <div class="rule"><div class="num">3</div><div>Loot can only be dropped if taking the storage kit—don’t despawn unwanted loot.</div></div>
+            <div class="rule"><div class="num">4</div><div>No combat logging during raids. If IRL forces you to log, say so—don’t log with combat tag.</div></div>
+            <div class="rule"><div class="num">5</div><div>Don’t abuse hologram/kit placement to raid (one ladder on the floor is allowed).</div></div>
+            <div class="rule"><div class="num">6</div><div>Glitch methods (fences, punching through windows, missing vehicles, floating entities) are not allowed.</div></div>
+            <div class="rule"><div class="num">7</div><div>A raid is considered active for 15 minutes after the last use of explosives or raid tools.</div></div>
+          </div>
+        </details>
+
+      </section>
+
+      <div class="back-row">
+        <a class="back-link" href="index.html">← Return to Main Menu</a>
+      </div>
+    </div>
+  </main>
 
   <script>
-  (function(){
-    const S = getComputedStyle(document.documentElement);
-    const cycle = +S.getPropertyValue('--cycle') || 4000;
-    const txtDur = +S.getPropertyValue('--text-dur') || 3000;
-    const flash = +S.getPropertyValue('--flash-dur') || 600;
-
-    const colorOvl = document.getElementById('colorOverlay');
-    const redOvl = document.getElementById('redOverlay');
-    const textEl = document.getElementById('headlineText');
-    const circle = document.getElementById('bloodCircle');
-    const flicker = document.getElementById('vfxFlicker');
-    const smoke = document.getElementById('smokeVideo');
-    let running = false;
-
-    function restart(el,name,dur,delay=0){
-      el.style.animation = 'none';
-      void el.offsetWidth;
-      el.style.animation = `${name} ${dur}ms ${delay}ms both`;
-    }
-
-    function detectiPadLike(){
-      const ua = navigator.userAgent || navigator.vendor || '';
-      const isIpadUA = /iPad/.test(ua);
-      const isIOS = /iPhone|iPod/.test(ua);
-      const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 1;
-      const isWebKit = /AppleWebKit/.test(ua) && !/CriOS|FxiOS|OPiOS/.test(ua);
-      return (isIpadUA || isIOS || (isTouch && isWebKit));
-    }
-
-    function setupTintMode(){
-      if(detectiPadLike()){
-        document.body.classList.add('use-filter');
-        // ensure color overlay remains visible but non-mix to guarantee tint
-        colorOvl.style.opacity = '1';
-      } else {
-        document.body.classList.remove('use-filter');
-        colorOvl.style.opacity = '0.18';
-      }
-    }
-
-    function applyTintOnVideo(on){
-      if(document.body.classList.contains('use-filter')){
-        if(on){
-          smoke.classList.add('tinted');
-          // colorOvl is a normal semi-transparent layer to boost visibility
-          colorOvl.style.background = 'rgba(255,26,26,0.14)';
-          colorOvl.style.mixBlendMode = 'normal';
-          colorOvl.style.opacity = '1';
-        } else {
-          smoke.classList.remove('tinted');
-          colorOvl.style.opacity = '0';
-        }
-      } else {
-        if(on){
-          // non-problem devices: use mix-blend-mode color overlay
-          colorOvl.style.background = 'var(--red)';
-          colorOvl.style.mixBlendMode = 'color';
-          colorOvl.style.opacity = '0.18';
-        } else {
-          colorOvl.style.opacity = '0';
-        }
-      }
-    }
-
-    function run(){
-      if(running) return;
-      running = true;
-
-      applyTintOnVideo(true);
-      setTimeout(()=> applyTintOnVideo(false), txtDur);
-
-      restart(redOvl,'redFlash',flash);
-
-      restart(textEl,'textFade',txtDur);
-      textEl.classList.remove('glitch');
-      setTimeout(()=> textEl.classList.add('glitch'),200);
-
-      restart(circle,'circleAnim', +S.getPropertyValue('--circle-dur'), +S.getPropertyValue('--circle-delay'));
-
-      flicker.style.opacity = '1';
-      setTimeout(()=> flicker.style.opacity = '0', flash);
-
-      setTimeout(()=> running = false, cycle);
-    }
-
-    document.getElementById('anarchyBtn').addEventListener('click', e=>{
-      e.stopPropagation();
-      const menu = document.getElementById('anarchyMenu');
-      const open = menu.classList.toggle('open');
-      e.currentTarget.setAttribute('aria-expanded', open);
-    });
-    document.addEventListener('click', e=>{
-      if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
-        document.getElementById('anarchyMenu').classList.remove('open');
-        document.getElementById('anarchyBtn').setAttribute('aria-expanded', false);
-      }
-    });
-
-    const steamBtn = document.getElementById('steamBtn');
-    if(steamBtn){
-      steamBtn.addEventListener('click', function(e){
-        const fallback = 'https://store.steampowered.com/';
-        setTimeout(()=> {
-          if(/Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent)) {
-            window.open(fallback, '_blank');
-          }
-        }, 800);
+    // Small JS: ensure only one native details open at a time (simple, unobtrusive)
+    (function(){
+      const details = Array.from(document.querySelectorAll('details'));
+      details.forEach(d => {
+        d.addEventListener('toggle', () => {
+          if (!d.open) return;
+          details.forEach(other => { if (other !== d) other.open = false; });
+        });
       });
-    }
 
-    window.addEventListener('DOMContentLoaded', ()=>{
-      setupTintMode();
-      if(smoke && smoke.paused){
-        smoke.play().catch(()=>{/* ignore autoplay block */});
+      // Video fallback: hide background if video fails
+      const vid = document.querySelector('#smoke-bg video');
+      const wrap = document.getElementById('smoke-bg');
+      if (vid) {
+        vid.addEventListener('error', ()=> { if (wrap) wrap.style.display = 'none'; }, {passive:true});
+        setTimeout(()=> { if (vid.readyState === 0 && wrap) wrap.style.display = 'none'; }, 2200);
       }
-      run();
-      setInterval(run, cycle);
-      // re-run detection on visibility change or resize (some iPads switch UA)
-      window.addEventListener('resize', setupTintMode);
-      document.addEventListener('visibilitychange', ()=> { if(!document.hidden) setupTintMode(); });
-    });
-  })();
+    })();
   </script>
 </body>
 </html>
