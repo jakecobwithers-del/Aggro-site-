@@ -6,7 +6,6 @@
   <title>Aggro PvP — Support</title>
 
   <style>
-    /* font (site root) */
     @font-face{
       font-family:'28DaysLater';
       src: url('28%20Days%20Later.ttf') format('truetype'), url('28DaysLater.ttf') format('truetype');
@@ -31,26 +30,18 @@
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* full-bleed video: put it underneath everything and force cover the viewport */
+    /* full-bleed video background */
     #smoke-bg{
       position:fixed;
-      top:0;left:0;right:0;bottom:0;
+      inset:0;
       width:100vw;height:100vh;
       object-fit:cover;
-      z-index:-9999; /* far behind to avoid stacking issues */
+      z-index:-9999;
       pointer-events:none;
       filter:brightness(0.5) contrast(1);
       background:#000 center/cover no-repeat;
     }
-
-    /* tint sits above video but under content */
-    .bg-tint{
-      position:fixed;inset:0;z-index:-9998;
-      background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.7));
-      pointer-events:none;
-    }
-
-    /* fallback if video cannot play */
+    .bg-tint{position:fixed;inset:0;z-index:-9998;background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.7));pointer-events:none}
     body.no-video{background-image:url('smoke.jpg');background-size:cover;background-position:center}
 
     .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px;position:relative;z-index:1}
@@ -68,26 +59,22 @@
     .item .text{font-size:15px;line-height:1.45}
     .item .text a{color:#fff;text-decoration:underline;font-weight:800}
 
-    /* owners block (names + short honour text) */
-    .owners{display:flex;flex-direction:column;gap:12px;margin-top:8px}
-    .owner{display:flex;gap:12px;align-items:center;padding:12px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03)}
-    .owner .avatar{width:64px;height:64px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;border:1px solid rgba(255,255,255,0.04);background-size:cover;background-position:center}
-    .owner .meta{display:flex;flex-direction:column}
-    .owner .name{font-weight:900;font-size:16px;color:#fff}
-    .owner .blurb{font-size:13px;color:var(--muted);margin-top:4px;max-width:70ch}
+    /* owners: minimal lines only */
+    .owners{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+    .owner{display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03)}
+    .owner .avatar{width:56px;height:56px;border-radius:8px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;border:1px solid rgba(255,255,255,0.04);background-size:cover;background-position:center}
+    .owner .label{font-weight:800;font-size:15px;color:#fff}
 
     .back-btn{display:inline-block;margin-top:22px;padding:10px 14px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;text-decoration:none;font-weight:700;display:block;width:max-content;margin-left:auto;margin-right:auto}
 
     @media(max-width:600px){
       h1{font-size:34px}
       .item .text{font-size:14px}
-      .owner{padding:10px}
-      .owner .avatar{width:56px;height:56px;font-size:18px}
+      .owner .avatar{width:48px;height:48px;font-size:16px}
     }
   </style>
 </head>
 <body>
-  <!-- video and tint (relative paths like rules.html) -->
   <video id="smoke-bg" autoplay muted loop playsinline preload="auto" poster="smoke.jpg">
     <source src="smoke.webm" type="video/webm">
     <source src="smoke.mp4" type="video/mp4">
@@ -133,18 +120,12 @@
         <div class="owners">
           <div class="owner">
             <div class="avatar" id="av-572334">R</div>
-            <div class="meta">
-              <div class="name">RB Skizza</div>
-              <div class="blurb">Server founder and lead admin — committed to fair play, regular updates, and keeping the community safe and fun.</div>
-            </div>
+            <div class="label">RB Skizza — Owner</div>
           </div>
 
           <div class="owner">
             <div class="avatar" id="av-842365">S</div>
-            <div class="meta">
-              <div class="name">Slomobob</div>
-              <div class="blurb">Head of community and events — designs server events, oversees balance, and handles player support with care.</div>
-            </div>
+            <div class="label">Slomobob — Co Owner</div>
           </div>
         </div>
       </div>
@@ -155,18 +136,14 @@
 
   <script>
     (function(){
-      // same fallback logic as rules.html: try play, on error set no-video so poster/background displays
       const vid = document.getElementById('smoke-bg');
       let played = false;
       vid.addEventListener('playing', ()=> played = true);
       vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
-      // attempt play (some browsers require interaction, this is best-effort)
       setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 700);
 
-      // load owner avatars best-effort (use embed fallback if exact avatar not available)
       function embedAvatarUrl(id){ return `https://cdn.discordapp.com/embed/avatars/${Number(id) % 5}.png`; }
       async function testHead(url){ try{ const r = await fetch(url, { method:'HEAD', cache:'no-store' }); return r.ok; } catch(e){ return false; } }
-
       async function applyAvatar(elId, id){
         const el = document.getElementById(elId);
         if (!el) return;
@@ -182,11 +159,9 @@
         el.textContent = '';
       }
 
-      // apply avatars for owners (ids from your data)
       applyAvatar('av-572334', '572334717731602462').catch(()=>{});
       applyAvatar('av-842365', '842365557486518302').catch(()=>{});
 
-      // diagnostic logging (open console to inspect)
       (async function diag(){
         const files = ['smoke.mp4','smoke.webm','smoke.jpg'];
         for (const f of files){
