@@ -57,10 +57,11 @@
     }
     .subtitle{
       margin-top:8px;
-      color:var(--muted);
       font-size:15px;
+      line-height:1.05;
     }
-    .subtitle b{ color:var(--accent); font-family:'DayZFont',sans-serif; letter-spacing:0.6px; }
+    .subtitle .line-white{ color:#fff; display:block; font-weight:700; }
+    .subtitle .line-red{ color:var(--accent); display:block; font-weight:900; font-family:'DayZFont',sans-serif; letter-spacing:0.6px; text-transform:lowercase; }
 
     /* Individual black cards (one card per support item) */
     .card{
@@ -176,11 +177,14 @@
     <div class="wrap">
       <header class="title" role="banner" aria-label="Support header">
         <h1>Support</h1>
-        <div class="subtitle">Still breathing? <b>We keep the camp running.</b></div>
+        <div class="subtitle" aria-hidden="false">
+          <span class="line-white">Still Breathing?</span>
+          <span class="line-red">we've got your six</span>
+        </div>
       </header>
 
       <!-- Bug Reports -->
-      <section class="card" aria-labelledby="bug-reports">
+      <section class="card" aria-labelledby="bug-reports" aria-label="Bug Reports section">
         <h2 id="bug-reports">Bug Reports</h2>
         <p>Found a crash, exploit, or anything acting up — include what happened, when, and screenshots or video so staff can reproduce and fix it quickly.</p>
         <div style="margin-top:12px;">
@@ -192,7 +196,7 @@
       </section>
 
       <!-- Suggestions -->
-      <section class="card" aria-labelledby="suggestions">
+      <section class="card" aria-labelledby="suggestions" aria-label="Suggestions section">
         <h2 id="suggestions">Suggestions</h2>
         <p>Have a gameplay tweak, event idea, or QoL improvement? Post constructive suggestions so the team can review and discuss them.</p>
         <div style="margin-top:12px;">
@@ -204,7 +208,7 @@
       </section>
 
       <!-- Ticket -->
-      <section class="card" aria-labelledby="ticket">
+      <section class="card" aria-labelledby="ticket" aria-label="Ticket section">
         <h2 id="ticket">Ticket</h2>
         <p>Need private help for bans, appeals, or account issues? Open a ticket and staff will follow up — include your Discord ID and any evidence to speed the process.</p>
         <div style="margin-top:12px;">
@@ -215,10 +219,13 @@
         </div>
       </section>
 
-      <!-- Owner / credits (smaller) -->
-      <section class="card" aria-labelledby="owner">
-        <h2 id="owner" style="color:#fff;">Owner & Thanks</h2>
-        <p class="owner-meta">Aggro PvP is run with care — fair play and respect are the backbone of this community. If the server helped you, say thanks and keep reports detailed and constructive.</p>
+      <!-- Owners -->
+      <section class="card" aria-labelledby="owners" aria-label="Owners section">
+        <h2 id="owners" style="color:#fff;">Owners</h2>
+        <p class="owner-meta">
+          These are the owners who made Aggro PvP possible — Aggro PvP is run with care; fair play and respect are the backbone of this community.
+          If the server helped you, thank the owners, send feedback to help us improve, or help keep the servers running with a donation.
+        </p>
 
         <div class="staff-row" aria-hidden="false">
           <div class="staff" title="RB Skizza">
