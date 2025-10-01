@@ -22,7 +22,7 @@
       --muted:rgba(255,255,255,0.86);
       --maxw:920px;
       --pad:20px;
-      --smoke-opacity:0.66;
+      --smoke-opacity:0.72;
       --gap:18px;
       --tab-height:56px;
     }
@@ -37,24 +37,23 @@
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Full fixed smoke background */
+    /* Oversized fixed smoke background that remains while scrolling */
     #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
     #smoke-bg video{
       position:fixed;
       left:50%;
       top:50%;
-      transform:translate(-50%,-50%);
-      min-width:100vw;
-      min-height:100vh;
-      width:auto;
-      height:auto;
+      transform:translate(-50%,-50%) scale(1.18);
+      width:160vw;
+      height:160vh;
       object-fit:cover;
       opacity:var(--smoke-opacity);
-      filter:blur(5px) saturate(1.04) contrast(1.02);
+      filter:blur(6px) saturate(1.06) contrast(1.03);
+      will-change:transform;
     }
 
     /* Page layout */
-    .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px 120px;box-sizing:border-box;}
+    .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px 140px;box-sizing:border-box;}
     .wrap{width:100%;max-width:var(--maxw);display:flex;flex-direction:column;gap:var(--gap);}
 
     /* Title */
@@ -72,7 +71,7 @@
     .subtitle .line-white{ color:#fff; display:block; font-weight:700; }
     .subtitle .line-red{ color:var(--accent); display:block; font-weight:900; font-family:'DayZFont',sans-serif; letter-spacing:0.6px; text-transform:lowercase; }
 
-    /* Tabs */
+    /* Tabs row (Owners removed from tabs) */
     .tabs { display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap; margin-top:6px; }
     .tab {
       height:var(--tab-height);
@@ -92,7 +91,27 @@
     }
     .tab[aria-selected="true"], .tab:focus { transform:translateY(-4px); color:var(--accent); box-shadow:0 14px 36px rgba(0,0,0,0.6); border-color:var(--card-border); outline:none; }
 
-    /* Single main card */
+    /* Owners button (separate from tabs) */
+    .owners-button {
+      height:var(--tab-height);
+      padding:10px 14px;
+      border-radius:12px;
+      background:linear-gradient(180deg, rgba(255,59,59,0.02), rgba(0,0,0,0.02));
+      border:1px solid rgba(255,59,59,0.08);
+      color:var(--accent);
+      font-weight:800;
+      text-transform:uppercase;
+      font-family:'DayZFont',sans-serif;
+      letter-spacing:0.8px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      transition:transform 120ms ease, box-shadow 120ms ease;
+    }
+    .owners-button[aria-pressed="true"]{ transform:translateY(-4px); box-shadow:0 14px 36px rgba(0,0,0,0.6); }
+
+    /* Main swap card */
     .card {
       margin-top:6px;
       border-radius:12px;
@@ -111,7 +130,7 @@
     .card-footer { display:flex; justify-content:flex-start; gap:12px; align-items:center; margin-top:12px; flex-wrap:wrap; }
     .goto { display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; background:linear-gradient(180deg,rgba(255,59,59,0.04),rgba(0,0,0,0.04)); border:1px solid rgba(255,59,59,0.12); color:var(--accent); font-weight:800; text-transform:uppercase; font-family:'DayZFont',sans-serif; width:92px; font-size:12px; text-decoration:none; }
 
-    /* Owners bubble (separate card below the main one) */
+    /* Owners bubble (separate block) */
     .owners-bubble {
       margin-top:6px;
       border-radius:12px;
@@ -140,7 +159,7 @@
     .owner-link b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:15px; }
     .owner-link:hover{ transform:translateX(6px); box-shadow:0 12px 30px rgba(0,0,0,0.6); }
 
-    /* Fixed return button (safe, visible, accessible) */
+    /* Fixed return button */
     .return-fixed{
       position:fixed;
       left:50%;
@@ -160,15 +179,16 @@
       align-items:center;
     }
 
-    /* Small screens */
+    /* Responsive */
     @media(max-width:720px){
       .tabs{ gap:8px; }
       .tab{ padding:8px 12px; height:48px; }
+      .owners-button{ padding:8px 12px; height:48px; }
       .owner-link{ min-width:160px; font-size:14px; }
       .return-fixed{ bottom:12px; padding:10px 14px; }
     }
     @media(max-width:520px){
-      .wrap{padding-bottom:100px;}
+      .wrap{padding-bottom:120px;}
       .card{ padding:16px; }
       .owner-link{ min-width:140px; font-size:13px; }
     }
@@ -192,30 +212,33 @@
         </div>
       </header>
 
-      <!-- Tabs -->
-      <nav class="tabs" role="tablist" aria-label="Support sections">
-        <button class="tab" role="tab" aria-selected="true" aria-controls="panel" id="tab-bug" data-key="bug">Bug Reports</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-suggest" data-key="suggest">Suggestions</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-ticket" data-key="ticket">Ticket</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-owners" data-key="owners">Owners</button>
-      </nav>
+      <!-- Tabs (Owners removed) + Owners button separate -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:6px;flex-wrap:wrap;">
+        <nav class="tabs" role="tablist" aria-label="Support sections">
+          <button class="tab" role="tab" aria-selected="true" aria-controls="panel" id="tab-bug" data-key="bug">Bug Reports</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-suggest" data-key="suggest">Suggestions</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-ticket" data-key="ticket">Ticket</button>
+        </nav>
+
+        <button class="owners-button" id="owners-btn" aria-pressed="false" aria-controls="owners-bubble">Owners</button>
+      </div>
 
       <!-- Main swap card -->
       <section class="card" id="panel" tabindex="0" aria-live="polite">
         <div id="panel-content">
           <h2>Bug Reports</h2>
-          <p>Found a crash, exploit, or anything acting up — include what happened, when it happened, your platform, and screenshots or video so staff can reproduce and fix it quickly.</p>
+          <p>Found a crash, exploit, or anything acting up — include exact steps to reproduce, map/location, server time, and attachments (screenshots or video).</p>
           <div class="card-footer">
             <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
               <span>Go to</span>
             </a>
-            <span style="color:var(--muted);font-size:13px;">Tip: include repro steps, timestamps and platform</span>
+            <span style="color:var(--muted);font-size:13px;">Tip: steps, server time, map, attachments</span>
           </div>
         </div>
       </section>
 
-      <!-- Owners as its own bubble below the main card -->
+      <!-- Owners bubble (separate) -->
       <aside class="owners-bubble" id="owners-bubble" aria-labelledby="owners-title" hidden>
         <div class="owners-header">
           <h3 id="owners-title" style="margin:0;font-family:DayZFont,system-ui;color:var(--accent);letter-spacing:0.8px;text-transform:uppercase;">Owners</h3>
@@ -231,88 +254,89 @@
     </div>
   </main>
 
-  <!-- Fixed Return to Main Menu button (visible and safe from overlap) -->
+  <!-- Fixed Return to Main Menu button -->
   <a class="return-fixed" href="index.html" aria-label="Return to Main Menu">← Return to Main Menu</a>
 
   <script>
     (function(){
       const tabs = Array.from(document.querySelectorAll('.tab'));
-      const panel = document.getElementById('panel');
-      const content = document.getElementById('panel-content');
+      const panelContent = document.getElementById('panel-content');
+      const ownersBtn = document.getElementById('owners-btn');
       const ownersBubble = document.getElementById('owners-bubble');
 
       const templates = {
-        bug: `
-          <h2>Bug Reports</h2>
-          <p>Found a crash, exploit, or anything acting up — include what happened, when it happened, your platform, and screenshots or video so staff can reproduce and fix it quickly.</p>
-          <div class="card-footer">
-            <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-              <span>Go to</span>
-            </a>
-            <span style="color:var(--muted);font-size:13px;">Tip: include repro steps, timestamps and platform</span>
-          </div>
-        `,
-        suggest: `
-          <h2>Suggestions</h2>
-          <p>Have a gameplay tweak, event idea, or QoL improvement? Post constructive suggestions in the Suggestions channel so the team can review and iterate.</p>
-          <div class="card-footer">
-            <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-              <span>Go to</span>
-            </a>
-            <span style="color:var(--muted);font-size:13px;">Tip: include balance notes and expected impact</span>
-          </div>
-        `,
-        ticket: `
-          <h2>Ticket</h2>
-          <p>Need private help for bans, appeals, or account issues? Open a ticket and staff will follow up. Include your Discord ID and evidence to speed the process.</p>
-          <div class="card-footer">
-            <a class="goto" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener" aria-label="Go to Ticket channel">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-              <span>Go to</span>
-            </a>
-            <span style="color:var(--muted);font-size:13px;">Tip: keep sensitive info private in tickets</span>
-          </div>
-        `
+        bug: {
+          title: 'Bug Reports',
+          html: `<p>Found a crash, exploit, or anything acting up — include exact steps to reproduce, map/location, server time, and attachments (screenshots or video).</p>
+                 <div class="card-footer">
+                   <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <span>Go to</span>
+                   </a>
+                   <span style="color:var(--muted);font-size:13px;">Tip: steps, server time, map, attachments</span>
+                 </div>`
+        },
+        suggest: {
+          title: 'Suggestions',
+          html: `<p>Have a gameplay tweak, event idea, or QoL improvement? Post concise, constructive suggestions that include the change, why it helps, and expected player impact.</p>
+                 <div class="card-footer">
+                   <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <span>Go to</span>
+                   </a>
+                   <span style="color:var(--muted);font-size:13px;">Tip: change, reason, expected impact</span>
+                 </div>`
+        },
+        ticket: {
+          title: 'Ticket',
+          html: `<p>Need private help (bans, appeals, account issues)? Open a ticket and include your Discord ID, clear evidence, and the outcome you want.</p>
+                 <div class="card-footer">
+                   <a class="goto" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener" aria-label="Go to Ticket channel">
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <span>Go to</span>
+                   </a>
+                   <span style="color:var(--muted);font-size:13px;">Tip: Discord ID, evidence, desired outcome</span>
+                 </div>`
+        }
       };
 
-      function setActive(tabEl){
+      function activateTab(tabEl){
         tabs.forEach(t=> t.setAttribute('aria-selected', t===tabEl ? 'true' : 'false'));
         const key = tabEl.dataset.key;
-
-        // Owners is a separate bubble: toggle it and keep main card content unchanged when owners selected
-        if(key === 'owners'){
-          ownersBubble.hidden = false;
-          // visually keep main card slightly dimmed
-          panel.style.opacity = '0.9';
-          panel.setAttribute('aria-hidden','true');
-          // focus owners bubble for keyboard users
-          ownersBubble.focus?.();
-        } else {
-          ownersBubble.hidden = true;
-          panel.style.opacity = '1';
-          panel.removeAttribute('aria-hidden');
-          content.innerHTML = templates[key] || templates.bug;
-        }
+        ownersBubble.hidden = true;
+        ownersBtn.setAttribute('aria-pressed','false');
+        // simple content swap with fade
+        panelContent.style.opacity = '0';
+        setTimeout(()=>{
+          panelContent.innerHTML = `<h2>${templates[key].title}</h2>` + templates[key].html;
+          panelContent.style.opacity = '1';
+        }, 180);
       }
 
       tabs.forEach(t=>{
-        t.addEventListener('click', ()=> setActive(t));
+        t.addEventListener('click', ()=> activateTab(t));
         t.addEventListener('keydown', (ev)=>{
           const idx = tabs.indexOf(t);
           if(ev.key === 'ArrowRight') tabs[(idx+1)%tabs.length].focus();
           if(ev.key === 'ArrowLeft') tabs[(idx-1+tabs.length)%tabs.length].focus();
-          if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); setActive(t); }
+          if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); activateTab(t); }
         });
       });
 
-      // Initial state: bug selected, owners hidden
+      // Owners button toggles owners bubble
+      ownersBtn.addEventListener('click', ()=>{
+        const pressed = ownersBtn.getAttribute('aria-pressed') === 'true';
+        ownersBtn.setAttribute('aria-pressed', String(!pressed));
+        ownersBubble.hidden = pressed;
+        // visually de-emphasize panel when owners shown
+        document.getElementById('panel').style.opacity = ownersBubble.hidden ? '1' : '0.92';
+        if(!ownersBubble.hidden) ownersBubble.scrollIntoView({behavior:'smooth',block:'center'});
+      });
+
+      // initial state
       document.querySelector('.tab[aria-selected="true"]').focus();
       ownersBubble.hidden = true;
 
-      // Ensure owners bubble is focusable for accessibility if shown
-      ownersBubble.tabIndex = -1;
     })();
   </script>
 </body>
