@@ -8,20 +8,22 @@
   <style>
     /* Font (encode spaces in filename) */
     @font-face{
-      font-family:'DayZFont';
+      font-family: 'DayZFont';
       src: url('28%20Days%20Later.ttf') format('truetype');
       font-display: swap;
     }
 
     :root{
-      --bg:#000;
-      --accent:#ff3b3b;
-      --muted:rgba(255,255,255,0.88);
-      --button-bg: rgba(255,255,255,0.03);
-      --button-hover: rgba(255,255,255,0.04);
+      --bg: #000;
+      --accent: #ff3b3b;
+      --muted: rgba(255,255,255,0.88);
+      --button-dark: #070707;
+      --button-dark-2: #0e0e0e;
       --glass: rgba(255,255,255,0.02);
-      --max-width:980px;
-      --radius:12px;
+      --max-width: 1100px;
+      --radius: 14px;
+      --smoke-opacity: 0.66;
+      --pop-duration: 320ms;
     }
 
     html,body{
@@ -36,130 +38,114 @@
       overflow-y:auto;
     }
 
-    /* Full smoke background */
+    /* full smoke background */
     #smoke-bg{
       position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+      background:#000;
     }
     #smoke-bg video{
       position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-      width:160vw; height:160vh; object-fit:cover; opacity:0.6;
-      filter: blur(6px) saturate(1.05) contrast(1.02); mix-blend-mode:screen;
+      width:160vw; height:160vh; object-fit:cover; opacity:var(--smoke-opacity);
+      filter: blur(5.5px) saturate(1.04) contrast(1.02); mix-blend-mode:screen;
     }
 
-    .site{ position:relative; z-index:2; min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px; box-sizing:border-box; }
+    /* site */
+    .site{ position:relative; z-index:2; min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:44px 20px; box-sizing:border-box; }
 
-    .content{
-      width:100%; max-width:var(--max-width);
-      display:flex; flex-direction:column; gap:18px;
-      align-items:center;
-      box-sizing:border-box;
-    }
+    .wrap{ width:100%; max-width:var(--max-width); display:flex; flex-direction:column; align-items:center; gap:18px; }
 
-    .heading{
-      text-align:center;
-      pointer-events:none;
-      margin-bottom:6px;
-    }
-
+    /* Heading — avoid heavy strokes; use crisp shadow and slight outline via layered text-shadow for legibility */
+    .heading{ text-align:center; pointer-events:none; margin-top:6px; }
     h1{
       margin:0;
       font-family:'DayZFont', "Segoe UI", sans-serif;
-      font-size: clamp(28px, 6.5vw, 56px);
+      font-size: clamp(30px, 6.5vw, 64px);
+      line-height:0.9;
       color:#fff;
-      -webkit-text-stroke: 1.2px rgba(0,0,0,0.7);
       letter-spacing:1.6px;
       text-transform:uppercase;
+      /* layered shadows for contrast without stroke artifacts */
+      text-shadow:
+        0 1px 0 rgba(0,0,0,0.8),
+        0 6px 22px rgba(0,0,0,0.6),
+        0 10px 40px rgba(255,59,59,0.05);
+      -webkit-font-smoothing:antialiased;
     }
+    .lead{ margin-top:8px; color:var(--muted); font-size:14px; max-width:78ch; pointer-events:auto; }
 
-    .lead{ margin-top:8px; color:var(--muted); font-size:14px; pointer-events:auto; text-align:center; }
+    /* button grid */
+    .btn-grid{ width:100%; display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-top:6px; }
 
-    /* Button grid */
-    .btn-grid{
-      width:100%;
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:14px;
-      margin-top:8px;
-    }
-
-    /* Section button style */
+    /* 3D black button with red rim */
     .rule-btn{
       -webkit-appearance:none; appearance:none;
       display:flex; align-items:center; justify-content:space-between;
       gap:12px;
-      background:var(--button-bg);
-      border:1px solid rgba(255,59,59,0.06);
-      padding:14px 16px;
+      padding:14px 18px;
       border-radius:12px;
       cursor:pointer;
       color:var(--muted);
-      transition:transform .12s ease, background .12s ease, box-shadow .12s ease;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-      font-weight:700;
-      font-family:'DayZFont', "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, var(--button-dark), var(--button-dark-2));
+      border: 2px solid rgba(255,59,59,0.14);
+      box-shadow:
+        inset 0 2px 6px rgba(255,255,255,0.02),
+        inset 0 -8px 18px rgba(0,0,0,0.75),
+        0 10px 30px rgba(0,0,0,0.9);
+      transition: transform 180ms cubic-bezier(.2,.9,.2,1), box-shadow 180ms, background 180ms;
+      font-weight:800;
+      font-family: 'DayZFont', "Segoe UI", sans-serif;
       text-align:left;
+      user-select:none;
     }
 
-    .rule-btn:hover{ background:var(--button-hover); transform:translateY(-3px); }
-    .rule-btn:active{ transform:translateY(-1px); }
-    .rule-btn .title{ font-size:16px; color:var(--accent); }
-    .rule-btn .hint{ font-size:13px; color:rgba(255,255,255,0.75); font-weight:600; }
+    .rule-btn .title{ color:var(--accent); font-size:16px; }
+    .rule-btn .sub{ color:rgba(255,255,255,0.72); font-size:13px; font-weight:700; }
 
-    /* Modal (panel) */
+    /* push/pull 3D press and hover */
+    .rule-btn:hover{ transform: translateY(-6px) scale(1.02); box-shadow: 0 18px 48px rgba(0,0,0,0.9); }
+    .rule-btn:active{ transform: translateY(-2px) scale(0.995); box-shadow: 0 8px 22px rgba(0,0,0,0.9); }
+
+    /* focus */
+    .rule-btn:focus{ outline: 3px solid rgba(255,59,59,0.14); outline-offset:6px; }
+
+    /* modal (pop) */
     .modal-wrap{
-      position:fixed;
-      inset:0;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:60;
-      padding:24px;
-      box-sizing:border-box;
-      background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.75));
+      position:fixed; inset:0; z-index:60; display:none; align-items:center; justify-content:center;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); padding:20px; box-sizing:border-box;
     }
 
     .modal{
-      width:100%;
-      max-width:820px;
-      background: linear-gradient(180deg,#050505,#0b0b0b);
-      border-radius:12px;
-      padding:22px;
-      box-sizing:border-box;
-      box-shadow:0 30px 80px rgba(0,0,0,0.8);
-      border:1px solid rgba(255,59,59,0.06);
-      transform:translateY(12px);
-      opacity:0;
-      transition: transform .22s ease, opacity .22s ease;
+      width:100%; max-width:920px; background: linear-gradient(180deg,#050505,#0b0b0b);
+      border-radius:14px; padding:22px; box-sizing:border-box; border:2px solid rgba(255,59,59,0.06);
+      box-shadow: 0 28px 90px rgba(0,0,0,0.9);
+      transform: translateY(18px) scale(0.98); opacity:0;
+      transition: transform var(--pop-duration) cubic-bezier(.2,.9,.25,1), opacity var(--pop-duration);
     }
+    .modal.open{ transform: translateY(0) scale(1); opacity:1; }
 
-    .modal.open{ transform:translateY(0); opacity:1; }
-    .modal h3{ margin:0 0 6px; font-family:'DayZFont', "Segoe UI", sans-serif; color:var(--accent); font-size:20px; }
-    .modal p{ margin:0 0 12px; color:var(--muted); line-height:1.5; font-size:15px; }
+    .modal h3{ margin:0 0 6px; font-family:'DayZFont', "Segoe UI", sans-serif; color:var(--accent); font-size:20px; letter-spacing:0.6px; }
+    .modal p.lead{ margin:0 0 12px; color:var(--muted); font-size:14px; }
 
     .rules-list{ display:flex; flex-direction:column; gap:10px; margin-top:6px; }
     .rules-list .item{
-      background:rgba(255,255,255,0.02);
-      padding:12px; border-radius:10px; border-left:4px solid rgba(255,59,59,0.14);
-      font-size:15px; color:rgba(255,255,255,0.95);
+      background: rgba(255,255,255,0.02); padding:12px; border-radius:10px; border-left:4px solid rgba(255,59,59,0.16);
+      font-size:15px; color:rgba(255,255,255,0.96); transform: translateY(10px) scale(0.98); opacity:0;
+      transition: transform 260ms cubic-bezier(.2,.9,.2,1), opacity 260ms;
     }
+    .rules-list .item.visible{ transform: translateY(0) scale(1); opacity:1; }
 
     .modal-footer{ display:flex; justify-content:space-between; gap:12px; margin-top:16px; align-items:center; flex-wrap:wrap; }
     .close-btn{
-      background:#000; border:1px solid rgba(255,59,59,0.06); color:var(--accent);
-      padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700;
+      background: linear-gradient(180deg, #000, #141414); color:var(--accent);
+      padding:10px 14px; border-radius:10px; border:1px solid rgba(255,59,59,0.08); cursor:pointer; font-weight:800;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.02), 0 8px 26px rgba(0,0,0,0.8);
     }
+    .close-btn:focus{ outline:3px solid rgba(255,59,59,0.14); outline-offset:4px; }
 
-    .back-link{ color:var(--muted); text-decoration:none; font-weight:700; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); background:var(--glass); }
-
-    /* show modal */
-    .modal-wrap.show{ display:flex; }
-
-    /* Accessible focus */
-    .rule-btn:focus, .close-btn:focus, .back-link:focus{ outline:3px solid rgba(255,59,59,0.12); outline-offset:4px; }
-
+    /* small screens */
     @media (max-width:520px){
-      .modal{ padding:16px; border-radius:10px; }
       .rule-btn{ padding:12px; border-radius:10px; }
+      .modal{ padding:16px; border-radius:12px; }
     }
   </style>
 </head>
@@ -174,50 +160,61 @@
   </div>
 
   <main class="site" role="main">
-    <div class="content" role="region" aria-label="Aggro PvP rules chooser">
-      <div class="heading">
+    <div class="wrap" role="region" aria-label="Aggro PvP rules chooser">
+      <header class="heading">
         <h1>Server Rules</h1>
-        <div class="lead">Aggro PvP is not for the weak. Tap a section to view its rules.</div>
-      </div>
+        <div class="lead">Aggro PvP is not for the weak. Tap or click a section to open its rules.</div>
+      </header>
 
       <div class="btn-grid" role="list">
-        <button class="rule-btn" data-section="general" aria-controls="modal" aria-expanded="false" role="button">
-          <span class="title">General</span>
-          <span class="hint">View</span>
+        <button class="rule-btn" data-section="general" aria-haspopup="dialog" aria-expanded="false">
+          <div>
+            <div class="title">General</div>
+            <div class="sub">Core expectations</div>
+          </div>
+          <div class="chev">›</div>
         </button>
 
-        <button class="rule-btn" data-section="safezone" aria-controls="modal" aria-expanded="false" role="button">
-          <span class="title">Safezone</span>
-          <span class="hint">View</span>
+        <button class="rule-btn" data-section="safezone" aria-haspopup="dialog" aria-expanded="false">
+          <div>
+            <div class="title">Safezone</div>
+            <div class="sub">Behaviour & protection</div>
+          </div>
+          <div class="chev">›</div>
         </button>
 
-        <button class="rule-btn" data-section="base-building" aria-controls="modal" aria-expanded="false" role="button">
-          <span class="title">Base Building</span>
-          <span class="hint">View</span>
+        <button class="rule-btn" data-section="base-building" aria-haspopup="dialog" aria-expanded="false">
+          <div>
+            <div class="title">Base Building</div>
+            <div class="sub">Construction rules</div>
+          </div>
+          <div class="chev">›</div>
         </button>
 
-        <button class="rule-btn" data-section="storage" aria-controls="modal" aria-expanded="false" role="button">
-          <span class="title">Base Storage Limit</span>
-          <span class="hint">View</span>
+        <button class="rule-btn" data-section="storage" aria-haspopup="dialog" aria-expanded="false">
+          <div>
+            <div class="title">Base Storage Limit</div>
+            <div class="sub">Storage caps</div>
+          </div>
+          <div class="chev">›</div>
         </button>
 
-        <button class="rule-btn" data-section="raiding" aria-controls="modal" aria-expanded="false" role="button">
-          <span class="title">Raiding</span>
-          <span class="hint">View</span>
+        <button class="rule-btn" data-section="raiding" aria-haspopup="dialog" aria-expanded="false">
+          <div>
+            <div class="title">Raiding</div>
+            <div class="sub">Raid etiquette</div>
+          </div>
+          <div class="chev">›</div>
         </button>
-      </div>
-
-      <div style="width:100%; display:flex; justify-content:center; margin-top:8px;">
-        <a class="back-link" href="index.html">← Return to Main Page</a>
       </div>
     </div>
   </main>
 
-  <!-- modal (single shared modal) -->
+  <!-- modal -->
   <div id="modalWrap" class="modal-wrap" role="dialog" aria-modal="true" aria-hidden="true">
     <div id="modal" class="modal" role="document" tabindex="-1" aria-labelledby="modalTitle">
       <h3 id="modalTitle">Section</h3>
-      <p id="modalDesc">Rules</p>
+      <p class="lead" id="modalDesc">Description</p>
 
       <div class="rules-list" id="modalRules" role="list"></div>
 
@@ -244,7 +241,7 @@
         },
         safezone: {
           title: 'Safezone',
-          desc: 'Safezone behaviour.',
+          desc: 'Safezone behaviour and protections.',
           rules: [
             'Unattended dropped items are free game. Otherwise, don’t touch what’s not yours including vehicles.',
             'No safezone camping, blocking, following, or abusing protection. If you kill in self-defense entering/leaving, leave their loot.',
@@ -253,7 +250,7 @@
         },
         'base-building': {
           title: 'Base Building',
-          desc: 'Construction rules.',
+          desc: 'Construction rules and limits.',
           rules: [
             'One main base + one stash base/FOB per player.',
             'Max 25 code-locked doors/hatches/containers per base.',
@@ -268,8 +265,10 @@
         },
         storage: {
           title: 'Base Storage Limit',
-          desc: 'Inventory caps.',
-          rules: ['You’re limited to 20 storage kits per base, plus 5 extra per team member.']
+          desc: 'Storage kit caps.',
+          rules: [
+            'You’re limited to 20 storage kits per base, plus 5 extra per team member.'
+          ]
         },
         raiding: {
           title: 'Raiding',
@@ -295,7 +294,7 @@
       const modalClose = document.getElementById('modalClose');
       let lastFocused = null;
 
-      function openModal(key){
+      function openModal(key, btn){
         const s = sections[key];
         if (!s) return;
         modalTitle.textContent = s.title;
@@ -309,25 +308,39 @@
           modalRules.appendChild(div);
         });
 
-        modalWrap.classList.add('show');
-        modal.classList.add('open');
-        modalWrap.setAttribute('aria-hidden','false');
-        lastFocused = document.activeElement;
+        // show modal
+        modalWrap.style.display = 'flex';
+        requestAnimationFrame(() => {
+          modalWrap.classList.add('visible');
+          modal.classList.add('open');
+          modalWrap.setAttribute('aria-hidden','false');
+          // animate rules items sequentially for pop effect
+          const items = Array.from(modalRules.children);
+          items.forEach((el, idx) => {
+            setTimeout(()=> el.classList.add('visible'), idx * 60 + 80);
+          });
+        });
+
+        lastFocused = btn || document.activeElement;
         modal.setAttribute('tabindex','-1');
         modal.focus();
       }
 
       function closeModal(){
-        modalWrap.classList.remove('show');
+        // reverse animations
         modal.classList.remove('open');
+        const items = Array.from(modalRules.children);
+        items.forEach(el => el.classList.remove('visible'));
         modalWrap.setAttribute('aria-hidden','true');
+        // fade out then hide
+        setTimeout(() => { modalWrap.style.display = 'none'; }, 280);
         if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
       }
 
       btns.forEach(b=>{
-        b.addEventListener('click', e=>{
+        b.addEventListener('click', (e)=>{
           const key = b.getAttribute('data-section');
-          openModal(key);
+          openModal(key, b);
         });
         b.addEventListener('keydown', e=>{
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); b.click(); }
@@ -342,12 +355,21 @@
         if (e.key === 'Escape') closeModal();
       });
 
-      // video fallback: hide video element if fails
+      // video fallback
       const vid = document.getElementById('smokeVideo');
+      const bg = document.getElementById('smoke-bg');
       if (vid){
-        vid.addEventListener('error', ()=>{ document.getElementById('smoke-bg').style.display='none'; }, {passive:true});
-        setTimeout(()=> { if (vid.readyState === 0) document.getElementById('smoke-bg').style.display='none'; }, 2500);
+        vid.addEventListener('error', ()=>{ if (bg) bg.style.display = 'none'; }, {passive:true});
+        setTimeout(()=> { if (vid.readyState === 0 && bg) bg.style.display = 'none'; }, 2200);
       }
+
+      // reduce smoke opacity on narrow screens
+      function adaptOpacity(){
+        if (window.innerWidth <= 520) document.documentElement.style.setProperty('--smoke-opacity','0.46');
+        else document.documentElement.style.setProperty('--smoke-opacity','0.66');
+      }
+      adaptOpacity();
+      window.addEventListener('resize', adaptOpacity);
     })();
   </script>
 </body>
