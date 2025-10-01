@@ -6,7 +6,7 @@
   <title>Aggro PvP — Support</title>
 
   <style>
-    /* site font (expects font file in same folder or site root) */
+    /* match rules page font (expects font file in same folder or site root) */
     @font-face{
       font-family:'28DaysLater';
       src: url('28%20Days%20Later.ttf') format('truetype'), url('28DaysLater.ttf') format('truetype');
@@ -16,118 +16,129 @@
     }
 
     :root{
-      --accent:#ff3c3c;
-      --muted:#bdbdbd;
-      --card-w:1000px;
+      --accent: #ff3c3c;
+      --card-w: 1100px;
+      --card-overlay: rgba(0,0,0,0.72);
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:transparent}
+    * { box-sizing: border-box; }
+    html,body { height: 100%; margin: 0; background: #000; }
     body{
-      font-family:'28DaysLater', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      color:#fff;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+      font-family: '28DaysLater', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Full-bleed smoke video container (placed directly under <body>) */
-    #smoke-bg{
-      position:fixed;
-      inset:0;
-      z-index:-9999;
-      pointer-events:none;
-      overflow:hidden;
-      background:#000;
-    }
+    /* full-bleed smoke video behind everything */
+    #smoke-bg { position: fixed; inset: 0; z-index: -9999; pointer-events: none; overflow: hidden; background: #000; }
     #smoke-bg video{
-      position:absolute;
-      top:50%;
-      left:50%;
-      transform:translate(-50%,-50%);
-      width:auto;
-      height:120%;
-      min-width:100%;
-      min-height:100%;
-      object-fit:cover;
-      display:block;
-      pointer-events:none;
-      filter:brightness(0.55) contrast(1);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: 120%;
+      object-fit: cover;
+      filter: brightness(0.55) contrast(1);
+      pointer-events: none;
+      display: block;
     }
 
-    /* Page content sits above the video but remains visually transparent */
-    .page{position:relative;z-index:0;min-height:100vh}
-    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px}
-
-    /* Transparent card so smoke shows through — readable text via shadows */
-    .card{
-      width:100%;
-      max-width:var(--card-w);
-      background:transparent;
-      border-radius:12px;
-      padding:36px;
-      box-shadow:none;
-      border:0;
-      color:#fff;
-      text-align:center;
+    /* main layout — card visually like rules page with smoke visible around edges */
+    main.page { position: relative; z-index: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 6vh 20px; }
+    .card {
+      width: 100%;
+      max-width: var(--card-w);
+      background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.55));
+      border: 1px solid rgba(255,60,60,0.06);
+      border-radius: 14px;
+      padding: 42px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.65);
+      backdrop-filter: blur(0px);
     }
-    @media(max-width:520px){ .card{padding:20px;border-radius:10px} }
 
-    h1{margin:0 0 12px 0;font-size:48px;color:var(--accent);font-weight:900;text-shadow:0 6px 20px rgba(0,0,0,0.85);line-height:0.95}
-    .lead{margin:0 0 18px 0;font-size:16px;color:#fff;opacity:0.98;text-shadow:0 2px 6px rgba(0,0,0,0.6)}
+    /* heading like rules: big, bold, white inside the smoky background */
+    header h1 {
+      margin: 0 0 6px 0;
+      font-size: 56px;
+      line-height: 0.9;
+      color: #fff;
+      letter-spacing: 0.5px;
+      text-align: center;
+      text-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 2px 8px rgba(0,0,0,0.6);
+    }
+    .sub { margin: 0 0 20px 0; text-align: center; color: rgba(255,255,255,0.95); font-size: 16px; }
 
-    .grid{display:block;max-width:780px;margin:0 auto}
-    .channel{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
-    .num{width:44px;color:var(--accent);font-weight:800;text-align:center}
-    .desc{font-size:15px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.6)}
+    /* sections & channels styling mirroring rules */
+    .sections { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 8px; }
+    .channels { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius: 10px; padding: 18px; border: 1px solid rgba(255,255,255,0.03); }
+    .channel { display:flex; gap: 14px; align-items: flex-start; padding: 10px 4px; }
+    .channel .num { width:48px; text-align:center; color: var(--accent); font-weight:900; font-size:18px; }
+    .channel .txt { font-size:15px; line-height:1.45; color: #fff; }
+    .channel .txt a { color: #fff; text-decoration: underline; font-weight:800; }
 
-    .owners{margin-top:18px;display:flex;flex-direction:column;gap:8px;align-items:center}
-    .owner{display:flex;align-items:center;gap:12px}
-    .owner .avatar{width:48px;height:48px;border-radius:8px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
-    .owner .label{font-weight:800;text-shadow:0 2px 8px rgba(0,0,0,0.6)}
+    /* owners area simplified, white labels */
+    .owners { margin-top: 6px; display:flex; gap:12px; flex-direction: column; }
+    .owner { display:flex; align-items:center; gap:12px; padding:10px; border-radius:8px; background: rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02); }
+    .owner .avatar { width:56px; height:56px; border-radius:10px; background:#222; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:20px; }
+    .owner .label { font-weight:900; color:#fff; font-size:15px; }
 
-    .back{display:inline-block;margin-top:22px;color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:8px}
+    /* footer/back button */
+    .back { display:block; margin:18px auto 0; padding:10px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); color:#fff; text-decoration:none; width:max-content; }
 
-    /* Fallback when video cannot play: use poster image as page background */
-    body.no-video .page{background-image:url('smoke-poster.jpg');background-size:cover;background-position:center}
-    @media(max-width:600px){ h1{font-size:34px} .card{padding:22px} .owner .avatar{width:40px;height:40px} }
+    @media (max-width:880px){
+      .card{padding:28px}
+      header h1{font-size:42px}
+      .owner .avatar{width:48px;height:48px;font-size:18px}
+    }
+    @media (max-width:520px){
+      .card{padding:20px}
+      header h1{font-size:34px}
+    }
   </style>
 </head>
 <body>
-  <!-- Full-bleed smoke (ensure exact filename and casing: "Smoke.mp4") -->
+  <!-- smoke video (exact casing matters: Smoke.mp4) -->
   <div id="smoke-bg" aria-hidden="true">
     <video id="smoke-vid" autoplay muted loop playsinline preload="auto" poster="smoke-poster.jpg">
-      <source src="Smoke.mp4" type="video/mp4">
       <source src="Smoke.webm" type="video/webm">
+      <source src="Smoke.mp4" type="video/mp4">
     </video>
   </div>
 
   <main class="page" role="main">
-    <div class="wrap">
-      <section class="card" aria-labelledby="support-title">
-        <header role="banner" aria-label="Aggro PvP">
-          <h1 id="support-title">Support</h1>
-          <p class="lead">Report bugs, open tickets, or drop suggestions in the Discord channels below.</p>
-        </header>
+    <section class="card" role="region" aria-labelledby="support-title">
+      <header role="banner">
+        <h1 id="support-title">SUPPORT</h1>
+        <p class="sub">If something's up, report it below. We handle bugs, tickets and suggestions in Discord.</p>
+      </header>
 
-        <section class="grid" role="list">
+      <div class="sections">
+        <div class="channels" role="list" aria-labelledby="channels-heading">
+          <h2 id="channels-heading" style="color:var(--accent); margin:0 0 8px 0; font-size:18px;">DISCORD CHANNELS</h2>
+
           <div class="channel" role="listitem">
             <div class="num">1</div>
-            <div class="desc"><a href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer">#bug-reports</a> — Report bugs or exploits.</div>
+            <div class="txt"><a href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer">#bug-reports</a> — Report critical bugs, exploits, or crashes. Attach steps, logs or screenshots.</div>
           </div>
 
           <div class="channel" role="listitem">
             <div class="num">2</div>
-            <div class="desc"><a href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer">#suggestions</a> — Post ideas and feedback.</div>
+            <div class="txt"><a href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer">#suggestions</a> — Balance ideas, features and general feedback for the team to review.</div>
           </div>
 
           <div class="channel" role="listitem">
             <div class="num">3</div>
-            <div class="desc"><a href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer">#ticket</a> — Open a private ticket for support.</div>
+            <div class="txt"><a href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer">#ticket</a> — Open a private ticket for account help, bans or appeals.</div>
           </div>
+        </div>
 
+        <div>
+          <h2 style="color:var(--accent); margin:8px 0 6px 0; font-size:18px;">SERVER OWNERS</h2>
           <div class="owners" role="group" aria-labelledby="owners-heading">
-            <h2 id="owners-heading" style="color:var(--accent);margin:12px 0 6px 0;font-size:18px">Server Owners</h2>
-
             <div class="owner">
               <div class="avatar" id="av-572334">R</div>
               <div class="label">RB Skizza — Owner</div>
@@ -138,29 +149,30 @@
               <div class="label">Slomobob — Co Owner</div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <a class="back" href="index.html">← Back to menu</a>
-        </section>
-      </section>
-    </div>
+      <a class="back" href="index.html" class="back">← Back to menu</a>
+    </section>
   </main>
 
   <script>
     (function(){
-      // Video play/fallback logic (mirrors working rules page behavior)
+      // same play/fallback approach as rules page
       const vid = document.getElementById('smoke-vid');
       let played = false;
-      if (vid){
+      if (vid) {
         vid.addEventListener('playing', ()=> played = true);
         vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
-        // some browsers require a short delay before attempting play
         setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 700);
       } else {
         document.body.classList.add('no-video');
       }
 
-      // Try to load owner avatars; falls back to letter avatars if remote fetch blocked
-      async function testHead(url){ try{ const r = await fetch(url, { method:'HEAD', cache:'no-store' }); return r.ok; } catch(e){ return false; } }
+      // owner avatar best-effort (falls back to letter avatar)
+      async function testHead(url){
+        try { const r = await fetch(url, { method: 'HEAD', cache: 'no-store' }); return r.ok; } catch(e) { return false; }
+      }
       async function applyAvatar(elId, id){
         const el = document.getElementById(elId);
         if (!el) return;
@@ -169,17 +181,17 @@
           `https://cdn.discordapp.com/avatars/${id}.png`,
           `https://cdn.discordapp.com/avatars/${id}.jpg`
         ];
-        for (const url of candidates){
-          if (await testHead(url)){ el.style.backgroundImage = `url(${url})`; el.textContent=''; return; }
+        for (const c of candidates){
+          if (await testHead(c)){ el.style.backgroundImage = `url(${c})`; el.textContent=''; return; }
         }
       }
       applyAvatar('av-572334','572334717731602462').catch(()=>{});
       applyAvatar('av-842365','842365557486518302').catch(()=>{});
 
-      // Optional quick diagnostics: open console to inspect these logs if video still black
+      // quick diagnostic logs to console if video fails
       (async function diag(){
-        const urls = ['Smoke.mp4','Smoke.webm','smoke-poster.jpg'];
-        for (const u of urls){
+        const list = ['Smoke.mp4','Smoke.webm','smoke-poster.jpg'];
+        for (const u of list){
           try{
             const r = await fetch(u, { method:'HEAD', cache:'no-store' });
             console.log(u, '→', r.status, 'content-type:', r.headers.get('content-type'));
