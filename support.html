@@ -3,213 +3,76 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Aggro PvP — Support</title>
+  <title>Aggro PvP — Support (Profiles)</title>
 
   <style>
-    /* Font file is in the site root as requested: "28 Days Later.ttf" */
+    /* try both font filenames in root */
     @font-face {
       font-family: '28DaysLater';
-      src: url('28 Days Later.ttf') format('truetype');
+      src: url('28%20Days%20Later.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: '28DaysLater';
+      src: url('28DaysLater.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
       font-display: swap;
     }
 
-    :root {
-      --accent: #ff3c3c;
-      --overlay: rgba(0,0,0,0.82);
-      --muted: #bdbdbd;
-      --card-max: 1100px;
+    :root{
+      --accent:#ff3c3c;
+      --muted:#bdbdbd;
+      --overlay:rgba(0,0,0,0.82);
+      --card-w:1100px;
     }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:#000;color:#fff;font-family:'28DaysLater',system-ui,-apple-system,"Segoe UI",Roboto,Arial}
 
-    * { box-sizing: border-box; }
-    html,body { height:100%; margin:0; }
-    body {
-      font-family: '28DaysLater', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color: #fff;
-      background: #000;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
+    /* video background in root */
+    #smoke-bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;filter:brightness(.46) contrast(1)}
+    .bg-tint{position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(0,0,0,0.35),rgba(0,0,0,0.8));pointer-events:none}
 
-    /* Fullscreen smoke video from root: smoke.mp4 */
-    #smoke-bg {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -3;
-      filter: contrast(1) brightness(0.45);
-      background: #000 center/cover no-repeat;
-    }
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px}
+    .card{width:100%;max-width:var(--card-w);background:var(--overlay);border-radius:12px;padding:28px;box-shadow:0 10px 40px rgba(0,0,0,.7);display:grid;grid-template-columns:1fr 340px;gap:20px;border:1px solid rgba(255,60,60,0.06)}
+    @media(max-width:900px){.card{grid-template-columns:1fr;padding:20px}}
 
-    .bg-tint {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.9) 100%);
-      pointer-events: none;
-    }
+    h1{margin:0 0 8px;color:var(--accent);font-size:42px;line-height:0.95;text-shadow:0 8px 24px rgba(0,0,0,.85)}
+    .lead{margin:0 0 12px;font-size:16px;color:#fff;opacity:.95}
 
-    .wrap {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 6vh 20px;
-    }
+    .channel-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+    .channel{display:inline-block;padding:10px 14px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));text-decoration:none;color:#fff;border:1px solid rgba(255,255,255,.03);font-weight:800}
+    .channel .tag{display:block;font-size:12px;color:var(--muted);margin-top:4px;font-weight:400}
 
-    .card {
-      width: 100%;
-      max-width: var(--card-max);
-      background: var(--overlay);
-      border-radius: 12px;
-      padding: 32px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.7), 0 0 40px rgba(255,60,60,0.06) inset;
-      border: 1px solid rgba(255,60,60,0.06);
-      display: grid;
-      grid-template-columns: 1fr 360px;
-      gap: 24px;
-      align-items: start;
-    }
+    .discord-panel{background:rgba(255,255,255,0.02);border-left:6px solid var(--accent);padding:14px;border-radius:8px}
+    .discord-panel h2{margin:0 0 8px;color:var(--accent);font-size:18px}
 
-    @media (max-width: 900px) {
-      .card { grid-template-columns: 1fr; padding: 20px; gap: 14px; }
-    }
+    .nameplate{display:flex;gap:12px;align-items:center;padding:12px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03);position:relative;overflow:visible}
+    .np-avatar{width:64px;height:64px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;color:#fff;border:1px solid rgba(255,255,255,0.04);background-size:cover;background-position:center}
+    .np-meta{display:flex;flex-direction:column;min-width:0}
+    .np-name{font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .np-sub{font-size:13px;color:var(--muted);margin-top:4px}
+    .np-actions{margin-left:auto}
+    .np-actions a{color:var(--accent);text-decoration:underline;font-weight:700}
 
-    h1 {
-      margin: 0 0 8px 0;
-      color: var(--accent);
-      font-size: 48px;
-      line-height: 0.95;
-      text-shadow: 0 8px 26px rgba(0,0,0,0.85);
-    }
+    .np-preview{position:absolute;right:12px;top:calc(100% + 10px);width:240px;background:rgba(0,0,0,0.92);border-radius:8px;padding:10px;border:1px solid rgba(255,255,255,0.03);display:none;flex-direction:column;gap:8px;z-index:40}
+    .nameplate:hover .np-preview{display:flex}
+    .p-row{display:flex;gap:10px;align-items:center}
+    .p-avatar{width:56px;height:56px;border-radius:8px;background:#222;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;background-size:cover;background-position:center}
+    .p-name{font-weight:800}
+    .p-bio{font-size:13px;color:var(--muted)}
 
-    .lead {
-      margin: 0 0 16px 0;
-      font-size: 18px;
-      line-height: 1.4;
-      color: #fff;
-      opacity: 0.98;
-    }
+    footer{margin-top:12px;font-size:13px;color:var(--muted)}
 
-    ul { margin: 0 0 16px 1.1rem; padding: 0; }
-    li { margin: 8px 0; font-size: 16px; line-height: 1.5; }
-
-    .channel-links { display:flex; flex-wrap:wrap; gap:10px; margin-top: 8px; }
-    .channel-links a {
-      display:inline-block;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      padding: 10px 14px;
-      border-radius: 999px;
-      color: #fff;
-      text-decoration: none;
-      border: 1px solid rgba(255,255,255,0.03);
-      font-weight: 700;
-      letter-spacing: 0.6px;
-    }
-    .channel-links a .tag { display:block; font-size:12px; color:var(--muted); margin-top:4px; font-weight:400; }
-
-    .discord-panel {
-      background: rgba(255,255,255,0.02);
-      border-left: 6px solid var(--accent);
-      padding: 14px;
-      border-radius: 8px;
-    }
-
-    .discord-panel h2 {
-      margin: 0 0 8px 0;
-      color: var(--accent);
-      font-size: 20px;
-    }
-
-    .homage {
-      margin-top: 12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .nameplate {
-      display:flex;
-      gap:12px;
-      align-items:center;
-      padding:10px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
-      border-radius:8px;
-      border:1px solid rgba(255,255,255,0.03);
-      position:relative;
-      overflow:visible;
-    }
-
-    .np-avatar {
-      width:56px;
-      height:56px;
-      border-radius:8px;
-      flex:0 0 56px;
-      background:linear-gradient(180deg,#222,#111);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#fff;
-      font-weight:700;
-      font-size:22px;
-      border:1px solid rgba(255,255,255,0.04);
-      background-size:cover;
-      background-position:center;
-    }
-
-    .np-meta { min-width:0; display:flex; flex-direction:column; gap:2px; }
-    .np-name { font-size:16px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .np-sub { font-size:13px; color:var(--muted); }
-
-    .np-actions { margin-left:auto; display:flex; gap:8px; align-items:center; }
-    .np-actions a {
-      color:var(--accent);
-      text-decoration:underline;
-      font-weight:700;
-      font-size:13px;
-    }
-
-    .np-preview {
-      position:absolute;
-      right: 12px;
-      top: calc(100% + 10px);
-      width:220px;
-      background: rgba(0,0,0,0.88);
-      border-radius:8px;
-      border:1px solid rgba(255,255,255,0.03);
-      padding:10px;
-      display:none;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      z-index: 30;
-      color:#fff;
-      gap:8px;
-    }
-    .nameplate:hover .np-preview { display:flex; flex-direction:column; }
-
-    .np-preview .p-row { display:flex; gap:8px; align-items:center; }
-    .np-preview .p-avatar { width:48px; height:48px; border-radius:6px; background:#222; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; background-size:cover; background-position:center; }
-    .np-preview .p-meta { display:flex; flex-direction:column; min-width:0; }
-    .np-preview .p-meta .p-name { font-weight:800; font-size:15px; }
-    .np-preview .p-meta .p-bio { font-size:13px; color:var(--muted); margin-top:4px; }
-
-    footer {
-      margin-top: 12px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    @media (max-width:600px) {
-      .np-preview { right: auto; left: 12px; width: 92%; }
-      .np-avatar { width:48px; height:48px; }
-    }
+    /* fallback if video doesn't load */
+    body.no-video{background-image:url('smoke.jpg');background-size:cover;background-position:center}
   </style>
 </head>
 <body>
-  <!-- Video background loaded from root (smoke.mp4) -->
   <video id="smoke-bg" autoplay muted loop playsinline preload="auto">
+    <source src="smoke.webm" type="video/webm">
     <source src="smoke.mp4" type="video/mp4">
   </video>
   <div class="bg-tint" aria-hidden="true"></div>
@@ -218,84 +81,74 @@
     <article class="card" aria-labelledby="support-title">
       <div>
         <h1 id="support-title">SUPPORT & SURVIVAL</h1>
+        <p class="lead">If you're still breathing, we've got your back. Report bugs, open tickets, or drop suggestions in the Discord channels below.</p>
 
-        <p class="lead">If you're still breathing, we've got your back. Report bugs, open tickets, or drop suggestions in the Discord channels below — we monitor them regularly.</p>
-
-        <ul>
-          <li><strong>#ticket</strong> — For direct help and admin support</li>
-          <li><strong>#bug-reports</strong> — Found a glitch, exploit, or issue?</li>
-          <li><strong>#suggestions</strong> — Got ideas to improve the server?</li>
-        </ul>
-
-        <div class="channel-links" aria-hidden="false">
-          <a href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer">
-            Bug reports
-            <span class="tag">#bug-reports</span>
+        <div class="channel-links">
+          <a class="channel" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer">
+            Bug reports<span class="tag">#bug-reports</span>
           </a>
-          <a href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer">
-            Suggestions
-            <span class="tag">#suggestions</span>
+          <a class="channel" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer">
+            Suggestions<span class="tag">#suggestions</span>
           </a>
-          <a href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer">
-            Ticket
-            <span class="tag">#ticket</span>
+          <a class="channel" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer">
+            Ticket<span class="tag">#ticket</span>
           </a>
         </div>
 
-        <div style="margin-top:18px" class="discord-panel" aria-labelledby="homage-heading">
-          <h2 id="homage-heading">🎖 Homage to Day Z server owner</h2>
-          <p class="lead" style="font-size:15px; margin-bottom:10px; color:#fff; opacity:0.9">
-            Respect to the Day Z founder and community keepers who inspired Aggro PvP. Below are nameplates that link to Discord search/profile and show a small preview when hovered.
-          </p>
+        <div style="margin-top:18px" class="discord-panel">
+          <h2>🎖 Homage to Day Z server owner</h2>
+          <p style="margin:0 0 10px;font-size:14px;color:#fff;opacity:.95">Respect to the founders. Small previews below link to each Discord profile; avatars load from Discord CDN if available and fall back to Discord default avatars.</p>
 
-          <div class="homage" id="homage-list">
-            <div class="nameplate" data-username="rbskizza" data-display="rbskizza">
+          <div style="display:flex;flex-direction:column;gap:10px" id="plates">
+            <!-- RB Skizza -->
+            <div class="nameplate" data-userid="572334717731602462" data-username="RB Skizza">
               <div class="np-avatar" aria-hidden="true">R</div>
               <div class="np-meta">
-                <div class="np-name">rbskizza</div>
+                <div class="np-name">RB Skizza</div>
                 <div class="np-sub">Day Z community</div>
               </div>
               <div class="np-actions">
-                <a class="profile-link" href="https://discord.com/search?query=rbskizza" target="_blank" rel="noopener noreferrer">View</a>
+                <a class="profile-link" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener noreferrer">View</a>
               </div>
 
               <div class="np-preview" role="dialog" aria-hidden="true">
                 <div class="p-row">
-                  <div class="p-avatar">R</div>
-                  <div class="p-meta">
-                    <div class="p-name">rbskizza</div>
+                  <div class="p-avatar" aria-hidden="true">R</div>
+                  <div style="display:flex;flex-direction:column;min-width:0">
+                    <div class="p-name">RB Skizza</div>
                     <div class="p-bio">Legacy Day Z contributor</div>
                   </div>
                 </div>
-                <div style="font-size:13px;color:var(--muted);margin-top:8px">Click View to open Discord search or profile in a new tab.</div>
+                <div style="font-size:13px;color:var(--muted)">Opens profile in a new tab.</div>
               </div>
             </div>
 
-            <div class="nameplate" data-username="slomobob" data-display="slomobob">
+            <!-- Slomobob -->
+            <div class="nameplate" data-userid="842365557486518302" data-username="Slomobob">
               <div class="np-avatar" aria-hidden="true">S</div>
               <div class="np-meta">
-                <div class="np-name">slomobob</div>
+                <div class="np-name">Slomobob</div>
                 <div class="np-sub">Day Z community</div>
               </div>
               <div class="np-actions">
-                <a class="profile-link" href="https://discord.com/search?query=slomobob" target="_blank" rel="noopener noreferrer">View</a>
+                <a class="profile-link" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener noreferrer">View</a>
               </div>
 
               <div class="np-preview" role="dialog" aria-hidden="true">
                 <div class="p-row">
-                  <div class="p-avatar">S</div>
-                  <div class="p-meta">
-                    <div class="p-name">slomobob</div>
+                  <div class="p-avatar" aria-hidden="true">S</div>
+                  <div style="display:flex;flex-direction:column;min-width:0">
+                    <div class="p-name">Slomobob</div>
                     <div class="p-bio">Acknowledged community creator</div>
                   </div>
                 </div>
-                <div style="font-size:13px;color:var(--muted);margin-top:8px">Click View to open Discord search or profile in a new tab.</div>
+                <div style="font-size:13px;color:var(--muted)">Opens profile in a new tab.</div>
               </div>
             </div>
 
           </div>
 
-          <footer style="margin-top:12px">If you supply exact Discord user IDs and avatar hashes, I will patch these plates to show live avatars and direct profile links.</footer>
+          <footer style="margin-top:10px">If you want different display names or short bios, tell me and I’ll inject them.</footer>
         </div>
 
       </div>
@@ -303,16 +156,14 @@
       <aside style="align-self:start">
         <div style="background:rgba(255,255,255,0.02);padding:14px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);max-width:320px;">
           <div style="font-weight:800;color:var(--accent);font-size:18px;margin-bottom:8px">Discord</div>
-          <div style="font-size:14px;color:var(--muted);margin-bottom:10px">Open the server or jump straight to support channels.</div>
-
+          <div style="font-size:14px;color:var(--muted);margin-bottom:10px">Jump to support channels</div>
           <div style="display:flex;flex-direction:column;gap:8px">
             <a href="https://discord.com/channels/1375728051194957874" target="_blank" rel="noopener noreferrer" style="color:#fff;text-decoration:underline">Open Server</a>
             <a href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer" style="color:#fff;text-decoration:underline">#bug-reports</a>
             <a href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer" style="color:#fff;text-decoration:underline">#suggestions</a>
             <a href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer" style="color:#fff;text-decoration:underline">#ticket</a>
           </div>
-
-          <div style="margin-top:12px;font-size:13px;color:var(--muted)">Tip: sign into Discord first so links open the app directly.</div>
+          <div style="margin-top:12px;font-size:13px;color:var(--muted)">Tip: sign into Discord so links open the app directly.</div>
         </div>
       </aside>
     </article>
@@ -320,48 +171,97 @@
 
   <script>
     (function(){
-      // Utility to apply live avatars when you have user id + avatar hash
-      function applyProfileAvatar({ selector, id, avatar }) {
-        const el = document.querySelector(selector);
-        if (!el) return;
-        const avatarEl = el.querySelector('.np-avatar');
-        const previewAvatar = el.querySelector('.p-avatar');
-        const ext = (avatar && avatar.startsWith('a_')) ? 'gif' : 'png';
-        const url = avatar ? `https://cdn.discordapp.com/avatars/${id}/${avatar}.${ext}?size=256` : `https://cdn.discordapp.com/embed/avatars/${Number(id) % 5}.png`;
-        if (avatarEl) {
-          avatarEl.style.backgroundImage = `url("${url}")`;
-          avatarEl.style.backgroundSize = 'cover';
-          avatarEl.textContent = '';
+      // Helper to test if a CDN avatar URL exists (HEAD). If it exists, use it. Fallback to embed default.
+      async function testAvatarUrl(url){
+        try{
+          const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+          return res.ok;
+        }catch(e){
+          return false;
         }
-        if (previewAvatar) {
-          previewAvatar.style.backgroundImage = `url("${url}")`;
-          previewAvatar.style.backgroundSize = 'cover';
-          previewAvatar.textContent = '';
+      }
+
+      // Build likely avatar URL from id and a guessed hash-less path (won't normally exist),
+      // but try it anyway; if it fails, fall back to embed avatar.
+      function embedAvatarUrl(id){
+        const idx = Number(id) % 5;
+        return `https://cdn.discordapp.com/embed/avatars/${idx}.png`;
+      }
+
+      async function tryLoadAvatarForPlate(plate){
+        const id = plate.getAttribute('data-userid');
+        const initials = (plate.getAttribute('data-username') || '').trim().charAt(0).toUpperCase() || '?';
+        const avatarEl = plate.querySelector('.np-avatar');
+        const previewAvatar = plate.querySelector('.p-avatar');
+
+        // Attempt: many avatars require a hash; try a simplified CDN path (may 404)
+        const pngUrl = `https://cdn.discordapp.com/avatars/${id}.png`; // usually 404 without hash
+        const webpUrl = `https://cdn.discordapp.com/avatars/${id}.webp`;
+        let found = false;
+        if (await testAvatarUrl(pngUrl)) { avatarEl.style.backgroundImage = `url(${pngUrl})`; previewAvatar.style.backgroundImage = `url(${pngUrl})`; found = true; }
+        else if (await testAvatarUrl(webpUrl)) { avatarEl.style.backgroundImage = `url(${webpUrl})`; previewAvatar.style.backgroundImage = `url(${webpUrl})`; found = true; }
+        else {
+          // fallback to Discord embed default avatar
+          const embed = embedAvatarUrl(id);
+          avatarEl.style.backgroundImage = `url(${embed})`;
+          previewAvatar.style.backgroundImage = `url(${embed})`;
         }
-        const link = el.querySelector('.profile-link');
+
+        // Clear the initial letter if background applied
+        if (avatarEl.style.backgroundImage && avatarEl.style.backgroundImage !== 'none') avatarEl.textContent = '';
+        if (previewAvatar && previewAvatar.style.backgroundImage && previewAvatar.style.backgroundImage !== 'none') previewAvatar.textContent = '';
+
+        // Ensure profile link points to user id
+        const link = plate.querySelector('.profile-link');
         if (link) link.href = `https://discord.com/users/${id}`;
       }
 
-      // Expose global helper for console use
-      window.applyProfileAvatar = applyProfileAvatar;
+      // Process both plates
+      document.querySelectorAll('.nameplate').forEach(plate => {
+        // inject p-avatar element if missing
+        if (!plate.querySelector('.p-avatar')) {
+          const pv = plate.querySelector('.np-preview .p-avatar');
+          if (!pv) {
+            const preview = plate.querySelector('.np-preview');
+            if (preview) {
+              const row = preview.querySelector('.p-row');
+              if (!row) {
+                const pRow = document.createElement('div');
+                pRow.className = 'p-row';
+                pRow.innerHTML = `<div class="p-avatar">${(plate.getAttribute('data-username')||'?').charAt(0)}</div><div class="p-meta"><div class="p-name">${plate.getAttribute('data-username')}</div><div class="p-bio" style="color:var(--muted)">Profile preview</div></div>`;
+                preview.insertBefore(pRow, preview.firstChild);
+              }
+            }
+          }
+        }
+      });
 
-      // Example usage (uncomment and fill if you have ids/hashes):
-      // window.applyProfileAvatar({ selector: '.nameplate[data-username="rbskizza"]', id: 'USER_ID', avatar: 'AVATAR_HASH' });
+      // Attempt to load avatars; timeouts to allow smooth progressive rendering
+      (async function loadAll(){
+        const plates = Array.from(document.querySelectorAll('.nameplate'));
+        for (const p of plates){
+          try {
+            await tryLoadAvatarForPlate(p);
+          } catch(e){
+            console.warn('avatar load error for', p, e);
+          }
+        }
+      })();
 
-      // Touch friendly toggle for preview popups
-      document.querySelectorAll('.nameplate').forEach(np => {
-        np.addEventListener('touchstart', function(ev){
+      // Video fallback handling
+      const vid = document.getElementById('smoke-bg');
+      let played = false;
+      vid.addEventListener('playing', ()=> played = true);
+      vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
+      setTimeout(()=>{ if (!played) vid.play().catch(()=>document.body.classList.add('no-video')); }, 700);
+
+      // Touch toggle for previews
+      document.querySelectorAll('.nameplate').forEach(np=>{
+        np.addEventListener('touchstart', function(e){
           const pv = this.querySelector('.np-preview');
           if (!pv) return;
           pv.style.display = (pv.style.display === 'flex') ? 'none' : 'flex';
         });
-      });
-
-      // Fallback detection: if video fails, add small CSS hint
-      const vid = document.getElementById('smoke-bg');
-      vid.addEventListener('error', function(){
-        document.body.style.backgroundImage = 'url("smoke.jpg")';
-        console.warn('Smoke video failed to load; ensure smoke.mp4 exists in site root and is served with correct MIME type.');
       });
     })();
   </script>
