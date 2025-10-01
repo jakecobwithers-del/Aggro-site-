@@ -1,174 +1,65 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Support — UI Layout</title>
-<style>
-  @font-face{
-    font-family:'28DaysLater';
-    src: url('28%20Days%20Later.ttf') format('truetype'), url('28DaysLater.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-  }
-
-  :root{
-    --accent:#ff3c3c;
-    --slab-bg:#0b0b0b;
-    --muted:#e9e9e9;
-    --card-w:980px;
-  }
-
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%;background:#000;font-family:'28DaysLater',system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--muted);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-  a{color:inherit;text-decoration:none}
-
-  /* smoke background */
-  #smoke-bg{position:fixed;inset:0;z-index:-9999;pointer-events:none;overflow:hidden;background:#000}
-  #smoke-bg video{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);min-width:100%;min-height:100%;width:auto;height:120%;object-fit:cover;pointer-events:none;display:block}
-
-  /* slab container */
-  main.page{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px;z-index:0}
-  .slab{
-    width:100%;max-width:var(--card-w);
-    background:linear-gradient(180deg, rgba(0,0,0,0.88), rgba(0,0,0,0.90));
-    border:1px solid rgba(255,60,60,0.06);
-    border-radius:14px;
-    padding:24px;
-    box-shadow:0 18px 60px rgba(0,0,0,0.65);
-  }
-
-  /* header */
-  .slab header{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:14px}
-  .slab h1{font-size:44px;color:#fff;line-height:0.92;letter-spacing:0.6px;text-shadow:0 10px 30px rgba(0,0,0,0.9)}
-
-  /* menu list */
-  .menu{display:flex;flex-direction:column;gap:10px}
-  .menu-item{
-    display:flex;align-items:center;justify-content:space-between;
-    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
-    border:1px solid rgba(255,255,255,0.03);
-    padding:12px 14px;border-radius:10px;cursor:pointer;
-  }
-  .menu-item .left{display:flex;align-items:center;gap:12px;min-width:0}
-  .badge{width:56px;height:56px;border-radius:8px;background:var(--slab-bg);display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:900;font-size:18px;border:1px solid rgba(255,255,255,0.03)}
-  .meta{display:flex;flex-direction:column;min-width:0}
-  .meta .title{font-weight:900;color:#fff;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .meta .subtitle{font-size:13px;color:rgba(255,255,255,0.82);margin-top:4px}
-  .arrow{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:900;font-size:18px;border:1px solid rgba(255,60,60,0.08);background:rgba(255,60,60,0.03)}
-
-  /* expandable area */
-  .expand{max-height:0;overflow:hidden;transition:max-height .28s ease}
-  .expand.open{max-height:600px;padding:10px 12px;margin-top:8px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-
-  /* return */
-  .return{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:8px;color:var(--accent);border:1px solid rgba(255,60,60,0.08);background:transparent;font-weight:900}
-
-  @media(max-width:720px){
-    .slab{padding:16px}
-    .badge{width:48px;height:48px;font-size:16px}
-    .slab h1{font-size:36px}
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aggro PvP — Rules</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="smoke-bg" aria-hidden="true">
-    <video autoplay muted loop playsinline preload="auto" poster="smoke-poster.jpg">
-      <source src="Smoke.webm" type="video/webm">
-      <source src="Smoke.mp4" type="video/mp4">
-    </video>
-  </div>
 
-  <main class="page" role="main">
-    <section class="slab" role="region" aria-labelledby="ui-title">
-      <header>
-        <h1 id="ui-title"></h1>
-      </header>
+  <!-- Header -->
+  <header>
+    <h1>Aggro PvP</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="rules.html" class="active">Rules</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="join.html">Join</a></li>
+        <li><a href="updates.html">Updates</a></li>
+        <li><a href="clips.html">Clips</a></li>
+        <li><a href="donate.html">Donate</a></li>
+      </ul>
+    </nav>
+  </header>
 
-      <nav class="menu" role="navigation" aria-label="UI menu">
-        <div class="menu-item" data-target="item-1">
-          <div class="left">
-            <div class="badge"></div>
-            <div class="meta">
-              <div class="title"></div>
-              <div class="subtitle"></div>
-            </div>
-          </div>
-          <div class="arrow"></div>
-        </div>
-        <div id="item-1" class="expand" aria-hidden="true"></div>
+  <!-- Hero / Banner -->
+  <section id="hero">
+    <h2>Server Rules</h2>
+    <p>Survive. Fight. Respect the rules of Aggro PvP.</p>
+  </section>
 
-        <div class="menu-item" data-target="item-2">
-          <div class="left">
-            <div class="badge"></div>
-            <div class="meta">
-              <div class="title"></div>
-              <div class="subtitle"></div>
-            </div>
-          </div>
-          <div class="arrow"></div>
-        </div>
-        <div id="item-2" class="expand" aria-hidden="true"></div>
+  <!-- Rules Section -->
+  <main>
+    <section id="rules">
+      <h3>General Rules</h3>
+      <ol>
+        <li>Rule 1 goes here</li>
+        <li>Rule 2 goes here</li>
+        <li>Rule 3 goes here</li>
+      </ol>
 
-        <div class="menu-item" data-target="item-3">
-          <div class="left">
-            <div class="badge"></div>
-            <div class="meta">
-              <div class="title"></div>
-              <div class="subtitle"></div>
-            </div>
-          </div>
-          <div class="arrow"></div>
-        </div>
-        <div id="item-3" class="expand" aria-hidden="true"></div>
+      <h3>PvP Rules</h3>
+      <ol>
+        <li>Rule A goes here</li>
+        <li>Rule B goes here</li>
+        <li>Rule C goes here</li>
+      </ol>
 
-        <div class="menu-item" data-target="item-4">
-          <div class="left">
-            <div class="badge"></div>
-            <div class="meta">
-              <div class="title"></div>
-              <div class="subtitle"></div>
-            </div>
-          </div>
-          <div class="arrow"></div>
-        </div>
-        <div id="item-4" class="expand" aria-hidden="true"></div>
-
-        <div class="menu-item" data-target="item-5">
-          <div class="left">
-            <div class="badge"></div>
-            <div class="meta">
-              <div class="title"></div>
-              <div class="subtitle"></div>
-            </div>
-          </div>
-          <div class="arrow"></div>
-        </div>
-        <div id="item-5" class="expand" aria-hidden="true"></div>
-      </nav>
-
-      <div style="display:flex;justify-content:center">
-        <a class="return" href="#"></a>
-      </div>
+      <h3>Base Building Rules</h3>
+      <ol>
+        <li>Rule X goes here</li>
+        <li>Rule Y goes here</li>
+        <li>Rule Z goes here</li>
+      </ol>
     </section>
   </main>
 
-<script>
-  // Minimal interactive scaffold (no visible text)
-  document.querySelectorAll('.menu-item').forEach(item=>{
-    item.tabIndex = 0;
-    item.addEventListener('click', ()=>{
-      const t = item.getAttribute('data-target');
-      const el = document.getElementById(t);
-      if (!el) return;
-      const open = el.classList.toggle('open');
-      el.setAttribute('aria-hidden', !open);
-    });
-    item.addEventListener('keydown', e=>{
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }
-    });
-  });
-</script>
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Aggro PvP — All Rights Reserved</p>
+  </footer>
+
 </body>
 </html>
