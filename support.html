@@ -6,6 +6,7 @@
   <title>Aggro PvP — Support</title>
 
   <style>
+    /* site font (expects font file in same folder or site root) */
     @font-face{
       font-family:'28DaysLater';
       src: url('28%20Days%20Later.ttf') format('truetype'), url('28DaysLater.ttf') format('truetype');
@@ -21,7 +22,7 @@
     }
 
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:#000}
+    html,body{height:100%;margin:0;background:transparent}
     body{
       font-family:'28DaysLater', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
       color:#fff;
@@ -29,35 +30,50 @@
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* smoke video (behind everything) */
-    #smoke-bg{position:fixed;inset:0;z-index:-2;pointer-events:none;overflow:hidden;background:#000}
+    /* Full-bleed smoke video container (placed directly under <body>) */
+    #smoke-bg{
+      position:fixed;
+      inset:0;
+      z-index:-9999;
+      pointer-events:none;
+      overflow:hidden;
+      background:#000;
+    }
     #smoke-bg video{
-      position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-      width:auto;height:120%;min-width:100%;min-height:100%;object-fit:cover;
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      width:auto;
+      height:120%;
+      min-width:100%;
+      min-height:100%;
+      object-fit:cover;
+      display:block;
+      pointer-events:none;
       filter:brightness(0.55) contrast(1);
-      pointer-events:none;display:block;
     }
 
-    /* no tint, content sits directly above the video */
+    /* Page content sits above the video but remains visually transparent */
     .page{position:relative;z-index:0;min-height:100vh}
     .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px}
 
-    /* card made transparent so the video shows through; text enhanced for readability */
+    /* Transparent card so smoke shows through — readable text via shadows */
     .card{
-      width:100%;max-width:var(--card-w);background:transparent;border-radius:12px;padding:36px;
-      box-shadow:none;border:0;
+      width:100%;
+      max-width:var(--card-w);
+      background:transparent;
+      border-radius:12px;
+      padding:36px;
+      box-shadow:none;
+      border:0;
       color:#fff;
       text-align:center;
-      backdrop-filter: none;
     }
+    @media(max-width:520px){ .card{padding:20px;border-radius:10px} }
 
-    /* subtle translucent backdrop only for small screens if needed (optional) */
-    @media(max-width:520px){
-      .card{background:rgba(0,0,0,0.18);padding:20px;border-radius:10px}
-    }
-
-    h1{margin:0 0 12px 0;font-size:48px;color:var(--accent);text-shadow:0 6px 20px rgba(0,0,0,0.85);line-height:0.95}
-    .lead{margin:0 0 18px 0;font-size:16px;color:#fff;opacity:0.98}
+    h1{margin:0 0 12px 0;font-size:48px;color:var(--accent);font-weight:900;text-shadow:0 6px 20px rgba(0,0,0,0.85);line-height:0.95}
+    .lead{margin:0 0 18px 0;font-size:16px;color:#fff;opacity:0.98;text-shadow:0 2px 6px rgba(0,0,0,0.6)}
 
     .grid{display:block;max-width:780px;margin:0 auto}
     .channel{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
@@ -71,17 +87,17 @@
 
     .back{display:inline-block;margin-top:22px;color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:8px}
 
-    /* fallback when video cannot play */
+    /* Fallback when video cannot play: use poster image as page background */
     body.no-video .page{background-image:url('smoke-poster.jpg');background-size:cover;background-position:center}
     @media(max-width:600px){ h1{font-size:34px} .card{padding:22px} .owner .avatar{width:40px;height:40px} }
   </style>
 </head>
 <body>
-  <!-- Smoke background -->
+  <!-- Full-bleed smoke (ensure exact filename and casing: "Smoke.mp4") -->
   <div id="smoke-bg" aria-hidden="true">
-    <video autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg">
-      <source src="Smoke.webm" type="video/webm">
+    <video id="smoke-vid" autoplay muted loop playsinline preload="auto" poster="smoke-poster.jpg">
       <source src="Smoke.mp4" type="video/mp4">
+      <source src="Smoke.webm" type="video/webm">
     </video>
   </div>
 
@@ -131,28 +147,47 @@
 
   <script>
     (function(){
-      const vid = document.querySelector('#smoke-bg video');
+      // Video play/fallback logic (mirrors working rules page behavior)
+      const vid = document.getElementById('smoke-vid');
       let played = false;
       if (vid){
         vid.addEventListener('playing', ()=> played = true);
         vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
+        // some browsers require a short delay before attempting play
         setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 700);
       } else {
         document.body.classList.add('no-video');
       }
 
-      async function testHead(url){ try{ const r = await fetch(url, { method:'HEAD', cache:'no-store' }); return r.ok; }catch(e){return false;} }
+      // Try to load owner avatars; falls back to letter avatars if remote fetch blocked
+      async function testHead(url){ try{ const r = await fetch(url, { method:'HEAD', cache:'no-store' }); return r.ok; } catch(e){ return false; } }
       async function applyAvatar(elId, id){
-        const el = document.getElementById(elId); if (!el) return;
-        const list = [
+        const el = document.getElementById(elId);
+        if (!el) return;
+        const candidates = [
           `https://cdn.discordapp.com/avatars/${id}.webp`,
           `https://cdn.discordapp.com/avatars/${id}.png`,
           `https://cdn.discordapp.com/avatars/${id}.jpg`
         ];
-        for (const url of list){ if (await testHead(url)){ el.style.backgroundImage = `url(${url})`; el.textContent=''; return; } }
+        for (const url of candidates){
+          if (await testHead(url)){ el.style.backgroundImage = `url(${url})`; el.textContent=''; return; }
+        }
       }
       applyAvatar('av-572334','572334717731602462').catch(()=>{});
       applyAvatar('av-842365','842365557486518302').catch(()=>{});
+
+      // Optional quick diagnostics: open console to inspect these logs if video still black
+      (async function diag(){
+        const urls = ['Smoke.mp4','Smoke.webm','smoke-poster.jpg'];
+        for (const u of urls){
+          try{
+            const r = await fetch(u, { method:'HEAD', cache:'no-store' });
+            console.log(u, '→', r.status, 'content-type:', r.headers.get('content-type'));
+          }catch(e){
+            console.log(u, '→ HEAD failed', e && e.message);
+          }
+        }
+      })();
     })();
   </script>
 </body>
