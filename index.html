@@ -1,268 +1,316 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Aggro PvP — Server Rules</title>
-
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Aggro PvP — JOIN THE FIGHT</title>
   <style>
-    /* Font (encode spaces in filename) */
-    @font-face{
-      font-family:'DayZFont';
-      src: url('28%20Days%20Later.ttf') format('truetype');
-      font-display: swap;
+    :root {
+      --bg: #050505;
+      --red: #ff1a1a;
+
+      /* timing */
+      --cycle: 4000;
+      --text-dur: 3000;
+      --flash-dur: 600;
+      --circle-dur: 3000;
+      --circle-delay: 0;
+
+      /* z-layers */
+      --z-menu: 6000;      /* menu on top */
+      --z-vfx: 4500;       /* flash/flicker */
+      --z-blood: 3500;
+      --z-head: 3000;
+      --z-color: 2500;     /* red-tint overlay */
+      --z-smoke: 2000;
+      --z-cta: 1000;
+      --z-logo: 1000;
     }
 
-    :root{
-      --bg:#000;
-      --accent:#ff3b3b;
-      --muted:rgba(255,255,255,0.88);
-      --button-dark:#070707;
-      --button-dark-2:#0e0e0e;
-      --radius:12px;
-      --smoke-opacity:0.66;
-      --max-width:1100px;
-    }
-
-    html,body{
-      height:100%;
-      margin:0;
+    *,*::before,*::after { box-sizing: border-box }
+    html,body {
+      margin:0; padding:0;
+      width:100%; height:100%;
       background:var(--bg);
-      color:#fff;
-      font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      overflow-y:auto;
-    }
-
-    /* full smoke background */
-    #smoke-bg{
-      position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; background:#000;
-    }
-    #smoke-bg video{
-      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-      width:160vw; height:160vh; object-fit:cover; opacity:var(--smoke-opacity);
-      filter: blur(5px) saturate(1.04) contrast(1.02); mix-blend-mode:screen;
-    }
-
-    /* site layout */
-    .site{ position:relative; z-index:2; min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:44px 20px; box-sizing:border-box; }
-    .wrap{ width:100%; max-width:var(--max-width); display:flex; flex-direction:column; align-items:center; gap:18px; box-sizing:border-box; }
-
-    /* Heading (no extra white text) */
-    .heading{ text-align:center; pointer-events:none; margin-top:6px; }
-    h1{
-      margin:0;
-      font-family:'DayZFont', "Segoe UI", sans-serif;
-      font-size: clamp(30px, 6.5vw, 64px);
-      line-height:0.9;
-      color:#fff;
-      letter-spacing:1.6px;
-      text-transform:uppercase;
-      text-shadow: 0 1px 0 rgba(0,0,0,0.85), 0 6px 22px rgba(0,0,0,0.6), 0 10px 40px rgba(255,59,59,0.05);
-    }
-
-    /* Collapsible grid */
-    .coll-grid{ width:100%; display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-top:12px; align-items:start; }
-    @media (max-width:880px){ .coll-grid{ grid-template-columns:1fr; } }
-
-    /* Use details/summary as large 3D buttons */
-    details{
-      background: linear-gradient(180deg,var(--button-dark),var(--button-dark-2));
-      border-radius:12px;
-      padding:0;
-      border:2px solid rgba(255,59,59,0.12);
-      box-shadow:
-        inset 0 2px 6px rgba(255,255,255,0.02),
-        inset 0 -8px 18px rgba(0,0,0,0.75),
-        0 16px 40px rgba(0,0,0,0.9);
-      transition: transform .18s ease, box-shadow .18s ease;
       overflow:hidden;
+      font-family:"28Days",sans-serif;
+      color:#fff;
+    }
+    @font-face {
+      font-family:"28Days";
+      src:url("28%20Days%20Later.ttf") format("truetype");
+      font-display:swap;
+    }
+    button,a { background:none; border:none; cursor:pointer }
+
+    /* MENU (always on top) */
+    .anarchyBtn {
+      position:fixed; top:14px; right:14px;
+      z-index:var(--z-menu);
+      pointer-events:auto;
+    }
+    .anarchyBtn img {
+      width:64px; height:64px;
+      display:block;
+    }
+    .anarchyMenu {
+      position:fixed; top:90px; right:14px;
+      display:none; flex-direction:column;
+      padding:12px; background:rgba(10,10,10,0.95);
+      border-radius:12px;
+      z-index:var(--z-menu);
+      pointer-events:auto;
+    }
+    .anarchyMenu.open { display:flex }
+    .anarchyMenu a {
+      color:#ffdede; font-size:16px; font-weight:800;
+      padding:10px 14px; text-decoration:none;
+      background:transparent;
     }
 
-    details[open]{ transform:translateY(-6px); box-shadow:0 28px 60px rgba(0,0,0,0.95); }
+    /* CTA & LOGO (under smoke) */
+    .cta {
+      position:fixed; bottom:8vh; left:50%;
+      transform:translateX(-50%);
+      display:flex; gap:20px;
+      z-index:var(--z-cta);
+      pointer-events:auto;
+    }
+    .cta a {
+      font-size:22px; padding:10px 26px;
+      border-radius:12px;
+      background:linear-gradient(180deg,#151515,#070707);
+      color:#fff; text-decoration:none;
+      transition:transform .2s;
+    }
+    .cta a:hover { transform:translateY(-3px) }
 
-    summary{
-      list-style:none;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:16px 18px;
-      cursor:pointer;
-      user-select:none;
-      outline:none;
+    #logo {
+      position:fixed; top:6vh; left:50%;
+      transform:translateX(-50%);
+      z-index:var(--z-logo);
+      pointer-events:auto;
+    }
+    #logo img { max-width:30vw; height:auto }
+
+    /* SMOKE VIDEO */
+    #smoke-wrap {
+      position:fixed; inset:0;
+      pointer-events:none;
+      z-index:var(--z-smoke);
+    }
+    #smokeVideo {
+      width:100%; height:100%;
+      object-fit:cover; opacity:.6;
     }
 
-    summary .title{ font-family:'DayZFont', "Segoe UI", sans-serif; font-size:18px; color:var(--accent); }
-    summary .chev{ font-size:20px; color:var(--accent); transform:rotate(0deg); transition: transform .18s ease; }
-    details[open] summary .chev{ transform:rotate(90deg); }
-
-    /* panel content that expands */
-    .content{
-      padding:14px 18px 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
-      border-top:1px solid rgba(255,255,255,0.02);
+    /* LIGHT RED TINT OVERLAY */
+    #colorOverlay {
+      position:fixed; inset:0;
+      background:var(--red);
+      mix-blend-mode:color;
+      opacity:0;
+      transition:opacity var(--text-dur)ms ease-in-out;
+      z-index:var(--z-color);
+      pointer-events:none;
     }
 
-    .rule-item{
-      display:flex; gap:12px; align-items:flex-start;
-      background:rgba(255,255,255,0.02);
-      padding:12px; border-radius:10px; margin-bottom:10px;
-      border-left:4px solid rgba(255,59,59,0.16);
-      font-size:15px; color:rgba(255,255,255,0.96);
+    /* RED FLASH */
+    #redOverlay {
+      position:fixed; inset:0;
+      background:var(--red);
+      mix-blend-mode:screen;
+      opacity:0;
+      z-index:var(--z-vfx);
+      pointer-events:none;
+      animation-fill-mode:both;
+    }
+    @keyframes redFlash {
+      0%   { opacity:0 }
+      10%  { opacity:.4 }
+      30%  { opacity:0 }
+      100% { opacity:0 }
     }
 
-    .num{
-      min-width:40px; height:40px; display:inline-grid; place-items:center;
-      background:linear-gradient(180deg, rgba(255,59,59,0.14), rgba(255,59,59,0.06));
-      color:var(--accent); font-weight:800; border-radius:8px; border:1px solid rgba(255,59,59,0.06); font-family:"Segoe UI",sans-serif;
+    /* FLICKER */
+    .vfx {
+      position:fixed; inset:0;
+      pointer-events:none;
+      z-index:var(--z-vfx);
+    }
+    .vfx .flicker {
+      position:absolute; inset:0;
+      mix-blend-mode:screen;
+      opacity:0;
     }
 
-    /* Back to main menu at bottom */
-    .back-row{ width:100%; display:flex; justify-content:center; margin-top:18px; }
-    .back-link{
-      display:inline-block; text-decoration:none; font-weight:800; background:linear-gradient(180deg,var(--button-dark),var(--button-dark-2));
-      border:2px solid rgba(255,59,59,0.14); color:var(--accent); padding:12px 18px; border-radius:12px;
-      box-shadow: inset 0 2px 6px rgba(255,255,255,0.02), inset 0 -8px 18px rgba(0,0,0,0.75), 0 10px 30px rgba(0,0,0,0.9);
+    /* HEADLINE */
+    #headline {
+      position:fixed; top:42vh; left:50%;
+      transform:translateX(-50%);
+      text-align:center;
+      z-index:var(--z-head);
+      pointer-events:none;
     }
+    #headlineText {
+      font-size:clamp(48px,14vw,136px);
+      line-height:.9; letter-spacing:.12em;
+      opacity:0; will-change:opacity;
+    }
+    @keyframes textFade {
+      0%,10%   { opacity:0 }
+      20%,80%  { opacity:1 }
+      100%     { opacity:0 }
+    }
+    .fadeText {
+      animation:textFade var(--text-dur)ms both;
+    }
+    @keyframes glitch {
+      0%,100% { clip:rect(0,9999px,0,0) }
+      20%     { clip:rect(20px,9999px,40px,0) }
+      40%     { clip:rect(50px,9999px,70px,0) }
+      60%     { clip:rect(10px,9999px,30px,0) }
+      80%     { clip:rect(60px,9999px,80px,0) }
+    }
+    .glitch, .glitch::before, .glitch::after {
+      animation:glitch .6s steps(2) both;
+    }
+    .glitch::before, .glitch::after {
+      content:attr(data-text);
+      position:absolute; inset:0;
+      mix-blend-mode:screen; opacity:.6;
+    }
+    .glitch::before { color:#ff4b4b; left:2px }
+    .glitch::after  { color:#7fb7ff; left:-2px }
 
-    /* Accessibility focus */
-    summary:focus, .back-link:focus{ outline:3px solid rgba(255,59,59,0.14); outline-offset:6px; }
-
-    /* Ensure details content scrollable on small screens */
-    @media (max-width:520px){
-      .content{ padding:12px; }
-      .rule-item{ padding:10px; }
+    /* BLOOD CIRCLE (fade with text) */
+    #bloodCircle {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%) scale(1);
+      opacity:0;
+      width:clamp(200px,40vw,400px);
+      pointer-events:none;
+      z-index:var(--z-blood);
+      animation-fill-mode:both;
+    }
+    @keyframes circleAnim {
+      0%,20%   { opacity:0 }
+      25%,75% { opacity:.6 }
+      100%    { opacity:0 }
     }
   </style>
 </head>
 <body>
 
-  <!-- full smoke background -->
-  <div id="smoke-bg" aria-hidden="true">
-    <video id="bgVideo" autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg" aria-hidden="true">
-      <source src="Smoke.webm" type="video/webm">
-      <source src="Smoke.mp4" type="video/mp4">
+  <!-- menu -->
+  <button id="anarchyBtn" class="anarchyBtn"
+          aria-controls="anarchyMenu" aria-expanded="false">
+    <img src="anarchy.png" alt="Toggle menu"/>
+  </button>
+  <nav id="anarchyMenu" class="anarchyMenu" role="menu">
+    <a href="rules.html">Rules</a>
+    <a href="support.html">Support</a>
+    <a href="donate.html">Donate</a>
+    <a href="killfeed.html">Kill Feed</a>
+    <a href="leaderboard.html">Leaderboard</a>
+  </nav>
+
+  <!-- CTA & logo -->
+  <div class="cta">
+    <a href="steam://connect/YOURSERVERIP">JOIN SERVER</a>
+    <a href="https://discord.gg/YOURDISCORD">JOIN COMMUNITY</a>
+  </div>
+  <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro Logo"/></div>
+
+  <!-- smoke -->
+  <div id="smoke-wrap">
+    <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
+      <source src="Smoke.mp4" type="video/mp4"/>
     </video>
   </div>
 
-  <main class="site" role="main">
-    <div class="wrap" role="region" aria-label="Aggro PvP rules">
-      <header class="heading" aria-hidden="false">
-        <h1>Server Rules</h1>
-      </header>
+  <!-- overlays -->
+  <div id="colorOverlay"></div>
+  <div id="redOverlay"></div>
+  <div class="vfx"><div id="vfxFlicker" class="flicker"></div></div>
 
-      <div class="coll-grid" role="list">
-
-        <details id="general" data-section="general">
-          <summary>
-            <span class="title">General</span>
-            <span class="chev" aria-hidden="true">›</span>
-          </summary>
-          <div class="content" role="region" aria-labelledby="general">
-            <div class="rule-item"><div class="num">1</div><div>No external mods, hacks, duping, NVinspect, or glitch movement. Filters and external crosshairs are allowed.</div></div>
-            <div class="rule-item"><div class="num">2</div><div>No alt accounts or stream sniping.</div></div>
-            <div class="rule-item"><div class="num">3</div><div>No combat logging. Wait 10 minutes after PvP before logging or entering safezone unless the fight couldn’t realistically continue.</div></div>
-            <div class="rule-item"><div class="num">4</div><div>If you log into someone else's base or locked room unexpectedly, make a ticket and don’t touch anything—even if it’s your own base post-raid.</div></div>
-            <div class="rule-item"><div class="num">5</div><div>Report bugs. Abusing glitches (including de-rendering bases) will be punished.</div></div>
-          </div>
-        </details>
-
-        <details id="safezone" data-section="safezone">
-          <summary>
-            <span class="title">Safezone</span>
-            <span class="chev" aria-hidden="true">›</span>
-          </summary>
-          <div class="content" role="region" aria-labelledby="safezone">
-            <div class="rule-item"><div class="num">1</div><div>Unattended dropped items are free game. Otherwise, don’t touch what’s not yours including vehicles.</div></div>
-            <div class="rule-item"><div class="num">2</div><div>No safezone camping, blocking, following, or abusing protection. If you kill in self-defense entering/leaving, leave their loot.</div></div>
-            <div class="rule-item"><div class="num">3</div><div>Unattended ungaraged vehicles may be deleted after 12 hours.</div></div>
-          </div>
-        </details>
-
-        <details id="base-building" data-section="base-building">
-          <summary>
-            <span class="title">Base Building</span>
-            <span class="chev" aria-hidden="true">›</span>
-          </summary>
-          <div class="content" role="region" aria-labelledby="base-building">
-            <div class="rule-item"><div class="num">1</div><div>One main base + one stash base/FOB per player.</div></div>
-            <div class="rule-item"><div class="num">2</div><div>Max 25 code-locked doors/hatches/containers per base.</div></div>
-            <div class="rule-item"><div class="num">3</div><div>All areas of your base must be accessible on foot—no loot rooms via windows only.</div></div>
-            <div class="rule-item"><div class="num">4</div><div>Build realistically—no unsupported structures or more than 2 floor kits out from a structure.</div></div>
-            <div class="rule-item"><div class="num">5</div><div>BBP kits must not overlap in ways that block access or raid tools.</div></div>
-            <div class="rule-item"><div class="num">6</div><div>Mesh and fence kits must be fully constructed.</div></div>
-            <div class="rule-item"><div class="num">7</div><div>On municipal buildings, silos, or radio towers, max 2 floor kits out—don’t block player structures.</div></div>
-            <div class="rule-item"><div class="num">8</div><div>Secure your base. Don’t share codes with untrusted players—no compensation for your mistakes.</div></div>
-            <div class="rule-item"><div class="num">9</div><div><strong style="color:var(--accent)">Note</strong> No base size limit, but don’t abuse it. Staff will notify you if it gets excessive.</div></div>
-          </div>
-        </details>
-
-        <details id="storage" data-section="storage">
-          <summary>
-            <span class="title">Base Storage Limit</span>
-            <span class="chev" aria-hidden="true">›</span>
-          </summary>
-          <div class="content" role="region" aria-labelledby="storage">
-            <div class="rule-item"><div class="num">1</div><div>You’re limited to 20 storage kits per base, plus 5 extra per team member.</div></div>
-          </div>
-        </details>
-
-        <details id="raiding" data-section="raiding" style="grid-column:1 / -1">
-          <summary>
-            <span class="title">Raiding</span>
-            <span class="chev" aria-hidden="true">›</span>
-          </summary>
-          <div class="content" role="region" aria-labelledby="raiding">
-            <div class="rule-item"><div class="num">1</div><div>Alliances are allowed.</div></div>
-            <div class="rule-item"><div class="num">2</div><div>No despawning, repairing, or modifying bases during active raids.</div></div>
-            <div class="rule-item"><div class="num">3</div><div>Loot can only be dropped if taking the storage kit—don’t despawn unwanted loot.</div></div>
-            <div class="rule-item"><div class="num">4</div><div>No combat logging during raids. If IRL forces you to log, say so—don’t log with combat tag.</div></div>
-            <div class="rule-item"><div class="num">5</div><div>Don’t abuse hologram/kit placement to raid (one ladder on the floor is allowed).</div></div>
-            <div class="rule-item"><div class="num">6</div><div>Glitch methods (fences, punching through windows, missing vehicles, floating entities) are not allowed.</div></div>
-            <div class="rule-item"><div class="num">7</div><div>A raid is considered active for 15 minutes after the last use of explosives or raid tools.</div></div>
-          </div>
-        </details>
-
-      </div>
-
-      <div class="back-row">
-        <a class="back-link" href="index.html">← Return to Main Menu</a>
-      </div>
+  <!-- headline & blood -->
+  <div id="headline">
+    <div id="headlineText" class="fadeText" data-text="JOIN THE FIGHT">
+      JOIN THE FIGHT
     </div>
-  </main>
+    <img id="bloodCircle" src="blood1.png" alt="Blood circle"/>
+  </div>
 
   <script>
-    (function(){
-      const details = Array.from(document.querySelectorAll('details'));
-      details.forEach(d => {
-        d.addEventListener('toggle', () => {
-          if (!d.open) return;
-          // close others
-          details.forEach(other => { if (other !== d) other.open = false; });
-          // scroll into view enough so the opened content is visible on small screens
-          setTimeout(() => {
-            const rect = d.getBoundingClientRect();
-            if (rect.top < 80) window.scrollBy({ top: rect.top - 72, behavior: 'smooth' });
-          }, 120);
-        });
+  (function(){
+    const S      = getComputedStyle(document.documentElement);
+    const cycle  = +S.getPropertyValue('--cycle');
+    const txtDur = +S.getPropertyValue('--text-dur');
+    const flash  = +S.getPropertyValue('--flash-dur');
 
-        // keyboard support on summary
-        const summary = d.querySelector('summary');
-        summary.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); d.open = !d.open; }
-        });
-      });
+    const smoke      = document.getElementById('smokeVideo');
+    const colorOvl   = document.getElementById('colorOverlay');
+    const redOvl     = document.getElementById('redOverlay');
+    const textEl     = document.getElementById('headlineText');
+    const circle     = document.getElementById('bloodCircle');
+    const flicker    = document.getElementById('vfxFlicker');
+    let running      = false;
 
-      // video fallback: hide if fails
-      const vid = document.getElementById('bgVideo');
-      const overlay = document.getElementById('smoke-bg');
-      if (vid) {
-        vid.addEventListener('error', () => { if (overlay) overlay.style.display = 'none'; }, {passive:true});
-        setTimeout(() => { if (vid.readyState === 0 && overlay) overlay.style.display = 'none'; }, 2200);
+    function restart(el,name,dur,delay=0){
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = `${name} ${dur}ms ${delay}ms both`;
+    }
+
+    function run(){
+      if(running) return;
+      running = true;
+
+      // 1) colorBlend tint
+      colorOvl.style.opacity = '1';
+      setTimeout(()=> colorOvl.style.opacity = '0', txtDur);
+
+      // 2) red flash
+      restart(redOvl,'redFlash',flash);
+
+      // 3) text fade + glitch
+      restart(textEl,'textFade',txtDur);
+      textEl.classList.remove('glitch');
+      setTimeout(()=> textEl.classList.add('glitch'),200);
+
+      // 4) blood fade
+      restart(circle,'circleAnim',
+              +S.getPropertyValue('--circle-dur'),
+              +S.getPropertyValue('--circle-delay'));
+
+      // 5) flicker
+      flicker.style.opacity = '1';
+      setTimeout(()=> flicker.style.opacity = '0',flash);
+
+      setTimeout(()=> running = false, cycle);
+    }
+
+    // menu toggle
+    document.getElementById('anarchyBtn').addEventListener('click',e=>{
+      e.stopPropagation();
+      const menu = document.getElementById('anarchyMenu');
+      const open = menu.classList.toggle('open');
+      e.currentTarget.setAttribute('aria-expanded',open);
+    });
+    document.addEventListener('click',e=>{
+      if(!e.target.closest('.anarchyBtn') &&
+         !e.target.closest('.anarchyMenu')){
+        document.getElementById('anarchyMenu').classList.remove('open');
+        document.getElementById('anarchyBtn').setAttribute('aria-expanded',false);
       }
-    })();
+    });
+
+    window.addEventListener('DOMContentLoaded',()=>{
+      run();
+      setInterval(run,cycle);
+    });
+  })();
   </script>
 </body>
 </html>
