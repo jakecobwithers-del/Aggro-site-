@@ -37,7 +37,7 @@
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Smoke background fixed full-coverage */
+    /* Full fixed smoke background */
     #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
     #smoke-bg video{
       position:fixed;
@@ -51,14 +51,13 @@
       object-fit:cover;
       opacity:var(--smoke-opacity);
       filter:blur(5px) saturate(1.04) contrast(1.02);
-      will-change:transform;
     }
 
     /* Page layout */
     .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px 120px;box-sizing:border-box;}
     .wrap{width:100%;max-width:var(--maxw);display:flex;flex-direction:column;gap:var(--gap);}
 
-    /* Title block */
+    /* Title */
     .title{ text-align:center; padding:6px 6px 0; }
     .title h1{
       margin:0;
@@ -69,23 +68,12 @@
       color:#fff;
       text-shadow:0 1px 0 rgba(0,0,0,0.85),0 8px 28px rgba(0,0,0,0.6);
     }
-    .subtitle{
-      margin-top:8px;
-      font-size:15px;
-      line-height:1.05;
-    }
+    .subtitle{ margin-top:8px; font-size:15px; line-height:1.05; }
     .subtitle .line-white{ color:#fff; display:block; font-weight:700; }
     .subtitle .line-red{ color:var(--accent); display:block; font-weight:900; font-family:'DayZFont',sans-serif; letter-spacing:0.6px; text-transform:lowercase; }
 
-    /* Tabs row */
-    .tabs {
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:center;
-      flex-wrap:wrap;
-      margin-top:6px;
-    }
+    /* Tabs */
+    .tabs { display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap; margin-top:6px; }
     .tab {
       height:var(--tab-height);
       padding:10px 18px;
@@ -100,18 +88,11 @@
       cursor:pointer;
       display:inline-flex;
       align-items:center;
-      gap:10px;
       transition:transform 130ms ease, box-shadow 130ms ease, background 130ms ease;
     }
-    .tab[aria-selected="true"], .tab:focus {
-      transform:translateY(-4px);
-      color:var(--accent);
-      box-shadow:0 14px 36px rgba(0,0,0,0.6);
-      outline:none;
-      border-color:var(--card-border);
-    }
+    .tab[aria-selected="true"], .tab:focus { transform:translateY(-4px); color:var(--accent); box-shadow:0 14px 36px rgba(0,0,0,0.6); border-color:var(--card-border); outline:none; }
 
-    /* Animated single card bubble that swaps content */
+    /* Single main card */
     .card {
       margin-top:6px;
       border-radius:12px;
@@ -120,81 +101,76 @@
       box-shadow: inset 0 2px 6px rgba(255,255,255,0.02), inset 0 -8px 18px rgba(0,0,0,0.75), 0 12px 30px rgba(0,0,0,0.9);
       padding:var(--pad);
       display:block;
-      min-height:160px;
+      min-height:180px;
       transition:transform 220ms cubic-bezier(.2,.9,.2,1), opacity 180ms linear;
       overflow:hidden;
     }
-
-    .card h2{
-      margin:0 0 6px 0;
-      font-family:'DayZFont',sans-serif;
-      color:var(--accent);
-      font-size:clamp(18px,3.6vw,28px);
-      letter-spacing:0.8px;
-      text-transform:uppercase;
-      text-shadow:0 4px 18px rgba(0,0,0,0.6);
-    }
+    .card h2{ margin:0 0 6px 0; font-family:'DayZFont',sans-serif; color:var(--accent); font-size:clamp(18px,3.6vw,28px); text-transform:uppercase; text-shadow:0 4px 18px rgba(0,0,0,0.6); }
     .card p{ margin:0 0 12px 0; color:var(--muted); line-height:1.6; font-size:15px; }
 
-    /* Inline goto pill inside card footer */
     .card-footer { display:flex; justify-content:flex-start; gap:12px; align-items:center; margin-top:12px; flex-wrap:wrap; }
-    .goto {
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:10px;
-      background:linear-gradient(180deg,rgba(255,59,59,0.04),rgba(0,0,0,0.04));
-      border:1px solid rgba(255,59,59,0.12);
-      color:var(--accent);
-      font-weight:800;
-      text-transform:uppercase;
-      font-family:'DayZFont',sans-serif;
-      justify-content:center;
-      text-decoration:none;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.6), 0 0 14px rgba(255,59,59,0.02);
-      width:92px;
-      font-size:12px;
-    }
-    .goto svg{ width:12px; height:12px; display:block; transform:translateX(-1px); }
+    .goto { display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; background:linear-gradient(180deg,rgba(255,59,59,0.04),rgba(0,0,0,0.04)); border:1px solid rgba(255,59,59,0.12); color:var(--accent); font-weight:800; text-transform:uppercase; font-family:'DayZFont',sans-serif; width:92px; font-size:12px; text-decoration:none; }
 
-    /* Owner column: stacked clickable names (unchanged) */
-    .owner{
+    /* Owners bubble (separate card below the main one) */
+    .owners-bubble {
+      margin-top:6px;
+      border-radius:12px;
+      background:linear-gradient(180deg, rgba(12,12,12,0.98), rgba(7,7,7,0.95));
+      border:2px solid rgba(255,59,59,0.08);
+      padding:14px;
       display:flex;
       flex-direction:column;
       gap:12px;
-      margin-top:8px;
     }
-    .owner-meta{ color:var(--muted); line-height:1.5; font-size:14px; margin:0; }
-    .staff-row{ display:flex; flex-direction:column; gap:10px; margin-top:12px; align-items:flex-start; }
-    .staff{
+    .owners-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .owners-list{ display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+    .owner-link{
+      display:inline-flex;
+      align-items:center;
+      gap:12px;
       padding:10px 14px;
       border-radius:10px;
       background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
       border:1px solid rgba(255,255,255,0.02);
       color:var(--muted);
-      font-size:16px;
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      min-width:200px;
-      cursor:pointer;
+      font-size:15px;
       text-decoration:none;
       transition:transform 120ms ease, box-shadow 120ms ease;
     }
-    .staff b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:16px; }
-    .staff:hover{ transform:translateX(6px); box-shadow: 0 12px 30px rgba(0,0,0,0.6); }
+    .owner-link b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:15px; }
+    .owner-link:hover{ transform:translateX(6px); box-shadow:0 12px 30px rgba(0,0,0,0.6); }
 
-    /* Responsive tweaks */
+    /* Fixed return button (safe, visible, accessible) */
+    .return-fixed{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:18px;
+      z-index:30;
+      padding:12px 18px;
+      border-radius:14px;
+      background:linear-gradient(180deg,#0b0b0b,#121212);
+      border:2px solid rgba(255,59,59,0.14);
+      color:var(--accent);
+      font-weight:800;
+      text-decoration:none;
+      box-shadow: 0 14px 46px rgba(0,0,0,0.7), inset 0 2px 6px rgba(255,255,255,0.02);
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    /* Small screens */
     @media(max-width:720px){
       .tabs{ gap:8px; }
       .tab{ padding:8px 12px; height:48px; }
-      .staff{ min-width:160px; font-size:15px; }
+      .owner-link{ min-width:160px; font-size:14px; }
+      .return-fixed{ bottom:12px; padding:10px 14px; }
     }
     @media(max-width:520px){
-      .title h1{ font-size:clamp(28px,12vw,52px); }
+      .wrap{padding-bottom:100px;}
       .card{ padding:16px; }
-      .staff{ min-width:140px; font-size:14px; }
+      .owner-link{ min-width:140px; font-size:13px; }
     }
   </style>
 </head>
@@ -216,18 +192,17 @@
         </div>
       </header>
 
-      <!-- Tab titles row -->
+      <!-- Tabs -->
       <nav class="tabs" role="tablist" aria-label="Support sections">
-        <button class="tab" role="tab" aria-selected="true" aria-controls="panel-bug" id="tab-bug" data-key="bug">Bug Reports</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-suggest" id="tab-suggest" data-key="suggest">Suggestions</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ticket" id="tab-ticket" data-key="ticket">Ticket</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-owners" id="tab-owners" data-key="owners">Owners</button>
+        <button class="tab" role="tab" aria-selected="true" aria-controls="panel" id="tab-bug" data-key="bug">Bug Reports</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-suggest" data-key="suggest">Suggestions</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-ticket" data-key="ticket">Ticket</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-owners" data-key="owners">Owners</button>
       </nav>
 
-      <!-- Single card bubble where content swaps -->
+      <!-- Main swap card -->
       <section class="card" id="panel" tabindex="0" aria-live="polite">
-        <!-- Content injected by JS; initial content below matches first tab -->
-        <div id="panel-bug" role="region" aria-labelledby="tab-bug">
+        <div id="panel-content">
           <h2>Bug Reports</h2>
           <p>Found a crash, exploit, or anything acting up — include what happened, when it happened, your platform, and screenshots or video so staff can reproduce and fix it quickly.</p>
           <div class="card-footer">
@@ -235,134 +210,109 @@
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
               <span>Go to</span>
             </a>
-            <span style="color:var(--muted);font-size:13px;">Tip: include repro steps and timestamps</span>
+            <span style="color:var(--muted);font-size:13px;">Tip: include repro steps, timestamps and platform</span>
           </div>
         </div>
       </section>
 
-      <!-- Hidden content templates (used by JS to swap into the bubble) -->
-      <template id="tpl-suggest">
-        <h2>Suggestions</h2>
-        <p>Have a gameplay tweak, event idea, or QoL improvement? Post constructive suggestions in the Suggestions channel so the team can review, discuss, and iterate.</p>
-        <div class="card-footer">
-          <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-            <span>Go to</span>
-          </a>
-          <span style="color:var(--muted);font-size:13px;">Tip: include your idea, balance notes, and expected player impact</span>
+      <!-- Owners as its own bubble below the main card -->
+      <aside class="owners-bubble" id="owners-bubble" aria-labelledby="owners-title" hidden>
+        <div class="owners-header">
+          <h3 id="owners-title" style="margin:0;font-family:DayZFont,system-ui;color:var(--accent);letter-spacing:0.8px;text-transform:uppercase;">Owners</h3>
+          <small style="color:var(--muted);">Click a name to open their Discord profile</small>
         </div>
-      </template>
-
-      <template id="tpl-ticket">
-        <h2>Ticket</h2>
-        <p>Need private help for bans, appeals, or account issues? Open a ticket and staff will follow up. Include your Discord ID and any evidence to speed the process.</p>
-        <div class="card-footer">
-          <a class="goto" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener" aria-label="Go to Ticket channel">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-            <span>Go to</span>
-          </a>
-          <span style="color:var(--muted);font-size:13px;">Tip: keep sensitive info private; only staff will see tickets</span>
+        <div class="owners-list">
+          <a class="owner-link" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener" aria-label="Open RB Skizza Discord profile"><b>RB Skizza</b></a>
+          <a class="owner-link" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener" aria-label="Open Slomobob Discord profile"><b>Slomobob</b></a>
+          <a class="owner-link" href="https://discord.com/users/754181442204074025" target="_blank" rel="noopener" aria-label="Open Sloppywet Discord profile"><b>Sloppywet</b></a>
         </div>
-      </template>
+      </aside>
 
-      <template id="tpl-owners">
-        <h2>Owners</h2>
-        <p class="owner-meta">These are the owners who made Aggro PvP possible — fair play and respect are the backbone of this community. Thank them, send feedback, or help keep servers running with a donation.</p>
-        <div class="staff-row" style="margin-top:12px;">
-          <a class="staff" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener" aria-label="Open RB Skizza Discord profile">
-            <b>RB Skizza</b>
-          </a>
-          <a class="staff" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener" aria-label="Open Slomobob Discord profile">
-            <b>Slomobob</b>
-          </a>
-          <a class="staff" href="https://discord.com/users/754181442204074025" target="_blank" rel="noopener" aria-label="Open Sloppywet Discord profile">
-            <b>Sloppywet</b>
-          </a>
-        </div>
-      </template>
-
-      <!-- Back to main -->
-      <div class="back-row" style="margin-top:6px;">
-        <a class="back-link" href="index.html" aria-label="Return to Main Menu">← Return to Main Menu</a>
-      </div>
     </div>
   </main>
+
+  <!-- Fixed Return to Main Menu button (visible and safe from overlap) -->
+  <a class="return-fixed" href="index.html" aria-label="Return to Main Menu">← Return to Main Menu</a>
 
   <script>
     (function(){
       const tabs = Array.from(document.querySelectorAll('.tab'));
       const panel = document.getElementById('panel');
+      const content = document.getElementById('panel-content');
+      const ownersBubble = document.getElementById('owners-bubble');
 
-      // Mapping key to template id
       const templates = {
-        bug: null, // initial content is already present in panel
-        suggest: document.getElementById('tpl-suggest'),
-        ticket: document.getElementById('tpl-ticket'),
-        owners: document.getElementById('tpl-owners')
+        bug: `
+          <h2>Bug Reports</h2>
+          <p>Found a crash, exploit, or anything acting up — include what happened, when it happened, your platform, and screenshots or video so staff can reproduce and fix it quickly.</p>
+          <div class="card-footer">
+            <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+              <span>Go to</span>
+            </a>
+            <span style="color:var(--muted);font-size:13px;">Tip: include repro steps, timestamps and platform</span>
+          </div>
+        `,
+        suggest: `
+          <h2>Suggestions</h2>
+          <p>Have a gameplay tweak, event idea, or QoL improvement? Post constructive suggestions in the Suggestions channel so the team can review and iterate.</p>
+          <div class="card-footer">
+            <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+              <span>Go to</span>
+            </a>
+            <span style="color:var(--muted);font-size:13px;">Tip: include balance notes and expected impact</span>
+          </div>
+        `,
+        ticket: `
+          <h2>Ticket</h2>
+          <p>Need private help for bans, appeals, or account issues? Open a ticket and staff will follow up. Include your Discord ID and evidence to speed the process.</p>
+          <div class="card-footer">
+            <a class="goto" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener" aria-label="Go to Ticket channel">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+              <span>Go to</span>
+            </a>
+            <span style="color:var(--muted);font-size:13px;">Tip: keep sensitive info private in tickets</span>
+          </div>
+        `
       };
 
-      // Helper to set active tab
-      function activateTab(targetTab){
-        tabs.forEach(t=>{
-          const selected = t === targetTab;
-          t.setAttribute('aria-selected', selected ? 'true' : 'false');
-        });
+      function setActive(tabEl){
+        tabs.forEach(t=> t.setAttribute('aria-selected', t===tabEl ? 'true' : 'false'));
+        const key = tabEl.dataset.key;
 
-        // animate card out/in
-        panel.style.opacity = '0';
-        panel.style.transform = 'translateY(6px)';
-        setTimeout(()=>{
-          // Replace content
-          const key = targetTab.dataset.key;
-          if(key === 'bug'){
-            // restore initial bug content (hardcoded)
-            panel.innerHTML = `
-              <div id="panel-bug" role="region" aria-labelledby="tab-bug">
-                <h2>Bug Reports</h2>
-                <p>Found a crash, exploit, or anything acting up — include what happened, when it happened, your platform, and screenshots or video so staff can reproduce and fix it quickly.</p>
-                <div class="card-footer">
-                  <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-                    <span>Go to</span>
-                  </a>
-                  <span style="color:var(--muted);font-size:13px;">Tip: include repro steps and timestamps</span>
-                </div>
-              </div>
-            `;
-          } else {
-            const tpl = templates[key];
-            if(tpl) panel.innerHTML = tpl.innerHTML;
-            else panel.innerHTML = '<h2>Info</h2><p>No content.</p>';
-          }
-
-          // reveal
+        // Owners is a separate bubble: toggle it and keep main card content unchanged when owners selected
+        if(key === 'owners'){
+          ownersBubble.hidden = false;
+          // visually keep main card slightly dimmed
+          panel.style.opacity = '0.9';
+          panel.setAttribute('aria-hidden','true');
+          // focus owners bubble for keyboard users
+          ownersBubble.focus?.();
+        } else {
+          ownersBubble.hidden = true;
           panel.style.opacity = '1';
-          panel.style.transform = 'translateY(0)';
-          panel.focus();
-        }, 180);
+          panel.removeAttribute('aria-hidden');
+          content.innerHTML = templates[key] || templates.bug;
+        }
       }
 
-      // Click handlers
       tabs.forEach(t=>{
-        t.addEventListener('click', ()=> activateTab(t));
+        t.addEventListener('click', ()=> setActive(t));
         t.addEventListener('keydown', (ev)=>{
           const idx = tabs.indexOf(t);
-          if(ev.key === 'ArrowRight'){
-            tabs[(idx+1)%tabs.length].focus();
-          } else if(ev.key === 'ArrowLeft'){
-            tabs[(idx-1+tabs.length)%tabs.length].focus();
-          } else if(ev.key === 'Enter' || ev.key === ' '){
-            ev.preventDefault();
-            activateTab(t);
-          }
+          if(ev.key === 'ArrowRight') tabs[(idx+1)%tabs.length].focus();
+          if(ev.key === 'ArrowLeft') tabs[(idx-1+tabs.length)%tabs.length].focus();
+          if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); setActive(t); }
         });
       });
 
-      // Ensure initial state
+      // Initial state: bug selected, owners hidden
       document.querySelector('.tab[aria-selected="true"]').focus();
+      ownersBubble.hidden = true;
 
-      // Optional: keep smoke covering bottom on mobile (no-op here; video is fixed)
-      // No additional JS required for smoke; video is fixed via CSS.
+      // Ensure owners bubble is focusable for accessibility if shown
+      ownersBubble.tabIndex = -1;
     })();
   </script>
 </body>
