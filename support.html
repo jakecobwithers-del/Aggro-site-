@@ -6,186 +6,194 @@
   <title>Aggro PvP — Support</title>
 
   <style>
-    /* try both root font filenames (with and without space) */
-    @font-face{font-family:'28DaysLater';src:url('28%20Days%20Later.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap}
-    @font-face{font-family:'28DaysLater';src:url('28DaysLater.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap}
-
-    :root{
-      --accent:#ff3c3c;
-      --overlay:rgba(0,0,0,0.82);
-      --muted:#bdbdbd;
-      --card-max:1100px;
+    @font-face {
+      font-family: '28DaysLater';
+      src: url('28%20Days%20Later.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0}
-    body{
-      font-family:'28DaysLater', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color:#fff;background:#000;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+    :root {
+      --accent: #ff3c3c;
+      --muted: #bdbdbd;
+      --overlay: rgba(0,0,0,0.82);
     }
 
-    /* Video background in site root; poster fallback and CSS fallback */
-    #smoke-bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;filter:contrast(1) brightness(0.45);background:#000 center/cover no-repeat}
-    .bg-tint{position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.75));pointer-events:none}
+    * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #000;
+      color: #fff;
+      font-family: '28DaysLater', system-ui, sans-serif;
+    }
 
-    /* Fallback background when video fails */
-    body.no-video{background-image:url('smoke.jpg');background-size:cover;background-position:center}
+    #smoke-bg {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -3;
+      filter: brightness(0.45) contrast(1);
+    }
 
-    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 16px}
-    .card{width:100%;max-width:var(--card-max);background:var(--overlay);border-radius:12px;padding:30px;box-shadow:0 10px 40px rgba(0,0,0,0.7);border:1px solid rgba(255,60,60,0.06);display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
-    @media (max-width:880px){.card{grid-template-columns:1fr;padding:20px}}
+    .bg-tint {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.75));
+      pointer-events: none;
+    }
 
-    h1{margin:0 0 8px 0;color:var(--accent);font-size:44px;line-height:0.95;text-shadow:0 8px 24px rgba(0,0,0,0.85)}
-    .lead{margin:0 0 12px 0;font-size:18px;line-height:1.45;color:#fff;opacity:0.98}
+    .wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6vh 20px;
+    }
 
-    /* channels: stacked vertical list with short descriptions */
-    .channels-list{margin-top:14px;display:flex;flex-direction:column;gap:10px}
-    .channel-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
-    .channel-link{font-weight:800;color:#fff;text-decoration:none;font-size:15px}
-    .channel-desc{font-size:13px;color:var(--muted);margin-top:2px}
+    .card {
+      width: 100%;
+      max-width: 1000px;
+      background: var(--overlay);
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,60,60,0.06);
+    }
 
-    /* homage/nameplates (clean, only names) */
-    .panel{background:rgba(255,255,255,0.02);padding:14px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
-    .panel h2{margin:0 0 8px 0;color:var(--accent);font-size:18px}
-    .nameplates{display:flex;flex-direction:column;gap:10px;margin-top:10px}
-    .nameplate{display:flex;gap:12px;align-items:center;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03)}
-    .np-avatar{width:64px;height:64px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:24px;border:1px solid rgba(255,255,255,0.04);background-size:cover;background-position:center}
-    .np-meta{display:flex;flex-direction:column;min-width:0}
-    .np-name{font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .np-actions{margin-left:auto}
-    .np-actions a{color:var(--accent);text-decoration:underline;font-weight:700}
+    h1 {
+      margin: 0 0 20px 0;
+      font-size: 48px;
+      color: var(--accent);
+      text-shadow: 0 6px 18px rgba(0,0,0,0.9);
+      line-height: 0.95;
+      text-align: center;
+    }
 
-    .back-btn{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;text-decoration:none;font-weight:700}
+    .section {
+      margin-top: 30px;
+    }
 
-    footer{margin-top:12px;font-size:13px;color:var(--muted)}
+    .section h2 {
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255,60,60,0.2);
+      padding-bottom: 6px;
+    }
 
-    @media (max-width:600px){
-      .np-avatar{width:56px;height:56px}
-      .card{grid-template-columns:1fr}
+    .item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .item .icon {
+      font-size: 20px;
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .item .text {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .item a {
+      color: #fff;
+      text-decoration: underline;
+      font-weight: bold;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 36px; }
+      .item .text { font-size: 15px; }
     }
   </style>
 </head>
 <body>
-  <video id="smoke-bg" autoplay muted loop playsinline preload="auto" poster="smoke.jpg">
+  <video id="smoke-bg" autoplay muted loop playsinline preload="auto">
     <source src="smoke.webm" type="video/webm">
     <source src="smoke.mp4" type="video/mp4">
   </video>
   <div class="bg-tint" aria-hidden="true"></div>
 
-  <main class="wrap" role="main">
-    <article class="card" aria-labelledby="support-title">
-      <div>
-        <h1 id="support-title">SUPPORT & SURVIVAL</h1>
-        <p class="lead">If you're still breathing, we've got your back. Report bugs, open tickets, or drop suggestions in the Discord channels below — we monitor them regularly.</p>
+  <main class="wrap">
+    <section class="card">
+      <h1>SUPPORT</h1>
 
-        <div class="channels-list" aria-label="Support channels">
-          <div class="channel-item">
-            <div style="min-width:10px;margin-top:2px;color:var(--accent)">#</div>
-            <div>
-              <a class="channel-link" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer">#bug-reports</a>
-              <div class="channel-desc">Report game-breaking bugs, exploits or crashes. Include steps to reproduce and logs/screenshots when possible.</div>
-            </div>
-          </div>
+      <div class="section">
+        <h2>DISCORD CHANNELS</h2>
 
-          <div class="channel-item">
-            <div style="min-width:10px;margin-top:2px;color:var(--accent)">#</div>
-            <div>
-              <a class="channel-link" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer">#suggestions</a>
-              <div class="channel-desc">Share ideas, balance suggestions, or community features you want to see added to the server.</div>
-            </div>
-          </div>
-
-          <div class="channel-item">
-            <div style="min-width:10px;margin-top:2px;color:var(--accent)">#</div>
-            <div>
-              <a class="channel-link" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer">#ticket</a>
-              <div class="channel-desc">Open a private support ticket for account help, appeals, or admin assistance.</div>
-            </div>
+        <div class="item">
+          <div class="icon">1.</div>
+          <div class="text">
+            <a href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank">#bug-reports</a> — Found a glitch, exploit, or issue? Report it here with as much detail as possible.
           </div>
         </div>
 
-        <div class="panel" style="margin-top:18px" aria-labelledby="homage">
-          <h2 id="homage">🎖 Homage</h2>
-          <p style="margin:0 0 10px;font-size:14px;color:#fff;opacity:.95">Respect to the contributors who inspired Aggro PvP.</p>
-
-          <div class="nameplates" id="plates">
-            <div class="nameplate" data-userid="572334717731602462" data-display="RB Skizza">
-              <div class="np-avatar" aria-hidden="true">R</div>
-              <div class="np-meta">
-                <div class="np-name">RB Skizza</div>
-              </div>
-              <div class="np-actions"><a class="profile-link" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener noreferrer">View</a></div>
-            </div>
-
-            <div class="nameplate" data-userid="842365557486518302" data-display="Slomobob">
-              <div class="np-avatar" aria-hidden="true">S</div>
-              <div class="np-meta">
-                <div class="np-name">Slomobob</div>
-              </div>
-              <div class="np-actions"><a class="profile-link" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener noreferrer">View</a></div>
-            </div>
+        <div class="item">
+          <div class="icon">2.</div>
+          <div class="text">
+            <a href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank">#suggestions</a> — Got ideas to improve the server? Share your thoughts and feedback.
           </div>
-
-          <footer style="margin-top:10px">Provide avatar hashes to show exact avatars; otherwise Discord default avatars are used as fallback.</footer>
         </div>
 
-        <a class="back-btn" href="index.html" role="button">← Back to menu</a>
+        <div class="item">
+          <div class="icon">3.</div>
+          <div class="text">
+            <a href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank">#ticket</a> — Need direct help or admin support? Open a private ticket here.
+          </div>
+        </div>
       </div>
 
-      <aside style="align-self:start">
-        <!-- aside left intentionally minimal and no repeated quick-links -->
-        <div class="panel">
-          <div style="font-weight:800;color:var(--accent);font-size:18px;margin-bottom:8px">Info</div>
-          <div style="font-size:13px;color:var(--muted)">Use the links on the left to open the support channels in Discord.</div>
+      <div class="section">
+        <h2>COMMUNITY LEGENDS</h2>
+
+        <div class="item">
+          <div class="icon">🛡</div>
+          <div class="text">
+            <a href="https://discord.com/users/572334717731602462" target="_blank">RB Skizza</a>
+          </div>
         </div>
-      </aside>
-    </article>
+
+        <div class="item">
+          <div class="icon">🛡</div>
+          <div class="text">
+            <a href="https://discord.com/users/842365557486518302" target="_blank">Slomobob</a>
+          </div>
+        </div>
+      </div>
+
+      <a class="back-btn" href="index.html">← Back to menu</a>
+    </section>
   </main>
 
   <script>
     (function(){
-      // Video autoplay/fallback handling
       const vid = document.getElementById('smoke-bg');
       let played = false;
       vid.addEventListener('playing', ()=> played = true);
       vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
       setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 900);
-
-      // Try to set avatar backgrounds using id fallback to embed avatar
-      function embedAvatarUrl(id){ return `https://cdn.discordapp.com/embed/avatars/${Number(id) % 5}.png`; }
-      async function testHead(url){ try{ const res = await fetch(url,{method:'HEAD',cache:'no-store'}); return res.ok;}catch(e){return false;} }
-
-      async function setAvatarForPlate(plate){
-        const id = plate.getAttribute('data-userid');
-        const avatarEl = plate.querySelector('.np-avatar');
-        const candidates = [
-          `https://cdn.discordapp.com/avatars/${id}.png`,
-          `https://cdn.discordapp.com/avatars/${id}.webp`,
-          `https://cdn.discordapp.com/avatars/${id}.jpg`
-        ];
-        let found = null;
-        for (const c of candidates){ if (await testHead(c)){ found = c; break; } }
-        const url = found || embedAvatarUrl(id);
-        avatarEl.style.backgroundImage = `url(${url})`;
-        avatarEl.textContent = '';
-        const link = plate.querySelector('.profile-link');
-        if (link) link.href = `https://discord.com/users/${id}`;
-      }
-
-      document.querySelectorAll('.nameplate').forEach(p=>{
-        setAvatarForPlate(p).catch(()=>{/*ignore*/});
-      });
-
-      // remove any duplicate quick-link nodes if present (safety)
-      // (keeps page clean if you accidentally include another link block)
-      (function removeExtraQuickLinks(){
-        const seen = new Set();
-        document.querySelectorAll('.channel-link').forEach(a=>{
-          const href = a.href;
-          if (seen.has(href)) a.parentElement.parentElement.removeChild(a.parentElement);
-          else seen.add(href);
-        });
-      })();
     })();
   </script>
 </body>
