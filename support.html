@@ -24,6 +24,7 @@
       --pad:20px;
       --smoke-opacity:0.66;
       --gap:18px;
+      --tab-height:56px;
     }
 
     html,body{
@@ -36,15 +37,17 @@
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Smoke background fixed full-coverage (covers entire viewport at all times) */
+    /* Smoke background fixed full-coverage */
     #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
     #smoke-bg video{
       position:fixed;
       left:50%;
       top:50%;
       transform:translate(-50%,-50%);
-      width:100vw;
-      height:100vh;
+      min-width:100vw;
+      min-height:100vh;
+      width:auto;
+      height:auto;
       object-fit:cover;
       opacity:var(--smoke-opacity);
       filter:blur(5px) saturate(1.04) contrast(1.02);
@@ -74,19 +77,53 @@
     .subtitle .line-white{ color:#fff; display:block; font-weight:700; }
     .subtitle .line-red{ color:var(--accent); display:block; font-weight:900; font-family:'DayZFont',sans-serif; letter-spacing:0.6px; text-transform:lowercase; }
 
-    /* Individual black cards (one card per support item) */
-    .card{
+    /* Tabs row */
+    .tabs {
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:6px;
+    }
+    .tab {
+      height:var(--tab-height);
+      padding:10px 18px;
+      border-radius:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+      border:1px solid rgba(255,255,255,0.02);
+      color:var(--muted);
+      font-weight:700;
+      text-transform:uppercase;
+      font-family:'DayZFont',sans-serif;
+      letter-spacing:0.8px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      transition:transform 130ms ease, box-shadow 130ms ease, background 130ms ease;
+    }
+    .tab[aria-selected="true"], .tab:focus {
+      transform:translateY(-4px);
+      color:var(--accent);
+      box-shadow:0 14px 36px rgba(0,0,0,0.6);
+      outline:none;
+      border-color:var(--card-border);
+    }
+
+    /* Animated single card bubble that swaps content */
+    .card {
+      margin-top:6px;
       border-radius:12px;
       background:linear-gradient(180deg,var(--card-start),var(--card-end));
       border:2px solid var(--card-border);
       box-shadow: inset 0 2px 6px rgba(255,255,255,0.02), inset 0 -8px 18px rgba(0,0,0,0.75), 0 12px 30px rgba(0,0,0,0.9);
       padding:var(--pad);
-      display:flex;
-      flex-direction:column;
-      gap:12px;
+      display:block;
+      min-height:160px;
+      transition:transform 220ms cubic-bezier(.2,.9,.2,1), opacity 180ms linear;
+      overflow:hidden;
     }
-
-    .card + .card{ margin-top:6px; }
 
     .card h2{
       margin:0 0 6px 0;
@@ -97,10 +134,10 @@
       text-transform:uppercase;
       text-shadow:0 4px 18px rgba(0,0,0,0.6);
     }
+    .card p{ margin:0 0 12px 0; color:var(--muted); line-height:1.6; font-size:15px; }
 
-    .card p{ margin:0 0 10px 0; color:var(--muted); line-height:1.6; font-size:15px; }
-
-    /* "Go to" pill */
+    /* Inline goto pill inside card footer */
+    .card-footer { display:flex; justify-content:flex-start; gap:12px; align-items:center; margin-top:12px; flex-wrap:wrap; }
     .goto {
       display:inline-flex;
       align-items:center;
@@ -119,14 +156,14 @@
       width:92px;
       font-size:12px;
     }
-
     .goto svg{ width:12px; height:12px; display:block; transform:translateX(-1px); }
 
-    /* Owner column: stacked clickable names */
+    /* Owner column: stacked clickable names (unchanged) */
     .owner{
       display:flex;
       flex-direction:column;
       gap:12px;
+      margin-top:8px;
     }
     .owner-meta{ color:var(--muted); line-height:1.5; font-size:14px; margin:0; }
     .staff-row{ display:flex; flex-direction:column; gap:10px; margin-top:12px; align-items:flex-start; }
@@ -148,32 +185,12 @@
     .staff b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:16px; }
     .staff:hover{ transform:translateX(6px); box-shadow: 0 12px 30px rgba(0,0,0,0.6); }
 
-    /* Original "Return to Main Menu" button style (as in rules.html) */
-    .back-row{display:flex;justify-content:center;margin-top:12px;}
-    .back-link{
-      text-decoration:none;
-      font-weight:800;
-      background:linear-gradient(180deg,#0b0b0b,#121212);
-      border:2px solid rgba(255,59,59,0.14);
-      color:var(--accent);
-      padding:12px 18px;
-      border-radius:12px;
-      box-shadow:
-        inset 0 2px 6px rgba(255,255,255,0.02),
-        inset 0 -8px 18px rgba(0,0,0,0.75),
-        0 10px 30px rgba(0,0,0,0.9);
-      display:inline-flex;
-      gap:10px;
-      align-items:center;
-    }
-    .back-link svg{ transform:translateX(-2px); }
-
-    /* Layout adjustments for small screens */
+    /* Responsive tweaks */
     @media(max-width:720px){
-      .goto{ width:100%; justify-content:flex-start; padding-left:12px; }
+      .tabs{ gap:8px; }
+      .tab{ padding:8px 12px; height:48px; }
       .staff{ min-width:160px; font-size:15px; }
     }
-
     @media(max-width:520px){
       .title h1{ font-size:clamp(28px,12vw,52px); }
       .card{ padding:16px; }
@@ -199,70 +216,154 @@
         </div>
       </header>
 
-      <!-- Bug Reports -->
-      <section class="card" aria-labelledby="bug-reports" aria-label="Bug Reports section">
-        <h2 id="bug-reports">Bug Reports</h2>
-        <p>Found a crash, exploit, or anything acting up — include what happened, when, and screenshots or video so staff can reproduce and fix it quickly.</p>
-        <div style="margin-top:12px;">
-          <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-            <span>Go to</span>
-          </a>
+      <!-- Tab titles row -->
+      <nav class="tabs" role="tablist" aria-label="Support sections">
+        <button class="tab" role="tab" aria-selected="true" aria-controls="panel-bug" id="tab-bug" data-key="bug">Bug Reports</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-suggest" id="tab-suggest" data-key="suggest">Suggestions</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ticket" id="tab-ticket" data-key="ticket">Ticket</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-owners" id="tab-owners" data-key="owners">Owners</button>
+      </nav>
+
+      <!-- Single card bubble where content swaps -->
+      <section class="card" id="panel" tabindex="0" aria-live="polite">
+        <!-- Content injected by JS; initial content below matches first tab -->
+        <div id="panel-bug" role="region" aria-labelledby="tab-bug">
+          <h2>Bug Reports</h2>
+          <p>Found a crash, exploit, or anything acting up — include what happened, when it happened, your platform, and screenshots or video so staff can reproduce and fix it quickly.</p>
+          <div class="card-footer">
+            <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+              <span>Go to</span>
+            </a>
+            <span style="color:var(--muted);font-size:13px;">Tip: include repro steps and timestamps</span>
+          </div>
         </div>
       </section>
 
-      <!-- Suggestions -->
-      <section class="card" aria-labelledby="suggestions" aria-label="Suggestions section">
-        <h2 id="suggestions">Suggestions</h2>
-        <p>Have a gameplay tweak, event idea, or QoL improvement? Post constructive suggestions so the team can review and discuss them.</p>
-        <div style="margin-top:12px;">
+      <!-- Hidden content templates (used by JS to swap into the bubble) -->
+      <template id="tpl-suggest">
+        <h2>Suggestions</h2>
+        <p>Have a gameplay tweak, event idea, or QoL improvement? Post constructive suggestions in the Suggestions channel so the team can review, discuss, and iterate.</p>
+        <div class="card-footer">
           <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
             <span>Go to</span>
           </a>
+          <span style="color:var(--muted);font-size:13px;">Tip: include your idea, balance notes, and expected player impact</span>
         </div>
-      </section>
+      </template>
 
-      <!-- Ticket -->
-      <section class="card" aria-labelledby="ticket" aria-label="Ticket section">
-        <h2 id="ticket">Ticket</h2>
-        <p>Need private help for bans, appeals, or account issues? Open a ticket and staff will follow up — include your Discord ID and any evidence to speed the process.</p>
-        <div style="margin-top:12px;">
+      <template id="tpl-ticket">
+        <h2>Ticket</h2>
+        <p>Need private help for bans, appeals, or account issues? Open a ticket and staff will follow up. Include your Discord ID and any evidence to speed the process.</p>
+        <div class="card-footer">
           <a class="goto" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener" aria-label="Go to Ticket channel">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
             <span>Go to</span>
           </a>
+          <span style="color:var(--muted);font-size:13px;">Tip: keep sensitive info private; only staff will see tickets</span>
         </div>
-      </section>
+      </template>
 
-      <!-- Owners stacked and clickable to Discord profiles -->
-      <section class="card" aria-labelledby="owners" aria-label="Owners section">
-        <h2 id="owners" style="color:#fff;">Owners</h2>
-        <p class="owner-meta">
-          These are the owners who made Aggro PvP possible — Aggro PvP is run with care; fair play and respect are the backbone of this community.
-          If the server helped you, thank the owners, send feedback to help us improve, or help keep the servers running with a donation.
-        </p>
-
-        <div class="staff-row" aria-hidden="false">
+      <template id="tpl-owners">
+        <h2>Owners</h2>
+        <p class="owner-meta">These are the owners who made Aggro PvP possible — fair play and respect are the backbone of this community. Thank them, send feedback, or help keep servers running with a donation.</p>
+        <div class="staff-row" style="margin-top:12px;">
           <a class="staff" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener" aria-label="Open RB Skizza Discord profile">
             <b>RB Skizza</b>
           </a>
-
           <a class="staff" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener" aria-label="Open Slomobob Discord profile">
             <b>Slomobob</b>
           </a>
-
           <a class="staff" href="https://discord.com/users/754181442204074025" target="_blank" rel="noopener" aria-label="Open Sloppywet Discord profile">
             <b>Sloppywet</b>
           </a>
         </div>
-      </section>
+      </template>
 
-      <!-- Original-style bottom back to main menu -->
-      <div class="back-row">
+      <!-- Back to main -->
+      <div class="back-row" style="margin-top:6px;">
         <a class="back-link" href="index.html" aria-label="Return to Main Menu">← Return to Main Menu</a>
       </div>
     </div>
   </main>
+
+  <script>
+    (function(){
+      const tabs = Array.from(document.querySelectorAll('.tab'));
+      const panel = document.getElementById('panel');
+
+      // Mapping key to template id
+      const templates = {
+        bug: null, // initial content is already present in panel
+        suggest: document.getElementById('tpl-suggest'),
+        ticket: document.getElementById('tpl-ticket'),
+        owners: document.getElementById('tpl-owners')
+      };
+
+      // Helper to set active tab
+      function activateTab(targetTab){
+        tabs.forEach(t=>{
+          const selected = t === targetTab;
+          t.setAttribute('aria-selected', selected ? 'true' : 'false');
+        });
+
+        // animate card out/in
+        panel.style.opacity = '0';
+        panel.style.transform = 'translateY(6px)';
+        setTimeout(()=>{
+          // Replace content
+          const key = targetTab.dataset.key;
+          if(key === 'bug'){
+            // restore initial bug content (hardcoded)
+            panel.innerHTML = `
+              <div id="panel-bug" role="region" aria-labelledby="tab-bug">
+                <h2>Bug Reports</h2>
+                <p>Found a crash, exploit, or anything acting up — include what happened, when it happened, your platform, and screenshots or video so staff can reproduce and fix it quickly.</p>
+                <div class="card-footer">
+                  <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                    <span>Go to</span>
+                  </a>
+                  <span style="color:var(--muted);font-size:13px;">Tip: include repro steps and timestamps</span>
+                </div>
+              </div>
+            `;
+          } else {
+            const tpl = templates[key];
+            if(tpl) panel.innerHTML = tpl.innerHTML;
+            else panel.innerHTML = '<h2>Info</h2><p>No content.</p>';
+          }
+
+          // reveal
+          panel.style.opacity = '1';
+          panel.style.transform = 'translateY(0)';
+          panel.focus();
+        }, 180);
+      }
+
+      // Click handlers
+      tabs.forEach(t=>{
+        t.addEventListener('click', ()=> activateTab(t));
+        t.addEventListener('keydown', (ev)=>{
+          const idx = tabs.indexOf(t);
+          if(ev.key === 'ArrowRight'){
+            tabs[(idx+1)%tabs.length].focus();
+          } else if(ev.key === 'ArrowLeft'){
+            tabs[(idx-1+tabs.length)%tabs.length].focus();
+          } else if(ev.key === 'Enter' || ev.key === ' '){
+            ev.preventDefault();
+            activateTab(t);
+          }
+        });
+      });
+
+      // Ensure initial state
+      document.querySelector('.tab[aria-selected="true"]').focus();
+
+      // Optional: keep smoke covering bottom on mobile (no-op here; video is fixed)
+      // No additional JS required for smoke; video is fixed via CSS.
+    })();
+  </script>
 </body>
 </html>
