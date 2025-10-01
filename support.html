@@ -6,7 +6,7 @@
   <title>Aggro PvP — Support</title>
 
   <style>
-    /* DayZFont matching rules.html */
+    /* DayZFont */
     @font-face{
       font-family: 'DayZFont';
       src: url('28 Days Later.ttf') format('truetype');
@@ -16,218 +16,76 @@
     :root{
       --bg:#000;
       --accent:#ff3b3b;
-      --card-bg-start:#070707;
-      --card-bg-end:#0f0f0f;
+      --card-start:#070707;
+      --card-end:#0f0f0f;
       --card-border:rgba(255,59,59,0.12);
-      --card-radius:12px;
-      --max-width:900px;
+      --muted:rgba(255,255,255,0.86);
+      --maxw:920px;
       --pad:20px;
       --smoke-opacity:0.66;
-      --muted: rgba(255,255,255,0.82);
+      --gap:18px;
     }
 
-    html,body{
-      height:100%;
-      margin:0;
-      background:var(--bg);
-      color:#fff;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
+    html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
 
-    /* Smoke background (same as rules.html) */
-    #smoke-bg{
-      position:fixed;
-      inset:0;
-      z-index:0;
-      pointer-events:none;
-      overflow:hidden;
-      background:#000;
-    }
+    /* Smoke background (fixed, blurred, oversized) */
+    #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
+    #smoke-bg video{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:160vw;height:160vh;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(5px) saturate(1.04) contrast(1.02);}
 
-    #smoke-bg video{
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform:translate(-50%,-50%);
-      width:160vw;
-      height:160vh;
-      object-fit:cover;
-      opacity:var(--smoke-opacity);
-      filter: blur(5px) saturate(1.04) contrast(1.02);
-    }
+    /* Page layout */
+    .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px 80px;box-sizing:border-box;}
+    .wrap{width:100%;max-width:var(--maxw);display:flex;flex-direction:column;gap:var(--gap);}
 
-    /* page container */
-    .page{
-      position:relative;
-      z-index:2;
-      min-height:100vh;
-      display:flex;
-      align-items:flex-start;
-      justify-content:center;
-      padding:6vh 20px 80px;
-      box-sizing:border-box;
+    /* Title block */
+    .title{
+      text-align:center;padding:8px 6px 4px;margin-bottom:4px;
     }
-
-    .container{
-      width:100%;
-      max-width:var(--max-width);
-      display:flex;
-      flex-direction:column;
-      gap:18px;
+    .title h1{
+      margin:0;font-family:'DayZFont',sans-serif;font-size:clamp(34px,6.5vw,72px);letter-spacing:1.6px;text-transform:uppercase;color:#fff;
+      text-shadow:0 1px 0 rgba(0,0,0,0.85),0 8px 28px rgba(0,0,0,0.6);
     }
-
-    /* Main white title + DayZ support subtitle */
-    .title-wrap{
-      text-align:center;
-      margin-bottom:6px;
-    }
-
-    .site-title{
-      margin:0;
-      font-family:'DayZFont', sans-serif;
-      font-size:clamp(36px,7vw,84px);
-      color:#fff;
-      text-transform:uppercase;
-      letter-spacing:1.6px;
-      text-shadow:
-        0 1px 0 rgba(0,0,0,0.85),
-        0 8px 28px rgba(0,0,0,0.6),
-        0 12px 40px rgba(255,59,59,0.04);
-    }
-
     .subtitle{
-      margin:6px 0 0 0;
-      font-family:'DayZFont', sans-serif;
-      color:rgba(255,255,255,0.9);
-      font-size:clamp(14px,3.6vw,20px);
-      opacity:0.95;
-      text-transform:none;
-      letter-spacing:0.6px;
+      margin-top:8px;color:var(--muted);font-size:15px;font-family:system-ui,Arial;
     }
+    .subtitle b{color:var(--accent);font-family:'DayZFont',sans-serif;display:inline-block;margin-left:6px;text-transform:uppercase;letter-spacing:0.8px;}
 
-    .subtitle .dayz{
-      display:block;
-      margin-top:6px;
-      color:var(--accent);
-      font-size:clamp(18px,4.2vw,28px);
-      text-transform:uppercase;
-      text-shadow: 0 4px 18px rgba(0,0,0,0.6);
+    /* Section card */
+    .card{border-radius:12px;background:linear-gradient(180deg,var(--card-start),var(--card-end));border:2px solid var(--card-border);box-shadow:
+      inset 0 2px 6px rgba(255,255,255,0.02), inset 0 -8px 18px rgba(0,0,0,0.75), 0 12px 30px rgba(0,0,0,0.9);padding:var(--pad);}
+
+    .card h2{margin:0 0 12px 0;font-family:'DayZFont',sans-serif;color:var(--accent);font-size:clamp(16px,3.6vw,26px);text-transform:uppercase;letter-spacing:0.8px;}
+    .card p{margin:0;color:var(--muted);line-height:1.6;font-size:15px;}
+
+    /* Support list — compact rows */
+    .support-list{display:flex;flex-direction:column;gap:12px;margin-top:8px;}
+    .support-item{display:flex;align-items:flex-start;gap:14px;}
+    .icon{
+      min-width:44px;height:44px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);font-weight:800;color:var(--accent);font-family:'DayZFont',sans-serif;
     }
+    .support-body{flex:1;}
+    .support-title{margin:0;color:#fff;font-family:'DayZFont',sans-serif;font-size:15px;letter-spacing:0.6px;text-transform:none;}
+    .support-desc{margin:6px 0 0 0;color:var(--muted);font-size:14px;}
+    .support-link{display:inline-block;margin-top:8px;padding:8px 12px;border-radius:8px;border:2px solid var(--accent);color:var(--accent);text-decoration:none;font-weight:800;background:transparent;box-shadow:0 8px 22px rgba(0,0,0,0.6),0 0 14px rgba(255,59,59,0.03);}
 
-    /* card / black pad */
-    .card{
-      border-radius:var(--card-radius);
-      background:linear-gradient(180deg,var(--card-bg-start),var(--card-bg-end));
-      border:2px solid var(--card-border);
-      box-shadow:
-        inset 0 2px 6px rgba(255,255,255,0.02),
-        inset 0 -8px 18px rgba(0,0,0,0.75),
-        0 12px 30px rgba(0,0,0,0.9);
-      padding:var(--pad);
-    }
+    /* Owner / credits card */
+    .owner-grid{display:grid;gap:12px;}
+    @media(min-width:860px){.owner-grid{grid-template-columns:1fr 300px;align-items:start;}}
 
-    .card h2{
-      margin:0 0 10px 0;
-      font-family:'DayZFont', sans-serif;
-      color:var(--accent);
-      font-size:clamp(18px,3.6vw,28px);
-      letter-spacing:0.8px;
-      text-transform:uppercase;
-      text-shadow: 0 4px 18px rgba(0,0,0,0.6);
-    }
+    .owner-meta{color:var(--muted);line-height:1.6;}
+    .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+    .chip{background:rgba(255,255,255,0.02);padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);font-size:13px;color:var(--muted);display:inline-flex;flex-direction:column;gap:4px;}
+    .chip b{color:var(--accent);font-family:'DayZFont',sans-serif;text-transform:uppercase;font-size:13px;}
 
-    .card p{
-      margin:0 0 8px 0;
-      color:var(--muted);
-      line-height:1.6;
-      font-size:15px;
-    }
+    /* Back link */
+    .back-row{display:flex;justify-content:center;margin-top:6px;gap:12px;}
+    .back-link{text-decoration:none;font-weight:800;background:linear-gradient(180deg,#0b0b0b,#121212);border:2px solid rgba(255,59,59,0.14);color:var(--accent);padding:12px 18px;border-radius:12px;box-shadow:inset 0 2px 6px rgba(255,255,255,0.02),inset 0 -8px 18px rgba(0,0,0,0.75),0 10px 30px rgba(0,0,0,0.9);display:inline-flex;gap:10px;align-items:center;}
 
-    .link{
-      display:inline-block;
-      margin-top:8px;
-      color:var(--accent);
-      text-decoration:none;
-      font-weight:800;
-      border-bottom:2px solid rgba(255,59,59,0.06);
-    }
-
-    /* owner/support credit card */
-    .owner{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:10px;
-      align-items:center;
-    }
-
-    .owner .meta{
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.5;
-    }
-
-    .people{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top:8px;
-    }
-
-    .person{
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:10px;
-      padding:10px 12px;
-      border:1px solid rgba(255,255,255,0.02);
-      box-shadow: inset 0 2px 6px rgba(255,255,255,0.02);
-      min-width:180px;
-    }
-
-    .person b{ color:var(--accent); display:block; margin-bottom:6px; font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:14px; }
-
-    .person small{ color:var(--muted); display:block; font-size:13px; margin-top:4px; }
-
-    /* back row */
-    .back-row{
-      display:flex;
-      justify-content:center;
-      margin-top:6px;
-      gap:12px;
-    }
-
-    .back-link{
-      text-decoration:none;
-      font-weight:800;
-      background:linear-gradient(180deg,#0b0b0b,#121212);
-      border:2px solid rgba(255,59,59,0.14);
-      color:var(--accent);
-      padding:12px 18px;
-      border-radius:12px;
-      box-shadow:
-        inset 0 2px 6px rgba(255,255,255,0.02),
-        inset 0 -8px 18px rgba(0,0,0,0.75),
-        0 10px 30px rgba(0,0,0,0.9);
-      display:inline-flex;
-      gap:10px;
-      align-items:center;
-    }
-
-    .back-link svg{ transform:translateX(-2px); }
-
-    @media (min-width:820px){
-      .owner{ grid-template-columns: 1fr 320px; align-items:start; }
-    }
-
-    @media (max-width:520px){
-      .site-title{ font-size:clamp(28px,12vw,56px); }
-      .card{ padding:14px; }
-      .person{ min-width:140px; }
-    }
+    /* small utility */
+    .muted{color:var(--muted);font-size:14px;}
+    @media(max-width:520px){.title h1{font-size:clamp(28px,12vw,52px)} .support-item{gap:10px} .icon{min-width:40px;height:40px}}
   </style>
 </head>
 <body>
-  <!-- Smoke background files should match your repo -->
   <div id="smoke-bg" aria-hidden="true">
     <video autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg">
       <source src="Smoke.webm" type="video/webm">
@@ -236,67 +94,63 @@
   </div>
 
   <main class="page" role="main">
-    <div class="container">
-      <header class="title-wrap" role="banner" aria-label="Support header">
-        <h1 class="site-title">Support</h1>
-        <div class="subtitle">
-          Still alive? <span class="dayz">DayZ Support</span>
-        </div>
+    <div class="wrap">
+      <header class="title">
+        <h1>Support</h1>
+        <div class="subtitle">Still breathing? <b>We've got your six.</b></div>
       </header>
 
-      <!-- Support heading card -->
-      <section class="card" aria-labelledby="support-heading">
-        <h2 id="support-heading">Support</h2>
+      <!-- Support section card -->
+      <section class="card" aria-labelledby="support-main">
+        <h2 id="support-main">Support</h2>
 
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <div>
-            <h3 style="margin:0 0 6px 0;font-family:'DayZFont',sans-serif;color:#fff;font-size:16px;">Bug Reports</h3>
-            <p>Found a glitch, crash, or exploit? Please post details, timestamps, and screenshots or video so we can reproduce and fix it.</p>
-            <a class="link" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener">Go to Bug Reports channel</a>
+        <div class="support-list">
+          <div class="support-item">
+            <div class="icon" aria-hidden="true">B</div>
+            <div class="support-body">
+              <p class="support-title">Bug Reports</p>
+              <p class="support-desc">Found a crash, exploit or odd behaviour? Include timestamps and media so staff can reproduce it quickly.</p>
+              <a class="support-link" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener">Open Bug Reports channel</a>
+            </div>
           </div>
 
-          <div>
-            <h3 style="margin:0 0 6px 0;font-family:'DayZFont',sans-serif;color:#fff;font-size:16px;">Suggestions</h3>
-            <p>Got ideas to improve the server, events, or community experience? Drop them here — constructive suggestions get reviewed regularly.</p>
-            <a class="link" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener">Go to Suggestions channel</a>
+          <div class="support-item">
+            <div class="icon" aria-hidden="true">S</div>
+            <div class="support-body">
+              <p class="support-title">Suggestions</p>
+              <p class="support-desc">Got ideas to improve the server or events? Post constructive suggestions and the team will review them.</p>
+              <a class="support-link" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener">Open Suggestions channel</a>
+            </div>
           </div>
 
-          <div>
-            <h3 style="margin:0 0 6px 0;font-family:'DayZFont',sans-serif;color:#fff;font-size:16px;">Ticket</h3>
-            <p>Need private help with bans, appeals, or account issues? Open a ticket and staff will help you as soon as they can.</p>
-            <a class="link" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener">Open a Ticket</a>
+          <div class="support-item">
+            <div class="icon" aria-hidden="true">T</div>
+            <div class="support-body">
+              <p class="support-title">Ticket</p>
+              <p class="support-desc">Need private help for bans, appeals or account issues? Open a ticket and staff will respond.</p>
+              <a class="support-link" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener">Open Ticket</a>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Owner / credits card -->
-      <section class="card" aria-labelledby="owner-heading">
-        <h2 id="owner-heading">Owner & Thanks</h2>
-
-        <div class="owner">
+      <!-- Owner / credits -->
+      <section class="card" aria-labelledby="owner">
+        <h2 id="owner">Owner & Thanks</h2>
+        <div class="owner-grid">
           <div>
-            <p class="meta"><strong style="color:var(--accent);">Fair play, respect, and support</strong> — Aggro PvP would not exist without the time and care put in by the owner and the community. If you appreciate the server, take a moment to show respect and support where you can.</p>
+            <p class="owner-meta"><strong style="color:var(--accent);">Fair play and respect</strong> — Aggro PvP runs because of the owner and many contributors. If the server helped you, say thanks, show respect and include useful details in reports.</p>
+            <p class="owner-meta muted">Contact requests should use the ticket channel above or polite DMs. Keep messages concise and respectful.</p>
 
-            <p class="meta">If you want to reach out or say thanks, use Discord DMs or the appropriate support channels. Please keep messages respectful and on-topic.</p>
-
-            <div class="people" aria-hidden="false">
-              <div class="person" title="RB Skizza">
-                <b>RB Skizza</b>
-                <div style="color:var(--muted);font-size:13px;">User ID: <small>572334717731602462</small></div>
-                <small>Contributor / Staff</small>
-              </div>
-
-              <div class="person" title="Slomobob">
-                <b>Slomobob</b>
-                <div style="color:var(--muted);font-size:13px;">User ID: <small>842365557486518302</small></div>
-                <small>Support / Admin</small>
-              </div>
+            <div class="chips" aria-hidden="false">
+              <div class="chip"><b>RB Skizza</b><span class="muted">ID: 572334717731602462</span><small class="muted">Contributor / Staff</small></div>
+              <div class="chip"><b>Slomobob</b><span class="muted">ID: 842365557486518302</span><small class="muted">Support / Admin</small></div>
             </div>
           </div>
 
-          <div style="padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,59,59,0.03),rgba(255,59,59,0.01));border:1px solid rgba(255,59,59,0.04);min-width:220px;">
-            <p style="margin:0 0 8px 0;font-weight:800;color:var(--accent)">Owner</p>
-            <p style="margin:0;color:var(--muted)">Thanks for supporting Aggro PvP. Fair play matters — be kind, provide details when reporting, and help keep the community strong.</p>
+          <div style="padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,59,59,0.03),rgba(255,59,59,0.01));border:1px solid rgba(255,59,59,0.04);min-height:120px;">
+            <p style="margin:0 0 8px 0;font-weight:800;color:var(--accent);font-family:'DayZFont',sans-serif">Owner</p>
+            <p class="muted" style="margin:0">To the owner: thanks for the time and effort. Community servers are built on sweat and goodwill — appreciated by many.</p>
           </div>
         </div>
       </section>
