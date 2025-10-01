@@ -6,9 +6,21 @@
   <title>Aggro PvP — Support</title>
 
   <style>
-    /* try both root font filenames (with and without space) */
-    @font-face{font-family:'28DaysLater';src:url('28%20Days%20Later.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap}
-    @font-face{font-family:'28DaysLater';src:url('28DaysLater.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap}
+    /* match rules.html font loading from site root (try both names) */
+    @font-face{
+      font-family:'28DaysLater';
+      src: url('28%20Days%20Later.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face{
+      font-family:'28DaysLater';
+      src: url('28DaysLater.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
 
     :root{
       --accent:#ff3c3c;
@@ -20,23 +32,38 @@
     *{box-sizing:border-box}
     html,body{height:100%;margin:0}
     body{
-      font-family:'28DaysLater', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family:'28DaysLater', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
       color:#fff;
       background:#000;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Video background from site root (smoke.mp4 / smoke.webm), poster fallback smoke.jpg */
-    #smoke-bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;filter:contrast(1) brightness(0.45);background:#000 center/cover no-repeat}
-    .bg-tint{position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.75));pointer-events:none}
-
-    /* Fallback when video fails */
+    /* Video background (same approach as rules.html) */
+    #smoke-bg{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      z-index:-3;
+      filter:brightness(0.45) contrast(1);
+      background:#000 center/cover no-repeat;
+    }
+    .bg-tint{
+      position:fixed;
+      inset:0;
+      z-index:-2;
+      background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.75));
+      pointer-events:none;
+    }
+    /* fallback when video fails */
     body.no-video{background-image:url('smoke.jpg');background-size:cover;background-position:center}
 
+    /* layout matching your rules style */
     .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px}
     .card{width:100%;max-width:var(--card-w);background:var(--overlay);border-radius:12px;padding:32px;box-shadow:0 10px 40px rgba(0,0,0,0.7);border:1px solid rgba(255,60,60,0.06)}
-    @media (max-width:880px){.card{padding:22px}}
+    @media(max-width:880px){.card{padding:22px}}
 
     h1{margin:0 0 18px 0;font-size:48px;color:var(--accent);text-shadow:0 6px 18px rgba(0,0,0,0.9);line-height:0.95;text-align:center}
     .lead{margin:0 0 18px 0;font-size:18px;line-height:1.45;color:#fff;opacity:0.98;text-align:center}
@@ -45,11 +72,11 @@
     .section h2{font-size:22px;color:var(--accent);margin:18px 0 12px 0;border-bottom:1px solid rgba(255,60,60,0.12);padding-bottom:8px}
 
     .item{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
-    .item .num{width:40px;text-align:center;color:var(--accent);font-weight:800;font-size:18px}
+    .item .num{width:44px;text-align:center;color:var(--accent);font-weight:800;font-size:18px}
     .item .text{font-size:16px;line-height:1.5}
     .item .text a{color:#fff;text-decoration:underline;font-weight:800}
 
-    /* Nameplates (only names) */
+    /* nameplates simplified (only names) */
     .nameplates{display:flex;flex-direction:column;gap:12px;margin-top:8px}
     .nameplate{display:flex;gap:12px;align-items:center;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03)}
     .np-avatar{width:64px;height:64px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:24px;border:1px solid rgba(255,255,255,0.04);background-size:cover;background-position:center}
@@ -58,11 +85,11 @@
     .np-actions{margin-left:auto}
     .np-actions a{color:var(--accent);text-decoration:underline;font-weight:700}
 
-    .back-btn{display:inline-block;margin-top:22px;padding:10px 14px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;text-decoration:none;font-weight:700}
+    .back-btn{display:inline-block;margin-top:22px;padding:10px 14px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;text-decoration:none;font-weight:700;display:block;width:max-content;margin-left:auto;margin-right:auto}
 
     footer{margin-top:12px;font-size:13px;color:var(--muted);text-align:center}
 
-    @media (max-width:600px){
+    @media(max-width:600px){
       h1{font-size:36px}
       .item .text{font-size:15px}
       .np-avatar{width:56px;height:56px}
@@ -70,6 +97,7 @@
   </style>
 </head>
 <body>
+  <!-- Place video element immediately after body open, same way as rules.html -->
   <video id="smoke-bg" autoplay muted loop playsinline preload="auto" poster="smoke.jpg">
     <source src="smoke.webm" type="video/webm">
     <source src="smoke.mp4" type="video/mp4">
@@ -110,22 +138,18 @@
       </div>
 
       <div class="section" aria-labelledby="homage-heading">
-        <h2 id="homage-heading">COMMUNITY LEGENDS</h2>
+        <h2 id="homage-heading">COMMUNITY</h2>
 
         <div class="nameplates" id="plates">
           <div class="nameplate" data-userid="572334717731602462" data-display="RB Skizza">
             <div class="np-avatar" aria-hidden="true">R</div>
-            <div class="np-meta">
-              <div class="np-name">RB Skizza</div>
-            </div>
+            <div class="np-meta"><div class="np-name">RB Skizza</div></div>
             <div class="np-actions"><a class="profile-link" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener noreferrer">View</a></div>
           </div>
 
           <div class="nameplate" data-userid="842365557486518302" data-display="Slomobob">
             <div class="np-avatar" aria-hidden="true">S</div>
-            <div class="np-meta">
-              <div class="np-name">Slomobob</div>
-            </div>
+            <div class="np-meta"><div class="np-name">Slomobob</div></div>
             <div class="np-actions"><a class="profile-link" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener noreferrer">View</a></div>
           </div>
         </div>
@@ -133,22 +157,22 @@
 
       <a class="back-btn" href="index.html" role="button">← Back to menu</a>
 
-      <footer>Provide avatar hashes to show exact avatars; otherwise Discord default avatars are used as fallback.</footer>
+      <footer id="note">Provide avatar hashes to show exact avatars; otherwise Discord default avatars are used as fallback.</footer>
     </section>
   </main>
 
   <script>
     (function(){
-      // Video autoplay/fallback handling
+      // replicate the same video fallback logic you used in rules.html
       const vid = document.getElementById('smoke-bg');
       let played = false;
       vid.addEventListener('playing', ()=> played = true);
       vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
       setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 900);
 
-      // Try to set nameplate avatars using id (best-effort). If avatar hash not known, fallback to Discord embed avatars.
+      // nameplate avatar best-effort (uses embed default if exact avatar hash not provided)
       function embedAvatarUrl(id){ return `https://cdn.discordapp.com/embed/avatars/${Number(id) % 5}.png`; }
-      async function testHead(url){ try{ const r = await fetch(url, { method:'HEAD', cache:'no-store' }); return r.ok; } catch(e){ return false; } }
+      async function testHead(url){ try{ const res = await fetch(url, { method:'HEAD', cache:'no-store' }); return res.ok; } catch(e){ return false; } }
 
       async function setAvatarForPlate(plate){
         const id = plate.getAttribute('data-userid');
