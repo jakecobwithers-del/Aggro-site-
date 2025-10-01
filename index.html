@@ -46,8 +46,8 @@
     .vfx .flicker{position:absolute;inset:0;mix-blend-mode:screen;opacity:0}
 
     /* HEADLINE / BLOOD */
-    #headline{position:fixed;top:42vh;left:50%;transform:translateX(-50%);text-align:center;z-index:var(--z-head);pointer-events:none}
-    #headlineText{font-size:clamp(48px,14vw,136px);line-height:.9;letter-spacing:.12em;opacity:0;will-change:opacity}
+    #headline{position:fixed;top:42vh;left:50%;transform:translateX(-50%);text-align:center;z-index:var(--z-head);pointer-events:none;transition:transform .18s ease,filter .18s ease}
+    #headlineText{font-size:clamp(48px,14vw,136px);line-height:.9;letter-spacing:.12em;opacity:0;will-change:opacity,transform,filter;transition:transform .18s ease,filter .18s ease,text-shadow .18s ease}
     @keyframes textFade{0%,10%{opacity:0}20%,80%{opacity:1}100%{opacity:0}}
     .fadeText{animation:textFade var(--text-dur)ms both}
     @keyframes glitch{0%,100%{clip:rect(0,9999px,0,0)}20%{clip:rect(20px,9999px,40px,0)}40%{clip:rect(50px,9999px,70px,0)}60%{clip:rect(10px,9999px,30px,0)}80%{clip:rect(60px,9999px,80px,0)}}
@@ -66,18 +66,15 @@
     .btn::before{content:"";position:absolute;inset:2px;border-radius:calc(var(--cta-radius)-2px);background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01));mix-blend-mode:overlay;pointer-events:none;z-index:2}
     .btn .icon{width:28px;height:28px;flex:0 0 28px;display:inline-block}
     .btn .label{font-size:16px}
-
     .btn.steam{background:linear-gradient(180deg,#0f0f0f,#070707);border:1px solid rgba(255,255,255,0.04);box-shadow:0 18px 36px rgba(0,0,0,0.68)}
     .btn.discord{background:linear-gradient(180deg,#23263a,#0f1220);border:1px solid rgba(255,255,255,0.03);box-shadow:0 18px 36px rgba(0,0,0,0.64)}
     .btn:hover{transform:translateY(-8px) scale(1.02);filter:drop-shadow(0 28px 36px rgba(0,0,0,0.6))}
     .btn:active{transform:translateY(-3px) scale(.995);filter:drop-shadow(0 10px 20px rgba(0,0,0,0.55));transition:transform .08s,filter .08s}
     .btn:focus{outline:3px solid rgba(255,255,255,0.06);outline-offset:6px}
-
-    /* subtle shine */
     .btn .shine{position:absolute;left:-40%;top:-10%;width:60%;height:120%;transform:rotate(-18deg);background:linear-gradient(90deg,rgba(255,255,255,0.02) 0%,rgba(255,255,255,0.12) 50%,rgba(255,255,255,0.02) 100%);opacity:0;z-index:1;pointer-events:none;transition:opacity .25s,transform .25s}
     .btn:hover .shine{opacity:1;transform:translateX(22%)}
 
-    /* When the red smoke/tint is active, make buttons and logo pop more */
+    /* tint-active increases pop for buttons, logo, and headline */
     body.tint-active .btn{
       transform: translateY(-12px) scale(1.06) !important;
       filter: brightness(1.12) saturate(1.12);
@@ -89,9 +86,15 @@
       filter: drop-shadow(0 18px 28px rgba(0,0,0,0.8)) saturate(1.08);
     }
 
-    /* responsive */
-    @media (max-width:620px){ .cta{flex-direction:column;gap:12px;bottom:6vh} .btn{min-width:86vw;width:auto;padding:0 18px} #logo img{max-width:60vw} }
+    /* HEADLINE POP: scale, brighten, and stronger text-shadow while tint is active */
+    body.tint-active #headlineText{
+      transform: translateY(-10px) scale(1.06);
+      filter: brightness(1.12) saturate(1.08);
+      text-shadow: 0 12px 30px rgba(0,0,0,0.8), 0 2px 0 rgba(255,26,26,0.06);
+      will-change: transform, filter, text-shadow;
+    }
 
+    @media (max-width:620px){ .cta{flex-direction:column;gap:12px;bottom:6vh} .btn{min-width:86vw;width:auto;padding:0 18px} #logo img{max-width:60vw} }
     @media (prefers-reduced-motion:reduce){ *{animation-duration:0.001ms !important;transition:none !important} .btn:hover,.btn:active{transform:none;box-shadow:none} }
   </style>
 </head>
@@ -175,6 +178,7 @@
 
     function addTintActive(){
       document.body.classList.add('tint-active');
+      // ensure headline pop lasts same period as tint; clear/restart timeout if running
       if(tintTimeout) clearTimeout(tintTimeout);
       tintTimeout = setTimeout(()=> document.body.classList.remove('tint-active'), txtDur + 80);
     }
@@ -183,12 +187,10 @@
       if(running) return;
       running = true;
 
-      // color tint (show overlay)
+      // color tint: show overlay and trigger visual pop
       colorOvl.style.opacity = '1';
       addTintActive();
-      setTimeout(()=> {
-        colorOvl.style.opacity = '0';
-      }, txtDur);
+      setTimeout(()=> colorOvl.style.opacity = '0', txtDur);
 
       // red flash
       restart(redOvl,'redFlash',flash);
