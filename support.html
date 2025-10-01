@@ -3,12 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — Support</title>
-
+<title>Support — UI Layout</title>
 <style>
-  /* font - expect file in site root or same folder */
   @font-face{
-    font-family: '28DaysLater';
+    font-family:'28DaysLater';
     src: url('28%20Days%20Later.ttf') format('truetype'), url('28DaysLater.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
@@ -16,113 +14,65 @@
   }
 
   :root{
-    --accent:#ff3c3c;      /* main red */
-    --slab-bg:#0b0b0b;     /* black slab */
-    --slab-edge:rgba(255,60,60,0.06);
-    --muted:#e9e9e9;       /* white/near-white text */
+    --accent:#ff3c3c;
+    --slab-bg:#0b0b0b;
+    --muted:#e9e9e9;
     --card-w:980px;
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%;background:#000;font-family:'28DaysLater',system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--muted);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-  a{color:inherit}
+  a{color:inherit;text-decoration:none}
 
-  /* full-bleed smoke video behind everything */
+  /* smoke background */
   #smoke-bg{position:fixed;inset:0;z-index:-9999;pointer-events:none;overflow:hidden;background:#000}
-  #smoke-bg video{
-    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-    min-width:100%;min-height:100%;width:auto;height:120%;object-fit:cover;
-    filter:brightness(0.45) contrast(1);
-    pointer-events:none;display:block;
-  }
+  #smoke-bg video{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);min-width:100%;min-height:100%;width:auto;height:120%;object-fit:cover;pointer-events:none;display:block}
 
-  /* page layout - center slab like the rules page */
+  /* slab container */
   main.page{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px;z-index:0}
   .slab{
     width:100%;max-width:var(--card-w);
     background:linear-gradient(180deg, rgba(0,0,0,0.88), rgba(0,0,0,0.90));
-    border:1px solid var(--slab-edge);
+    border:1px solid rgba(255,60,60,0.06);
     border-radius:14px;
-    padding:28px;
+    padding:24px;
     box-shadow:0 18px 60px rgba(0,0,0,0.65);
-    backdrop-filter: none;
   }
 
-  /* heading area */
-  .slab header{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:18px}
-  .slab h1{
-    font-size:44px;
-    color:#fff; /* white heading text */
-    letter-spacing:0.6px;
-    line-height:0.92;
-    text-shadow:0 10px 30px rgba(0,0,0,0.9);
-  }
-  .slab p.lead{
-    color:rgba(255,255,255,0.95);
-    font-size:14px;
-    opacity:0.96;
-  }
+  /* header */
+  .slab header{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:14px}
+  .slab h1{font-size:44px;color:#fff;line-height:0.92;letter-spacing:0.6px;text-shadow:0 10px 30px rgba(0,0,0,0.9)}
 
-  /* menu list (slab content) */
-  .menu{
-    margin-top:6px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
-
+  /* menu list */
+  .menu{display:flex;flex-direction:column;gap:10px}
   .menu-item{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
+    display:flex;align-items:center;justify-content:space-between;
     background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
     border:1px solid rgba(255,255,255,0.03);
-    padding:14px 16px;
-    border-radius:10px;
-    cursor:pointer;
-    transition:transform .12s ease, box-shadow .12s ease;
+    padding:12px 14px;border-radius:10px;cursor:pointer;
   }
-  .menu-item:active{transform:translateY(1px)}
-  .menu-item:hover{box-shadow:0 6px 18px rgba(0,0,0,0.6)}
-
-  .menu-item .left{
-    display:flex;align-items:center;gap:12px;min-width:0
-  }
-  .badge{
-    width:56px;height:56px;border-radius:8px;background:var(--slab-bg);display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:900;font-size:18px;border:1px solid rgba(255,255,255,0.03)
-  }
+  .menu-item .left{display:flex;align-items:center;gap:12px;min-width:0}
+  .badge{width:56px;height:56px;border-radius:8px;background:var(--slab-bg);display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:900;font-size:18px;border:1px solid rgba(255,255,255,0.03)}
   .meta{display:flex;flex-direction:column;min-width:0}
   .meta .title{font-weight:900;color:#fff;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .meta .subtitle{font-size:13px;color:rgba(255,255,255,0.82);margin-top:4px}
+  .arrow{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:900;font-size:18px;border:1px solid rgba(255,60,60,0.08);background:rgba(255,60,60,0.03)}
 
-  .arrow{
-    width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:900;font-size:18px;
-    border:1px solid rgba(255,60,60,0.08);background:rgba(255,60,60,0.03)
-  }
+  /* expandable area */
+  .expand{max-height:0;overflow:hidden;transition:max-height .28s ease}
+  .expand.open{max-height:600px;padding:10px 12px;margin-top:8px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
 
-  /* expanded content (hidden by default) */
-  .expand{max-height:0;overflow:hidden;transition:max-height .28s ease;padding:0 4px}
-  .expand.open{padding:10px 12px;margin-top:8px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.02);max-height:600px}
+  /* return */
+  .return{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:8px;color:var(--accent);border:1px solid rgba(255,60,60,0.08);background:transparent;font-weight:900}
 
-  .expand p{color:rgba(255,255,255,0.92);font-size:14px;line-height:1.45;margin:0}
-
-  /* return button styled red text on transparent background */
-  .return{
-    display:inline-block;margin-top:18px;padding:10px 14px;border-radius:8px;
-    color:var(--accent);border:1px solid rgba(255,60,60,0.08);background:transparent;font-weight:900;text-decoration:none;
-  }
-
-  /* mobile tweaks */
   @media(max-width:720px){
-    .slab{padding:18px;border-radius:12px}
+    .slab{padding:16px}
     .badge{width:48px;height:48px;font-size:16px}
-    .menu-item{padding:12px}
     .slab h1{font-size:36px}
   }
 </style>
 </head>
 <body>
-  <!-- smoke background -->
   <div id="smoke-bg" aria-hidden="true">
     <video autoplay muted loop playsinline preload="auto" poster="smoke-poster.jpg">
       <source src="Smoke.webm" type="video/webm">
@@ -131,116 +81,94 @@
   </div>
 
   <main class="page" role="main">
-    <section class="slab" role="region" aria-labelledby="support-title">
+    <section class="slab" role="region" aria-labelledby="ui-title">
       <header>
-        <h1 id="support-title">SUPPORT</h1>
-        <p class="lead">Report bugs, open tickets, or get help — use the Discord channels below.</p>
+        <h1 id="ui-title"></h1>
       </header>
 
-      <nav class="menu" role="navigation" aria-label="Support menu">
-        <div class="menu-item" data-target="g">
+      <nav class="menu" role="navigation" aria-label="UI menu">
+        <div class="menu-item" data-target="item-1">
           <div class="left">
-            <div class="badge">G</div>
+            <div class="badge"></div>
             <div class="meta">
-              <div class="title">GENERAL</div>
-              <div class="subtitle">Basic server behaviour and guidelines</div>
+              <div class="title"></div>
+              <div class="subtitle"></div>
             </div>
           </div>
-          <div class="arrow">›</div>
+          <div class="arrow"></div>
         </div>
-        <div id="g" class="expand" aria-hidden="true">
-          <p>Keep chat civil. No cheating, no exploits. Follow staff directions in game and on Discord.</p>
-        </div>
+        <div id="item-1" class="expand" aria-hidden="true"></div>
 
-        <div class="menu-item" data-target="s">
+        <div class="menu-item" data-target="item-2">
           <div class="left">
-            <div class="badge">S</div>
+            <div class="badge"></div>
             <div class="meta">
-              <div class="title">SAFEZONE</div>
-              <div class="subtitle">Rules for safezones and protected areas</div>
+              <div class="title"></div>
+              <div class="subtitle"></div>
             </div>
           </div>
-          <div class="arrow">›</div>
+          <div class="arrow"></div>
         </div>
-        <div id="s" class="expand" aria-hidden="true">
-          <p>Safezones are non-combat. No raiding or building inside safezones. Respect NPCs and shops.</p>
-        </div>
+        <div id="item-2" class="expand" aria-hidden="true"></div>
 
-        <div class="menu-item" data-target="b">
+        <div class="menu-item" data-target="item-3">
           <div class="left">
-            <div class="badge">B</div>
+            <div class="badge"></div>
             <div class="meta">
-              <div class="title">BASE BUILDING</div>
-              <div class="subtitle">Construction, snapping and footprint limits</div>
+              <div class="title"></div>
+              <div class="subtitle"></div>
             </div>
           </div>
-          <div class="arrow">›</div>
+          <div class="arrow"></div>
         </div>
-        <div id="b" class="expand" aria-hidden="true">
-          <p>Follow allowed footprint rules. No blocking spawn areas. Don’t grief other players' structures.</p>
-        </div>
+        <div id="item-3" class="expand" aria-hidden="true"></div>
 
-        <div class="menu-item" data-target="l">
+        <div class="menu-item" data-target="item-4">
           <div class="left">
-            <div class="badge">L</div>
+            <div class="badge"></div>
             <div class="meta">
-              <div class="title">BASE STORAGE LIMIT</div>
-              <div class="subtitle">Storage caps and how to request exceptions</div>
+              <div class="title"></div>
+              <div class="subtitle"></div>
             </div>
           </div>
-          <div class="arrow">›</div>
+          <div class="arrow"></div>
         </div>
-        <div id="l" class="expand" aria-hidden="true">
-          <p>Storage limits apply per-base. If you need extra space, open a ticket with build screenshots.</p>
-        </div>
+        <div id="item-4" class="expand" aria-hidden="true"></div>
 
-        <div class="menu-item" data-target="r">
+        <div class="menu-item" data-target="item-5">
           <div class="left">
-            <div class="badge">R</div>
+            <div class="badge"></div>
             <div class="meta">
-              <div class="title">RAIDING</div>
-              <div class="subtitle">Raid windows, loot rules and acceptable tactics</div>
+              <div class="title"></div>
+              <div class="subtitle"></div>
             </div>
           </div>
-          <div class="arrow">›</div>
+          <div class="arrow"></div>
         </div>
-        <div id="r" class="expand" aria-hidden="true">
-          <p>Raids allowed during designated windows. No offline wiping. Follow loot split rules on the forums.</p>
-        </div>
+        <div id="item-5" class="expand" aria-hidden="true"></div>
       </nav>
 
       <div style="display:flex;justify-content:center">
-        <a class="return" href="index.html">← Return to Main Menu</a>
+        <a class="return" href="#"></a>
       </div>
     </section>
   </main>
 
 <script>
-  // simple expand/collapse behaviour — accessible and minimal
+  // Minimal interactive scaffold (no visible text)
   document.querySelectorAll('.menu-item').forEach(item=>{
-    item.addEventListener('click', ()=>{
-      const target = item.getAttribute('data-target');
-      const panel = document.getElementById(target);
-      if (!panel) return;
-      const open = panel.classList.toggle('open');
-      panel.setAttribute('aria-hidden', !open);
-    });
-    // keyboard support
     item.tabIndex = 0;
+    item.addEventListener('click', ()=>{
+      const t = item.getAttribute('data-target');
+      const el = document.getElementById(t);
+      if (!el) return;
+      const open = el.classList.toggle('open');
+      el.setAttribute('aria-hidden', !open);
+    });
     item.addEventListener('keydown', e=>{
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }
     });
   });
-
-  // playback fallback: if video doesn't start, fall back to poster background
-  (function(){
-    const vid = document.querySelector('#smoke-bg video');
-    if (!vid) { document.body.classList.add('no-video'); return; }
-    let played = false;
-    vid.addEventListener('playing', ()=> played = true);
-    vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
-    setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 700);
-  })();
 </script>
 </body>
 </html>
