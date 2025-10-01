@@ -6,135 +6,68 @@
   <title>Aggro PvP — Support</title>
 
   <style>
-    /* Try both root font filenames (space and no-space); font file must be in same folder as this HTML */
-    @font-face{
-      font-family: '28DaysLater';
-      src: url('28%20Days%20Later.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face{
-      font-family: '28DaysLater';
-      src: url('28DaysLater.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
+    /* try both root font filenames (with and without space) */
+    @font-face{font-family:'28DaysLater';src:url('28%20Days%20Later.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap}
+    @font-face{font-family:'28DaysLater';src:url('28DaysLater.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap}
 
     :root{
-      --accent: #ff3c3c;
-      --overlay: rgba(0,0,0,0.82);
-      --muted: #bdbdbd;
-      --card-max: 1100px;
+      --accent:#ff3c3c;
+      --overlay:rgba(0,0,0,0.82);
+      --muted:#bdbdbd;
+      --card-max:1100px;
     }
 
-    /* Base */
     *{box-sizing:border-box}
     html,body{height:100%;margin:0}
     body{
-      font-family: '28DaysLater', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color:#fff;
-      background:#000;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+      font-family:'28DaysLater', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color:#fff;background:#000;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
     }
 
-    /* Fullscreen smoke video from site root (smoke.mp4). Add smoke.webm and smoke.jpg in root for better fallback. */
-    #smoke-bg{
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      z-index:-3;
-      filter:contrast(1) brightness(0.45);
-      background:#000 center/cover no-repeat;
-    }
-    .bg-tint{
-      position:fixed;
-      inset:0;
-      z-index:-2;
-      background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.9) 100%);
-      pointer-events:none;
-    }
+    /* Video background in site root; poster fallback and CSS fallback */
+    #smoke-bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;filter:contrast(1) brightness(0.45);background:#000 center/cover no-repeat}
+    .bg-tint{position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.75));pointer-events:none}
 
-    /* Page container */
+    /* Fallback background when video fails */
+    body.no-video{background-image:url('smoke.jpg');background-size:cover;background-position:center}
+
     .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 16px}
-    .card{
-      width:100%;
-      max-width:var(--card-max);
-      background:var(--overlay);
-      border-radius:12px;
-      padding:30px;
-      box-shadow:0 10px 40px rgba(0,0,0,0.7);
-      border:1px solid rgba(255,60,60,0.06);
-      display:grid;
-      grid-template-columns: 1fr 320px;
-      gap:22px;
-      align-items:start;
-    }
-    @media (max-width:880px){ .card{ grid-template-columns:1fr; padding:20px } }
+    .card{width:100%;max-width:var(--card-max);background:var(--overlay);border-radius:12px;padding:30px;box-shadow:0 10px 40px rgba(0,0,0,0.7);border:1px solid rgba(255,60,60,0.06);display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+    @media (max-width:880px){.card{grid-template-columns:1fr;padding:20px}}
 
-    /* Left column (main content) */
     h1{margin:0 0 8px 0;color:var(--accent);font-size:44px;line-height:0.95;text-shadow:0 8px 24px rgba(0,0,0,0.85)}
-    .lead{margin:0 0 14px 0;font-size:18px;line-height:1.45;color:#fff;opacity:0.98}
-    ul{margin:10px 0 18px 1.1rem;padding:0}
-    li{margin:8px 0;font-size:16px;line-height:1.5}
+    .lead{margin:0 0 12px 0;font-size:18px;line-height:1.45;color:#fff;opacity:0.98}
 
-    /* Channel links block — single place under lead text */
-    .channels{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:6px;
-    }
-    .channel{
-      display:block;
-      min-width:160px;
-      padding:10px 14px;
-      border-radius:999px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      color:#fff;
-      text-decoration:none;
-      border:1px solid rgba(255,255,255,0.03);
-      font-weight:800;
-    }
-    .channel .tag{display:block;font-size:12px;color:var(--muted);margin-top:6px;font-weight:400}
+    /* channels: stacked vertical list with short descriptions */
+    .channels-list{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+    .channel-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+    .channel-link{font-weight:800;color:#fff;text-decoration:none;font-size:15px}
+    .channel-desc{font-size:13px;color:var(--muted);margin-top:2px}
 
-    /* Right column (sidebar) */
-    .sidebar{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+    /* homage/nameplates (clean, no popups) */
     .panel{background:rgba(255,255,255,0.02);padding:14px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
     .panel h2{margin:0 0 8px 0;color:var(--accent);font-size:18px}
-
-    /* Nameplate styles (homage) */
-    .nameplate{display:flex;gap:12px;align-items:center;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03);position:relative;overflow:visible}
-    .np-avatar{width:60px;height:60px;border-radius:8px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;border:1px solid rgba(255,255,255,0.04);background-size:cover;background-position:center}
+    .nameplates{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+    .nameplate{display:flex;gap:12px;align-items:center;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03)}
+    .np-avatar{width:64px;height:64px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:24px;border:1px solid rgba(255,255,255,0.04);background-size:cover;background-position:center}
     .np-meta{display:flex;flex-direction:column;min-width:0}
-    .np-name{font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .np-name{font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .np-sub{font-size:13px;color:var(--muted);margin-top:4px}
     .np-actions{margin-left:auto}
     .np-actions a{color:var(--accent);text-decoration:underline;font-weight:700}
 
-    .np-preview{position:absolute;right:12px;top:calc(100% + 10px);width:240px;background:rgba(0,0,0,0.92);border-radius:8px;padding:10px;border:1px solid rgba(255,255,255,0.03);display:none;flex-direction:column;gap:8px;z-index:40}
-    .nameplate:hover .np-preview{display:flex}
-    .p-row{display:flex;gap:10px;align-items:center}
-    .p-avatar{width:52px;height:52px;border-radius:8px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;background-size:cover;background-position:center}
-    .p-name{font-weight:800}
-    .p-bio{font-size:13px;color:var(--muted)}
-
-    /* Back to menu button */
     .back-btn{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;text-decoration:none;font-weight:700}
 
-    /* Footer note */
     footer{margin-top:12px;font-size:13px;color:var(--muted)}
-    /* Video fallback CSS */
-    body.no-video{background-image:url('smoke.jpg');background-size:cover;background-position:center}
+
+    @media (max-width:600px){
+      .np-avatar{width:56px;height:56px}
+      .card{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
-  <!-- Video background from site root -->
-  <video id="smoke-bg" autoplay muted loop playsinline preload="auto">
+  <video id="smoke-bg" autoplay muted loop playsinline preload="auto" poster="smoke.jpg">
     <source src="smoke.webm" type="video/webm">
     <source src="smoke.mp4" type="video/mp4">
   </video>
@@ -144,92 +77,73 @@
     <article class="card" aria-labelledby="support-title">
       <div>
         <h1 id="support-title">SUPPORT & SURVIVAL</h1>
-
         <p class="lead">If you're still breathing, we've got your back. Report bugs, open tickets, or drop suggestions in the Discord channels below — we monitor them regularly.</p>
 
-        <!-- single channel block under the paragraph -->
-        <div class="channels" aria-label="Support channels">
-          <a class="channel" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer">
-            Bug reports
-            <span class="tag">#bug-reports</span>
-          </a>
+        <div class="channels-list" aria-label="Support channels">
+          <div class="channel-item">
+            <div style="min-width:10px;margin-top:2px;color:var(--accent)">#</div>
+            <div>
+              <a class="channel-link" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer">#bug-reports</a>
+              <div class="channel-desc">Report game-breaking bugs, exploits or crashes. Include steps to reproduce and logs/screenshots when possible.</div>
+            </div>
+          </div>
 
-          <a class="channel" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer">
-            Suggestions
-            <span class="tag">#suggestions</span>
-          </a>
+          <div class="channel-item">
+            <div style="min-width:10px;margin-top:2px;color:var(--accent)">#</div>
+            <div>
+              <a class="channel-link" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer">#suggestions</a>
+              <div class="channel-desc">Share ideas, balance suggestions, or community features you want to see added to the server.</div>
+            </div>
+          </div>
 
-          <a class="channel" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer">
-            Ticket
-            <span class="tag">#ticket</span>
-          </a>
+          <div class="channel-item">
+            <div style="min-width:10px;margin-top:2px;color:var(--accent)">#</div>
+            <div>
+              <a class="channel-link" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer">#ticket</a>
+              <div class="channel-desc">Open a private support ticket for account help, appeals, or admin assistance.</div>
+            </div>
+          </div>
         </div>
 
-        <div style="margin-top:18px" class="panel" aria-labelledby="homage">
+        <div class="panel" style="margin-top:18px" aria-labelledby="homage">
           <h2 id="homage">🎖 Homage to Day Z contributors</h2>
-          <p style="margin:0 0 12px;font-size:14px;color:#fff;opacity:.95">Respect to the creators who inspired Aggro PvP. Hover a nameplate for a small preview, or click View to open the profile in Discord.</p>
+          <p style="margin:0 0 8px;font-size:14px;color:#fff;opacity:.95">Respect to the creators who inspired Aggro PvP. Small preview nameplates below; View opens the user's profile in Discord.</p>
 
-          <!-- nameplates -->
-          <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="nameplates" id="plates">
             <div class="nameplate" data-userid="572334717731602462" data-display="RB Skizza">
               <div class="np-avatar" aria-hidden="true">R</div>
               <div class="np-meta">
                 <div class="np-name">RB Skizza</div>
-                <div class="np-sub">Day Z community</div>
+                <div class="np-sub">Legacy Day Z contributor</div>
               </div>
               <div class="np-actions"><a class="profile-link" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener noreferrer">View</a></div>
-
-              <div class="np-preview" role="dialog" aria-hidden="true">
-                <div class="p-row">
-                  <div class="p-avatar" aria-hidden="true">R</div>
-                  <div style="display:flex;flex-direction:column;min-width:0">
-                    <div class="p-name">RB Skizza</div>
-                    <div class="p-bio">Legacy Day Z contributor</div>
-                  </div>
-                </div>
-                <div style="font-size:13px;color:var(--muted)">Opens the user's profile in a new tab.</div>
-              </div>
             </div>
 
             <div class="nameplate" data-userid="842365557486518302" data-display="Slomobob">
               <div class="np-avatar" aria-hidden="true">S</div>
               <div class="np-meta">
                 <div class="np-name">Slomobob</div>
-                <div class="np-sub">Day Z community</div>
+                <div class="np-sub">Acknowledged community creator</div>
               </div>
               <div class="np-actions"><a class="profile-link" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener noreferrer">View</a></div>
-
-              <div class="np-preview" role="dialog" aria-hidden="true">
-                <div class="p-row">
-                  <div class="p-avatar" aria-hidden="true">S</div>
-                  <div style="display:flex;flex-direction:column;min-width:0">
-                    <div class="p-name">Slomobob</div>
-                    <div class="p-bio">Acknowledged community creator</div>
-                  </div>
-                </div>
-                <div style="font-size:13px;color:var(--muted)">Opens the user's profile in a new tab.</div>
-              </div>
             </div>
           </div>
 
-          <footer style="margin-top:12px">If you supply exact avatar hashes I will replace initials with live avatars and make preview richer.</footer>
+          <footer style="margin-top:10px">Provide avatar hashes to show exact avatars; otherwise Discord default avatars are used as fallback.</footer>
         </div>
 
         <a class="back-btn" href="index.html" role="button">← Back to menu</a>
-
       </div>
 
-      <aside class="sidebar" aria-label="Discord quick links">
+      <aside style="align-self:start">
         <div class="panel">
-          <div style="font-weight:800;color:var(--accent);font-size:18px;margin-bottom:8px">Discord</div>
-          <div style="font-size:14px;color:var(--muted);margin-bottom:10px">Open the server or jump to support channels</div>
+          <div style="font-weight:800;color:var(--accent);font-size:18px;margin-bottom:8px">Quick Links</div>
           <div style="display:flex;flex-direction:column;gap:8px">
-            <a href="https://discord.com/channels/1375728051194957874" target="_blank" rel="noopener noreferrer" style="color:#fff;text-decoration:underline">Open Server</a>
             <a href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener noreferrer" style="color:#fff;text-decoration:underline">#bug-reports</a>
             <a href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener noreferrer" style="color:#fff;text-decoration:underline">#suggestions</a>
             <a href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener noreferrer" style="color:#fff;text-decoration:underline">#ticket</a>
           </div>
-          <div style="margin-top:12px;font-size:13px;color:var(--muted)">Tip: sign into Discord so links open the app directly.</div>
+          <div style="margin-top:12px;font-size:13px;color:var(--muted)">Sign into Discord for links to open the app directly.</div>
         </div>
       </aside>
     </article>
@@ -237,82 +151,48 @@
 
   <script>
     (function(){
-      // VIDEO fallback: attempt to play; if fails add body.no-video so CSS uses smoke.jpg
+      // Video autoplay/fallback handling
       const vid = document.getElementById('smoke-bg');
-      let playing = false;
-      vid.addEventListener('playing', ()=> playing = true);
+      let played = false;
+      vid.addEventListener('playing', ()=> played = true);
       vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
-      // try to auto-play (some browsers block autoplay unless muted; video is muted)
-      setTimeout(()=>{ if (!playing) vid.play().catch(()=> document.body.classList.add('no-video')); }, 800);
+      setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 900);
 
-      // Attempt to load live avatars from CDN when we have only IDs (best-effort).
-      // Note: Discord CDN requires the avatar hash to fetch exact avatars; without it we fallback to embed default avatar.
-      function embedAvatarUrl(id){
-        const idx = Number(id) % 5;
-        return `https://cdn.discordapp.com/embed/avatars/${idx}.png`;
+      // Try loading exact avatars from CDN if avatar hash known (none provided),
+      // otherwise use Discord embed default avatars (id % 5).
+      function embedAvatarUrl(id){ return `https://cdn.discordapp.com/embed/avatars/${Number(id) % 5}.png`; }
+
+      async function testHead(url){
+        try{
+          const res = await fetch(url, { method:'HEAD', cache:'no-store' });
+          return res.ok;
+        }catch(e){ return false; }
       }
 
-      async function trySetAvatar(plate){
+      async function setAvatarForPlate(plate){
         const id = plate.getAttribute('data-userid');
         const avatarEl = plate.querySelector('.np-avatar');
-        const previewEl = plate.querySelector('.p-avatar');
-
-        // We don't have avatar hash; attempt a HEAD request for common extensions (rare to succeed without hash).
-        const tryUrls = [
+        const previewEl = null; // no preview popup used
+        // Try HEAD for common guesses (unlikely to succeed without hash)
+        const candidates = [
           `https://cdn.discordapp.com/avatars/${id}.png`,
           `https://cdn.discordapp.com/avatars/${id}.webp`,
           `https://cdn.discordapp.com/avatars/${id}.jpg`
         ];
-
-        let foundUrl = null;
-        for (const u of tryUrls){
-          try{
-            const r = await fetch(u, { method: 'HEAD', cache: 'no-store' });
-            if (r.ok){ foundUrl = u; break; }
-          }catch(e){}
-        }
-
-        if (foundUrl){
-          avatarEl.style.backgroundImage = `url(${foundUrl})`;
-          if (previewEl) previewEl.style.backgroundImage = `url(${foundUrl})`;
-          avatarEl.textContent = '';
-          if (previewEl) previewEl.textContent = '';
-        } else {
-          // fallback to embed avatar
-          const embed = embedAvatarUrl(id);
-          avatarEl.style.backgroundImage = `url(${embed})`;
-          if (previewEl) previewEl.style.backgroundImage = `url(${embed})`;
-          avatarEl.textContent = '';
-          if (previewEl) previewEl.textContent = '';
-        }
-
-        // Ensure profile link points to exact user
+        let found = null;
+        for (const c of candidates){ if (await testHead(c)){ found = c; break } }
+        const url = found || embedAvatarUrl(id);
+        avatarEl.style.backgroundImage = `url(${url})`;
+        avatarEl.textContent = '';
+        // ensure profile link points to user id
         const link = plate.querySelector('.profile-link');
         if (link) link.href = `https://discord.com/users/${id}`;
       }
 
-      // Run avatar attempts for each nameplate
-      document.querySelectorAll('.nameplate').forEach(p => {
-        // make sure p-avatar exists in preview
-        const preview = p.querySelector('.np-preview');
-        if (preview && !preview.querySelector('.p-avatar')){
-          const row = preview.querySelector('.p-row');
-          if (!row){
-            const newRow = document.createElement('div');
-            newRow.className = 'p-row';
-            newRow.innerHTML = `<div class="p-avatar">${(p.getAttribute('data-display')||'?').charAt(0)}</div><div class="p-meta"><div class="p-name">${p.getAttribute('data-display')}</div><div class="p-bio" style="color:var(--muted)">Profile preview</div></div>`;
-            preview.insertBefore(newRow, preview.firstChild);
-          }
-        }
-        trySetAvatar(p).catch(()=>{/*ignore*/});
-      });
-
-      // Touch toggle for previews on mobile
-      document.querySelectorAll('.nameplate').forEach(np=>{
-        np.addEventListener('touchstart', function(e){
-          const pv = this.querySelector('.np-preview');
-          if (!pv) return;
-          pv.style.display = (pv.style.display === 'flex') ? 'none' : 'flex';
+      document.querySelectorAll('.nameplate').forEach(p=>{
+        setAvatarForPlate(p).catch(()=>{/*ignore*/});
+        p.addEventListener('touchstart', function(e){
+          // prevent accidental double-tap; no popup so just allow link clicks
         });
       });
     })();
