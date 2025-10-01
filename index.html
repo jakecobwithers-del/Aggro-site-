@@ -16,7 +16,6 @@
       --z-menu:6000; --z-vfx:4500; --z-blood:3500; --z-head:3000;
       --z-color:2500; --z-smoke:2000; --z-cta:1000; --z-logo:1000;
       --cta-h:56px; --cta-radius:14px;
-      --pop-color:#ff4b4b;
     }
 
     *,*::before,*::after{box-sizing:border-box}
@@ -32,21 +31,21 @@
     .anarchyMenu a{color:#ffdede;font-size:16px;font-weight:800;padding:10px 14px;text-decoration:none}
 
     /* LOGO */
-    #logo{position:fixed;top:6vh;left:50%;transform:translateX(-50%);z-index:var(--z-logo);pointer-events:auto}
-    #logo img{max-width:30vw;height:auto}
+    #logo{position:fixed;top:6vh;left:50%;transform:translateX(-50%);z-index:var(--z-logo);pointer-events:auto;transition:transform .18s ease,filter .18s ease}
+    #logo img{max-width:30vw;height:auto;display:block;transition:transform .18s ease,filter .18s ease}
 
     /* SMOKE */
     #smoke-wrap{position:fixed;inset:0;pointer-events:none;z-index:var(--z-smoke)}
     #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:.6;transition:filter .3s linear,opacity .3s linear}
 
-    /* original overlays */
+    /* OVERLAYS */
     #colorOverlay{position:fixed;inset:0;background:var(--red);mix-blend-mode:color;opacity:0;transition:opacity var(--text-dur)ms ease-in-out;z-index:var(--z-color);pointer-events:none}
     #redOverlay{position:fixed;inset:0;background:var(--red);mix-blend-mode:screen;opacity:0;z-index:var(--z-vfx);pointer-events:none;animation-fill-mode:both}
     @keyframes redFlash{0%{opacity:0}10%{opacity:.4}30%{opacity:0}100%{opacity:0}}
     .vfx{position:fixed;inset:0;pointer-events:none;z-index:var(--z-vfx)}
     .vfx .flicker{position:absolute;inset:0;mix-blend-mode:screen;opacity:0}
 
-    /* HEADLINE / BLOOD (unchanged) */
+    /* HEADLINE / BLOOD */
     #headline{position:fixed;top:42vh;left:50%;transform:translateX(-50%);text-align:center;z-index:var(--z-head);pointer-events:none}
     #headlineText{font-size:clamp(48px,14vw,136px);line-height:.9;letter-spacing:.12em;opacity:0;will-change:opacity}
     @keyframes textFade{0%,10%{opacity:0}20%,80%{opacity:1}100%{opacity:0}}
@@ -58,94 +57,42 @@
     #bloodCircle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(1);opacity:0;width:clamp(200px,40vw,400px);pointer-events:none;z-index:var(--z-blood);animation-fill-mode:both}
     @keyframes circleAnim{0%,20%{opacity:0}25%,75%{opacity:.6}100%{opacity:0}}
 
-    /* CTA container (keeps same placement) */
+    /* CTA container */
     .cta{position:fixed;bottom:8vh;left:50%;transform:translateX(-50%);display:flex;gap:20px;z-index:var(--z-cta);pointer-events:auto}
 
-    /* 3D POPPY BUTTONS */
-    .btn {
-      display:inline-flex; align-items:center; gap:12px; justify-content:center;
-      height:var(--cta-h); min-width:220px; padding:0 22px; border-radius:var(--cta-radius);
-      color:#fff; font-weight:900; letter-spacing:.04em; text-transform:uppercase;
-      position:relative; overflow:visible; text-decoration:none;
-      transition: transform .18s cubic-bezier(.2,.9,.3,1), box-shadow .18s, filter .18s;
-      transform-style:preserve-3d;
-      -webkit-font-smoothing:antialiased;
-    }
-
-    /* multi-layer shadows and edges for depth */
-    .btn::after{
-      /* pronounced soft shadow under the button */
-      content:"";
-      position:absolute; left:8px; right:8px; bottom:-14px; height:18px;
-      background: radial-gradient(closest-side, rgba(0,0,0,0.6), rgba(0,0,0,0.15));
-      filter: blur(10px);
-      z-index:-3;
-      transition: transform .18s;
-    }
-    .btn::before{
-      /* thin inner edge to simulate bevel */
-      content:"";
-      position:absolute; inset:2px; border-radius:calc(var(--cta-radius) - 2px);
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
-      mix-blend-mode:overlay; pointer-events:none; z-index:2;
-    }
-
-    /* Icon sizing */
+    /* Button base */
+    .btn{display:inline-flex;align-items:center;gap:12px;justify-content:center;height:var(--cta-h);min-width:220px;padding:0 22px;border-radius:var(--cta-radius);color:#fff;font-weight:900;letter-spacing:.04em;text-transform:uppercase;position:relative;overflow:visible;text-decoration:none;transition:transform .18s cubic-bezier(.2,.9,.3,1),box-shadow .18s,filter .18s;transform-style:preserve-3d}
+    .btn::after{content:"";position:absolute;left:8px;right:8px;bottom:-14px;height:18px;background:radial-gradient(closest-side,rgba(0,0,0,0.6),rgba(0,0,0,0.15));filter:blur(10px);z-index:-3;transition:transform .18s}
+    .btn::before{content:"";position:absolute;inset:2px;border-radius:calc(var(--cta-radius)-2px);background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01));mix-blend-mode:overlay;pointer-events:none;z-index:2}
     .btn .icon{width:28px;height:28px;flex:0 0 28px;display:inline-block}
     .btn .label{font-size:16px}
-    .btn .badge{margin-left:8px;padding:6px 10px;border-radius:8px;font-size:12px;font-weight:900}
 
-    /* Steam look */
-    .btn.steam{ background: linear-gradient(180deg,#0f0f0f,#070707); border:1px solid rgba(255,255,255,0.04); box-shadow: 0 18px 36px rgba(0,0,0,0.68); }
-    .btn.steam .badge{ background: linear-gradient(180deg,#ff6b6b,#ff2a2a); color:#fff }
+    .btn.steam{background:linear-gradient(180deg,#0f0f0f,#070707);border:1px solid rgba(255,255,255,0.04);box-shadow:0 18px 36px rgba(0,0,0,0.68)}
+    .btn.discord{background:linear-gradient(180deg,#23263a,#0f1220);border:1px solid rgba(255,255,255,0.03);box-shadow:0 18px 36px rgba(0,0,0,0.64)}
+    .btn:hover{transform:translateY(-8px) scale(1.02);filter:drop-shadow(0 28px 36px rgba(0,0,0,0.6))}
+    .btn:active{transform:translateY(-3px) scale(.995);filter:drop-shadow(0 10px 20px rgba(0,0,0,0.55));transition:transform .08s,filter .08s}
+    .btn:focus{outline:3px solid rgba(255,255,255,0.06);outline-offset:6px}
 
-    /* Discord look */
-    .btn.discord{ background: linear-gradient(180deg,#23263a,#0f1220); border:1px solid rgba(255,255,255,0.03); box-shadow: 0 18px 36px rgba(0,0,0,0.64); }
-    .btn.discord .badge{ background: linear-gradient(180deg,#5b8df0,#344eaf); color:#fff }
+    /* subtle shine */
+    .btn .shine{position:absolute;left:-40%;top:-10%;width:60%;height:120%;transform:rotate(-18deg);background:linear-gradient(90deg,rgba(255,255,255,0.02) 0%,rgba(255,255,255,0.12) 50%,rgba(255,255,255,0.02) 100%);opacity:0;z-index:1;pointer-events:none;transition:opacity .25s,transform .25s}
+    .btn:hover .shine{opacity:1;transform:translateX(22%)}
 
-    /* hover: lift, edge shift, shadow expands, slight scale */
-    .btn:hover{
-      transform: translateY(-8px) scale(1.02);
-      filter: drop-shadow(0 28px 36px rgba(0,0,0,0.6));
+    /* When the red smoke/tint is active, make buttons and logo pop more */
+    body.tint-active .btn{
+      transform: translateY(-12px) scale(1.06) !important;
+      filter: brightness(1.12) saturate(1.12);
+      box-shadow: 0 36px 72px rgba(0,0,0,0.75);
     }
-    .btn:active{
-      transform: translateY(-3px) scale(0.995);
-      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.55));
-      transition: transform .08s, filter .08s;
-    }
-    .btn:focus{ outline: 3px solid rgba(255,255,255,0.06); outline-offset:6px }
-
-    /* attention pulse animation (subtle) */
-    @keyframes popPulse{
-      0%{ transform: scale(1) translateY(-4px) }
-      50%{ transform: scale(1.015) translateY(-10px) }
-      100%{ transform: scale(1) translateY(-4px) }
-    }
-    /* apply pulse only to .pop (add class if you want a stronger draw) */
-    .btn.pop{
-      animation: popPulse 2.6s cubic-bezier(.2,.9,.3,1) infinite;
+    body.tint-active .btn::after{transform: scaleX(1.08)}
+    body.tint-active #logo img{
+      transform: translateY(-8px) scale(1.06);
+      filter: drop-shadow(0 18px 28px rgba(0,0,0,0.8)) saturate(1.08);
     }
 
-    /* small subtle shine that moves on hover */
-    .btn .shine{
-      position:absolute; left:-40%; top:-10%; width:60%; height:120%; transform:rotate(-18deg);
-      background: linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.02) 100%);
-      opacity:0; z-index:1; pointer-events:none; transition:opacity .25s, transform .25s;
-    }
-    .btn:hover .shine{ opacity:1; transform: translateX(22%); }
+    /* responsive */
+    @media (max-width:620px){ .cta{flex-direction:column;gap:12px;bottom:6vh} .btn{min-width:86vw;width:auto;padding:0 18px} #logo img{max-width:60vw} }
 
-    /* responsive stacking */
-    @media (max-width:620px){
-      .cta{flex-direction:column;gap:12px;bottom:6vh}
-      .btn{min-width:86vw;width:auto;padding:0 18px}
-      #logo img{max-width:60vw}
-    }
-
-    @media (prefers-reduced-motion:reduce){
-      *{animation-duration:0.001ms !important;transition:none !important}
-      .btn:hover,.btn:active{transform:none;box-shadow:none}
-      .btn.pop{animation:none}
-    }
+    @media (prefers-reduced-motion:reduce){ *{animation-duration:0.001ms !important;transition:none !important} .btn:hover,.btn:active{transform:none;box-shadow:none} }
   </style>
 </head>
 <body>
@@ -164,8 +111,7 @@
 
   <!-- CTA & logo -->
   <div class="cta" role="navigation" aria-label="Primary actions">
-    <!-- Steam 3D CTA -->
-    <a id="steamBtn" class="btn steam pop" href="steam://connect/YOURSERVERIP" role="button" aria-label="Join server on Steam">
+    <a id="steamBtn" class="btn steam" href="steam://connect/YOURSERVERIP" role="button" aria-label="Join server on Steam">
       <span class="shine" aria-hidden="true"></span>
       <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
         <circle cx="6.5" cy="13.5" r="2.4" fill="#fff" opacity="0.95"/>
@@ -174,17 +120,14 @@
         <path d="M10.9 15.1l4.9-2.9" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
       </svg>
       <span class="label">Join Server</span>
-      <span class="badge" aria-hidden="true" style="background:var(--pop-color);color:#fff">LIVE</span>
     </a>
 
-    <!-- Discord 3D CTA -->
     <a id="discordBtn" class="btn discord" href="https://discord.gg/YOURDISCORD" role="button" aria-label="Join our Discord">
       <span class="shine" aria-hidden="true"></span>
       <svg class="icon" viewBox="0 0 71 55" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
         <path d="M20 20c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4zM51 20c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4z" fill="#fff"/>
       </svg>
       <span class="label">Join Community</span>
-      <span class="badge" aria-hidden="true" style="background:linear-gradient(180deg,#5b8df0,#344eaf);color:#fff">CHAT</span>
     </a>
   </div>
 
@@ -198,9 +141,9 @@
   </div>
 
   <!-- overlays -->
-  <div id="colorOverlay"></div>
-  <div id="redOverlay"></div>
-  <div class="vfx"><div id="vfxFlicker" class="flicker"></div></div>
+  <div id="colorOverlay" aria-hidden="true"></div>
+  <div id="redOverlay" aria-hidden="true"></div>
+  <div class="vfx"><div id="vfxFlicker" class="flicker" aria-hidden="true"></div></div>
 
   <!-- headline & blood -->
   <div id="headline">
@@ -222,6 +165,7 @@
     const circle = document.getElementById('bloodCircle');
     const flicker = document.getElementById('vfxFlicker');
     let running = false;
+    let tintTimeout = null;
 
     function restart(el,name,dur,delay=0){
       el.style.animation = 'none';
@@ -229,13 +173,22 @@
       el.style.animation = `${name} ${dur}ms ${delay}ms both`;
     }
 
+    function addTintActive(){
+      document.body.classList.add('tint-active');
+      if(tintTimeout) clearTimeout(tintTimeout);
+      tintTimeout = setTimeout(()=> document.body.classList.remove('tint-active'), txtDur + 80);
+    }
+
     function run(){
       if(running) return;
       running = true;
 
-      // colorBlend tint
+      // color tint (show overlay)
       colorOvl.style.opacity = '1';
-      setTimeout(()=> colorOvl.style.opacity = '0', txtDur);
+      addTintActive();
+      setTimeout(()=> {
+        colorOvl.style.opacity = '0';
+      }, txtDur);
 
       // red flash
       restart(redOvl,'redFlash',flash);
@@ -269,7 +222,7 @@
       }
     });
 
-    // Steam fallback for mobile where steam:// may be blocked
+    // Steam fallback
     const steamBtn = document.getElementById('steamBtn');
     if(steamBtn){
       steamBtn.addEventListener('click', function(e){
@@ -282,7 +235,6 @@
       });
     }
 
-    // keep original run behavior
     window.addEventListener('DOMContentLoaded', ()=>{
       if(smoke && smoke.paused){ smoke.play().catch(()=>{/* autoplay blocked */}); }
       run();
