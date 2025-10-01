@@ -70,14 +70,14 @@
       box-shadow: inset 0 2px 6px rgba(255,255,255,0.02), inset 0 -8px 18px rgba(0,0,0,0.75), 0 12px 30px rgba(0,0,0,0.9);
       padding:var(--pad);
       display:flex;
-      gap:16px;
-      align-items:flex-start;
+      flex-direction:column;
+      gap:12px;
     }
 
     .card + .card{ margin-top:6px; }
 
     .card h2{
-      margin:0 0 10px 0;
+      margin:0 0 6px 0;
       font-family:'DayZFont',sans-serif;
       color:var(--accent);
       font-size:clamp(18px,3.6vw,28px);
@@ -86,22 +86,16 @@
       text-shadow:0 4px 18px rgba(0,0,0,0.6);
     }
 
-    .card .content{
-      flex:1;
-      min-width:0;
-    }
-
     .card p{ margin:0 0 10px 0; color:var(--muted); line-height:1.6; font-size:15px; }
 
-    /* Left "Go to" arrow pill */
+    /* Left "Go to" pill moved to bottom and smaller */
     .goto {
-      display:flex;
+      display:inline-flex;
       align-items:center;
-      gap:10px;
-      min-width:86px;
+      gap:8px;
       padding:8px 10px;
       border-radius:10px;
-      background:linear-gradient(180deg,rgba(255,59,59,0.06),rgba(0,0,0,0.06));
+      background:linear-gradient(180deg,rgba(255,59,59,0.04),rgba(0,0,0,0.04));
       border:1px solid rgba(255,59,59,0.12);
       color:var(--accent);
       font-weight:800;
@@ -110,34 +104,56 @@
       justify-content:center;
       text-decoration:none;
       box-shadow: 0 8px 22px rgba(0,0,0,0.6), 0 0 14px rgba(255,59,59,0.02);
+      width:92px;
+      font-size:12px;
     }
 
     .goto svg{ width:12px; height:12px; display:block; transform:translateX(-1px); }
 
-    /* Channel pill next to goto for clearer label */
-    .channel-pill{
-      display:block;
-      margin-top:8px;
-      padding:8px 10px;
+    /* Channel link simplified */
+    .channel-link{
+      display:inline-block;
+      margin-top:6px;
+      padding:8px 12px;
       border-radius:8px;
       background:rgba(255,255,255,0.02);
       border:1px solid rgba(255,255,255,0.02);
       color:var(--muted);
       font-weight:700;
       text-decoration:none;
-      width:max-content;
     }
-    .channel-pill .muted-id{display:block;color:rgba(255,255,255,0.7);font-size:13px;font-weight:500;margin-top:4px;}
+
+    /* Owner / credits (smaller chips) */
+    .owner{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .owner-meta{ color:var(--muted); line-height:1.5; font-size:14px; margin:0; }
+    .staff-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+    .staff{
+      padding:8px 10px;
+      border-radius:8px;
+      background:rgba(255,255,255,0.02);
+      border:1px solid rgba(255,255,255,0.02);
+      color:var(--muted);
+      font-size:13px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:140px;
+    }
+    .staff b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:12px; }
 
     /* Layout adjustments for small screens */
     @media(max-width:720px){
-      .card{flex-direction:column;}
-      .goto{min-width:100%;justify-content:flex-start;padding-left:12px;}
+      .goto{ width:100%; justify-content:flex-start; padding-left:12px; }
     }
 
     @media(max-width:520px){
       .title h1{ font-size:clamp(28px,12vw,52px); }
       .card{ padding:16px; }
+      .staff{ min-width:120px; font-size:12px; }
     }
   </style>
 </head>
@@ -158,43 +174,60 @@
 
       <!-- Bug Reports -->
       <section class="card" aria-labelledby="bug-reports">
-        <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-          <span style="font-size:12px;line-height:1;">Go to</span>
-        </a>
-
-        <div class="content">
-          <h2 id="bug-reports">Bug Reports</h2>
-          <p>Found a crash, exploit, or anything acting up — include what happened, when, and screenshots or video so staff can reproduce and fix it quickly.</p>
-          <a class="channel-pill" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener">#bug-reports <span class="muted-id">channel ID: 1385078265236160563</span></a>
+        <h2 id="bug-reports">Bug Reports</h2>
+        <p>Found a crash, exploit, or anything acting up — include what happened, when, and screenshots or video so staff can reproduce and fix it quickly.</p>
+        <a class="channel-link" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener">Open bug reports on Discord</a>
+        <div style="margin-top:12px;">
+          <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+            <span>Go to</span>
+          </a>
         </div>
       </section>
 
       <!-- Suggestions -->
       <section class="card" aria-labelledby="suggestions">
-        <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-          <span style="font-size:12px;line-height:1;">Go to</span>
-        </a>
-
-        <div class="content">
-          <h2 id="suggestions">Suggestions</h2>
-          <p>Have a gameplay tweak, event idea, or QoL improvement? Post constructive suggestions so the team can review and discuss them.</p>
-          <a class="channel-pill" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener">#suggestions <span class="muted-id">channel ID: 1385079306350493766</span></a>
+        <h2 id="suggestions">Suggestions</h2>
+        <p>Have a gameplay tweak, event idea, or QoL improvement? Post constructive suggestions so the team can review and discuss them.</p>
+        <a class="channel-link" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener">Open suggestions on Discord</a>
+        <div style="margin-top:12px;">
+          <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+            <span>Go to</span>
+          </a>
         </div>
       </section>
 
       <!-- Ticket -->
       <section class="card" aria-labelledby="ticket">
-        <a class="goto" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener" aria-label="Go to Ticket channel">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-          <span style="font-size:12px;line-height:1;">Go to</span>
-        </a>
+        <h2 id="ticket">Ticket</h2>
+        <p>Need private help for bans, appeals, or account issues? Open a ticket and staff will follow up — include your Discord ID and any evidence to speed the process.</p>
+        <a class="channel-link" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener">Open tickets on Discord</a>
+        <div style="margin-top:12px;">
+          <a class="goto" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener" aria-label="Go to Ticket channel">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+            <span>Go to</span>
+          </a>
+        </div>
+      </section>
 
-        <div class="content">
-          <h2 id="ticket">Ticket</h2>
-          <p>Need private help for bans, appeals, or account issues? Open a ticket and staff will follow up — include your Discord ID and any evidence to speed the process.</p>
-          <a class="channel-pill" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener">#tickets <span class="muted-id">channel ID: 1385461796437233695</span></a>
+      <!-- Owner / credits (smaller) -->
+      <section class="card" aria-labelledby="owner">
+        <h2 id="owner" style="color:#fff;">Owner & Thanks</h2>
+        <p class="owner-meta">Aggro PvP is run with care — fair play and respect are the backbone of this community. If the server helped you, say thanks and keep reports detailed and constructive.</p>
+
+        <div class="staff-row" aria-hidden="false">
+          <div class="staff" title="RB Skizza">
+            <b>RB Skizza</b>
+            <span style="color:var(--muted);font-size:13px;">ID: 572334717731602462</span>
+            <small style="color:var(--muted);">Contributor / Staff</small>
+          </div>
+
+          <div class="staff" title="Slomobob">
+            <b>Slomobob</b>
+            <span style="color:var(--muted);font-size:13px;">ID: 842365557486518302</span>
+            <small style="color:var(--muted);">Support / Admin</small>
+          </div>
         </div>
       </section>
 
@@ -202,7 +235,7 @@
       <div style="display:flex;justify-content:center;margin-top:6px;">
         <a class="goto" href="index.html" aria-label="Return to main menu" style="text-decoration:none;">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-          <span style="font-size:12px;line-height:1;">Go to</span>
+          <span>Go to</span>
         </a>
       </div>
     </div>
