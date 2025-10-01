@@ -5,129 +5,257 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Aggro PvP — JOIN THE FIGHT</title>
   <style>
-    :root{
-      --bg:#050505;
-      --red:#ff1a1a;
-      --discord-blue-1:#5b8df0;
-      --discord-blue-2:#344eaf;
-      --steam-red-1:#ff6b6b;
-      --steam-red-2:#ff2a2a;
+    :root {
+      --bg: #050505;
+      --red: #ff1a1a;
 
       /* timing */
-      --cycle:4000;
-      --text-dur:3000;
-      --flash-dur:600;
-      --circle-dur:3000;
-      --circle-delay:0;
+      --cycle: 4000;
+      --text-dur: 3000;
+      --flash-dur: 600;
+      --circle-dur: 3000;
+      --circle-delay: 0;
 
-      /* layers */
-      --z-menu:6000;
-      --z-vfx:4500;
-      --z-blood:3500;
-      --z-head:5000;  /* headline above overlays */
-      --z-cta:4100;   /* CTAs above smoke */
-      --z-smoke:2000; /* smoke layer */
-      --z-logo:1500;  /* logo under smoke */
-      --cta-h:56px;
-      --cta-radius:12px;
+      /* z-layers */
+      --z-menu: 6000;      /* menu on top */
+      --z-vfx: 4500;       /* flash/flicker */
+      --z-blood: 3500;
+      --z-head: 5000;      /* ensure headline sits above overlays/smoke */
+      --z-color: 2500;     /* red-tint overlay */
+      --z-smoke: 2000;
+      --z-cta: 4100;       /* CTAs above smoke */
+      --z-logo: 1500;      /* logo under smoke */
     }
 
-    *,*::before,*::after{box-sizing:border-box}
-    html,body{height:100%;width:100%;margin:0;padding:0;background:var(--bg);overflow:hidden;color:#fff;font-family:"28Days",sans-serif}
-    @font-face{font-family:"28Days";src:url("28%20Days%20Later.ttf") format("truetype");font-display:swap}
+    *,*::before,*::after { box-sizing: border-box }
+    html,body {
+      margin:0; padding:0;
+      width:100%; height:100%;
+      background:var(--bg);
+      overflow:hidden;
+      font-family:"28Days",sans-serif;
+      color:#fff;
+    }
+    @font-face {
+      font-family:"28Days";
+      src:url("28%20Days%20Later.ttf") format("truetype");
+      font-display:swap;
+    }
+    button,a { background:none; border:none; cursor:pointer; color:inherit; font:inherit }
 
-    button,a{background:none;border:none;cursor:pointer;color:inherit;font:inherit;text-decoration:none}
+    /* ---------- ORIGINAL MENU ---------- */
+    .anarchyBtn {
+      position:fixed; top:14px; right:14px;
+      z-index:var(--z-menu);
+      pointer-events:auto;
+    }
+    .anarchyBtn img {
+      width:64px; height:64px;
+      display:block;
+    }
+    .anarchyMenu {
+      position:fixed; top:90px; right:14px;
+      display:none; flex-direction:column;
+      padding:12px; background:rgba(10,10,10,0.95);
+      border-radius:12px;
+      z-index:var(--z-menu);
+      pointer-events:auto;
+    }
+    .anarchyMenu.open { display:flex }
+    .anarchyMenu a {
+      color:#ffdede; font-size:16px; font-weight:800;
+      padding:10px 14px; text-decoration:none;
+      background:transparent;
+    }
 
-    /* MENU */
-    .anarchyBtn{position:fixed;top:14px;right:14px;z-index:var(--z-menu);pointer-events:auto}
-    .anarchyBtn img{width:64px;height:64px;display:block}
-    .anarchyMenu{position:fixed;top:90px;right:14px;display:none;flex-direction:column;padding:12px;background:rgba(10,10,10,0.95);border-radius:12px;z-index:var(--z-menu);pointer-events:auto}
-    .anarchyMenu.open{display:flex}
-    .anarchyMenu a{color:#ffdede;font-size:16px;font-weight:800;padding:10px 14px;text-decoration:none}
+    /* ---------- CTA (moved above smoke) ---------- */
+    .cta {
+      position:fixed; bottom:8vh; left:50%;
+      transform:translateX(-50%);
+      display:flex; gap:20px;
+      z-index:var(--z-cta);
+      pointer-events:auto;
+    }
 
-    /* CTAs above smoke (unchanged elsewhere) */
-    .cta{position:fixed;bottom:8vh;left:50%;transform:translateX(-50%);display:flex;gap:18px;z-index:var(--z-cta);pointer-events:auto}
-
-    /* 3D button base - main background slightly cool blue to make them pop under red tint,
-       but each button gets a clear accent: steam uses red accent, discord uses blue accent. */
-    .cta .btn{
-      display:inline-flex;align-items:center;gap:12px;justify-content:center;
-      height:var(--cta-h);min-width:220px;padding:0 22px;border-radius:var(--cta-radius);
-      font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#fff;
-      position:relative;overflow:visible;transition:transform .16s,box-shadow .16s,filter .16s;
+    /* 3D CTA buttons - blue base so both read under tint; accents for Steam (red) and Discord (blue) */
+    .cta .btn {
+      display:inline-flex; align-items:center; gap:12px; justify-content:center;
+      height:56px; min-width:220px; padding:0 22px;
+      border-radius:12px;
+      font-weight:900; letter-spacing:.04em; text-transform:uppercase;
+      color:#fff; text-decoration:none;
+      position:relative; overflow:visible;
+      transition: transform .18s cubic-bezier(.2,.9,.3,1), box-shadow .18s, filter .18s;
       border:1px solid rgba(255,255,255,0.04);
-      background:linear-gradient(180deg,#09203a,#061325); /* cool base so both buttons read well in red tint */
-      box-shadow:0 18px 36px rgba(0,0,0,0.68);
+      background: linear-gradient(180deg,#0b2a44,#041022);
+      box-shadow: 0 18px 36px rgba(0,0,0,0.7);
     }
     .cta .btn::before{
-      content:"";position:absolute;inset:2px;border-radius:calc(var(--cta-radius)-2px);
-      background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01));
-      mix-blend-mode:overlay;pointer-events:none;z-index:1;
+      content:""; position:absolute; inset:2px; border-radius:10px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+      mix-blend-mode:overlay; pointer-events:none; z-index:1;
     }
     .cta .btn::after{
-      content:"";position:absolute;left:8px;right:8px;bottom:-14px;height:18px;background:radial-gradient(closest-side,rgba(0,0,0,0.6),rgba(0,0,0,0.12));filter:blur(10px);z-index:-1;transition:transform .16s;
+      content:""; position:absolute; left:8px; right:8px; bottom:-14px; height:18px;
+      background: radial-gradient(closest-side, rgba(0,0,0,0.6), rgba(0,0,0,0.12));
+      filter: blur(10px); z-index:-1; transition: transform .18s;
     }
-    .cta .icon{width:24px;height:24px;flex:0 0 24px;display:inline-block}
-    .cta .label{font-size:15px}
+    .cta .icon { width:26px; height:26px; flex:0 0 26px; display:inline-block }
+    .cta .label { font-size:15px }
 
-    /* Steam: red accent badge */
-    .btn.steam{ background:linear-gradient(180deg,#0d2b3a,#041018); border-color: rgba(255,80,80,0.06); box-shadow: 0 20px 48px rgba(200,0,0,0.06), 0 10px 18px rgba(0,0,0,0.6) }
-    .btn.steam .accent{margin-left:10px;padding:6px 10px;border-radius:8px;background:linear-gradient(180deg,var(--steam-red-1),var(--steam-red-2));font-weight:900;font-size:12px;color:#fff;box-shadow:0 6px 18px rgba(255,26,26,0.12);}
+    .btn.steam {
+      background: linear-gradient(180deg,#12060a,#070405);
+      border-color: rgba(255,80,80,0.06);
+      box-shadow: 0 20px 48px rgba(200,0,0,0.06), 0 10px 18px rgba(0,0,0,0.6);
+    }
+    .btn.steam .accent {
+      margin-left:10px; padding:6px 10px; border-radius:8px;
+      background: linear-gradient(180deg,#ff6b6b,#ff2a2a); font-weight:900; font-size:12px; color:#fff;
+      box-shadow: 0 6px 18px rgba(255,26,26,0.12);
+    }
 
-    /* Discord: blue accent badge */
-    .btn.discord{ background:linear-gradient(180deg,#0d2640,#041024); border-color: rgba(90,120,200,0.06); box-shadow: 0 20px 48px rgba(50,80,200,0.06), 0 10px 18px rgba(0,0,0,0.58) }
-    .btn.discord .accent{margin-left:10px;padding:6px 10px;border-radius:8px;background:linear-gradient(180deg,var(--discord-blue-1),var(--discord-blue-2));font-weight:900;font-size:12px;color:#fff;box-shadow:0 6px 18px rgba(40,80,200,0.12);}
+    .btn.discord {
+      background: linear-gradient(180deg,#0c294b,#041224);
+      border-color: rgba(90,120,200,0.06);
+      box-shadow: 0 20px 48px rgba(50,80,200,0.06), 0 10px 18px rgba(0,0,0,0.58);
+    }
+    .btn.discord .accent {
+      margin-left:10px; padding:6px 10px; border-radius:8px;
+      background: linear-gradient(180deg,#5b8df0,#344eaf); font-weight:900; font-size:12px; color:#fff;
+      box-shadow: 0 6px 18px rgba(40,80,200,0.12);
+    }
 
-    .cta .btn:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 34px 68px rgba(0,0,0,0.72)}
-    .cta .btn:active{transform:translateY(-3px) scale(.995);box-shadow:0 12px 32px rgba(0,0,0,0.6)}
-    .cta .btn:focus{outline:3px solid rgba(255,255,255,0.06);outline-offset:6px}
+    .cta .btn:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 34px 68px rgba(0,0,0,0.72) }
+    .cta .btn:active { transform: translateY(-3px) scale(.995); box-shadow: 0 12px 32px rgba(0,0,0,0.6) }
+    .cta .btn:focus { outline: 3px solid rgba(255,255,255,0.06); outline-offset:6px }
 
-    /* small shine */
-    .cta .shine{position:absolute;left:-30%;top:-10%;width:60%;height:120%;transform:rotate(-18deg);opacity:0;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.02) 100%);transition:transform .28s,opacity .28s;z-index:2}
-    .cta .btn:hover .shine{opacity:1;transform:translateX(24%)}
+    .cta .shine {
+      position:absolute; left:-30%; top:-10%; width:60%; height:120%;
+      transform:rotate(-18deg); opacity:0; pointer-events:none;
+      background: linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.02) 100%);
+      transition: transform .28s, opacity .28s; z-index:2;
+    }
+    .cta .btn:hover .shine { opacity:1; transform: translateX(24%) }
 
-    /* Logo behind smoke (no other changes) */
-    #logo{position:fixed;top:6vh;left:50%;transform:translateX(-50%);z-index:var(--z-logo);pointer-events:none;transition:filter .16s ease,transform .16s ease,opacity .16s ease}
-    #logo img{max-width:30vw;height:auto;display:block;filter:drop-shadow(0 12px 22px rgba(0,0,0,0.7))}
+    /* ---------- LOGO (under smoke) - only logo is treated during tint ---------- */
+    #logo {
+      position:fixed; top:6vh; left:50%;
+      transform:translateX(-50%);
+      z-index:var(--z-logo);
+      pointer-events:auto;
+      transition: filter .16s ease, transform .16s ease, opacity .16s ease;
+    }
+    #logo img { max-width:30vw; height:auto; display:block; filter: drop-shadow(0 12px 22px rgba(0,0,0,0.7)); }
 
-    /* SMOKE */
-    #smoke-wrap{position:fixed;inset:0;pointer-events:none;z-index:var(--z-smoke)}
-    #smokeVideo{width:100%;height:100%;object-fit:cover;opacity:.6;transition:filter .25s linear,opacity .25s linear}
+    /* ---------- SMOKE & OVERLAYS (unchanged) ---------- */
+    #smoke-wrap {
+      position:fixed; inset:0;
+      pointer-events:none;
+      z-index:var(--z-smoke);
+    }
+    #smokeVideo {
+      width:100%; height:100%;
+      object-fit:cover; opacity:.6;
+    }
 
-    /* Overlays unchanged */
-    #colorOverlay{position:fixed;inset:0;background:var(--red);mix-blend-mode:color;opacity:0;transition:opacity var(--text-dur)ms ease-in-out;z-index:var(--z-color);pointer-events:none}
-    #redOverlay{position:fixed;inset:0;background:var(--red);mix-blend-mode:screen;opacity:0;z-index:var(--z-vfx);pointer-events:none;animation-fill-mode:both}
-    @keyframes redFlash{0%{opacity:0}10%{opacity:.4}30%{opacity:0}100%{opacity:0}}
+    #colorOverlay {
+      position:fixed; inset:0;
+      background:var(--red);
+      mix-blend-mode:color;
+      opacity:0;
+      transition:opacity var(--text-dur)ms ease-in-out;
+      z-index:var(--z-color);
+      pointer-events:none;
+    }
 
-    /* Headline kept above overlays (no behavioral changes) */
-    #headline{position:fixed;top:42vh;left:50%;transform:translateX(-50%);text-align:center;z-index:var(--z-head);pointer-events:none}
-    #headlineText{font-size:clamp(48px,14vw,136px);line-height:.9;letter-spacing:.12em;opacity:0;will-change:opacity}
-    @keyframes textFade{0%,10%{opacity:0}20%,80%{opacity:1}100%{opacity:0}}
-    .fadeText{animation:textFade var(--text-dur)ms both}
-    @keyframes glitch{0%,100%{clip:rect(0,9999px,0,0)}20%{clip:rect(20px,9999px,40px,0)}40%{clip:rect(50px,9999px,70px,0)}60%{clip:rect(10px,9999px,30px,0)}80%{clip:rect(60px,9999px,80px,0)}}
-    .glitch,.glitch::before,.glitch::after{animation:glitch .6s steps(2) both}
-    .glitch::before,.glitch::after{content:attr(data-text);position:absolute;inset:0;mix-blend-mode:screen;opacity:.6}
-    .glitch::before{color:#ff4b4b;left:2px}.glitch::after{color:#7fb7ff;left:-2px}
-
-    #bloodCircle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(1);opacity:0;width:clamp(200px,40vw,400px);pointer-events:none;z-index:var(--z-blood);animation-fill-mode:both}
-    @keyframes circleAnim{0%,20%{opacity:0}25%,75%{opacity:.6}100%{opacity:0}}
-
-    /* Logo-only boost during tint so it reads under red smoke (kept minimal) */
-    body.tint-active #logo img{
-      filter:brightness(1.85) contrast(1.2) saturate(0.95) drop-shadow(0 18px 30px rgba(0,0,0,0.85));
+    #redOverlay {
+      position:fixed; inset:0;
+      background:var(--red);
       mix-blend-mode:screen;
-      transform:translateY(-6px) scale(1.03);
+      opacity:0;
+      z-index:var(--z-vfx);
+      pointer-events:none;
+      animation-fill-mode:both;
+    }
+    @keyframes redFlash {
+      0%   { opacity:0 }
+      10%  { opacity:.4 }
+      30%  { opacity:0 }
+      100% { opacity:0 }
+    }
+
+    .vfx { position:fixed; inset:0; pointer-events:none; z-index:var(--z-vfx) }
+    .vfx .flicker { position:absolute; inset:0; mix-blend-mode:screen; opacity:0 }
+
+    /* HEADLINE (z-index raised in root) */
+    #headline {
+      position:fixed; top:42vh; left:50%;
+      transform:translateX(-50%);
+      text-align:center;
+      z-index:var(--z-head);
+      pointer-events:none;
+    }
+    #headlineText {
+      font-size:clamp(48px,14vw,136px);
+      line-height:.9; letter-spacing:.12em;
+      opacity:0; will-change:opacity;
+    }
+    @keyframes textFade {
+      0%,10%   { opacity:0 }
+      20%,80%  { opacity:1 }
+      100%     { opacity:0 }
+    }
+    .fadeText { animation:textFade var(--text-dur)ms both; }
+    @keyframes glitch {
+      0%,100% { clip:rect(0,9999px,0,0) }
+      20%     { clip:rect(20px,9999px,40px,0) }
+      40%     { clip:rect(50px,9999px,70px,0) }
+      60%     { clip:rect(10px,9999px,30px,0) }
+      80%     { clip:rect(60px,9999px,80px,0) }
+    }
+    .glitch, .glitch::before, .glitch::after { animation:glitch .6s steps(2) both }
+    .glitch::before, .glitch::after { content:attr(data-text); position:absolute; inset:0; mix-blend-mode:screen; opacity:.6 }
+    .glitch::before { color:#ff4b4b; left:2px } .glitch::after { color:#7fb7ff; left:-2px }
+
+    #bloodCircle {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%) scale(1);
+      opacity:0;
+      width:clamp(200px,40vw,400px);
+      pointer-events:none;
+      z-index:var(--z-blood);
+      animation-fill-mode:both;
+    }
+    @keyframes circleAnim {
+      0%,20%   { opacity:0 }
+      25%,75% { opacity:.6 }
+      100%    { opacity:0 }
+    }
+
+    /* ---------- LOGO-ONLY TINT VISIBILITY (minimal) ---------- */
+    body.tint-active #logo img {
+      filter: brightness(1.9) contrast(1.25) saturate(0.95) drop-shadow(0 20px 36px rgba(0,0,0,0.85));
+      mix-blend-mode:screen;
+      transform: translateY(-6px) scale(1.03);
       opacity:1;
     }
 
-    @media (max-width:620px){ .cta{flex-direction:column;gap:12px;bottom:6vh} .cta .btn{min-width:86vw;width:auto;padding:0 18px} #logo img{max-width:60vw} #headlineText{font-size:clamp(36px,12vw,88px)} }
-    @media (prefers-reduced-motion:reduce){*{animation-duration:0.001ms !important;transition:none !important} .cta .btn:hover,.cta .btn:active{transform:none;box-shadow:none}}
+    @media (max-width:620px){
+      .cta{flex-direction:column;gap:12px;bottom:6vh}
+      .cta .btn{min-width:86vw;width:auto;padding:0 18px}
+      #logo img{max-width:60vw}
+    }
+    @media (prefers-reduced-motion:reduce){
+      *{animation-duration:0.001ms !important;transition:none !important}
+      .cta .btn:hover,.cta .btn:active{transform:none;box-shadow:none}
+    }
   </style>
 </head>
 <body>
 
-  <!-- menu -->
-  <button id="anarchyBtn" class="anarchyBtn" aria-controls="anarchyMenu" aria-expanded="false">
+  <!-- menu (original) -->
+  <button id="anarchyBtn" class="anarchyBtn"
+          aria-controls="anarchyMenu" aria-expanded="false">
     <img src="anarchy.png" alt="Toggle menu"/>
   </button>
   <nav id="anarchyMenu" class="anarchyMenu" role="menu">
@@ -138,41 +266,43 @@
     <a href="leaderboard.html">Leaderboard</a>
   </nav>
 
-  <!-- CTAs above smoke -->
+  <!-- CTAs above smoke (3D Steam red accent and Discord blue accent) -->
   <div class="cta" role="navigation" aria-label="Primary actions">
     <a id="steamBtn" class="btn steam" href="steam://connect/YOURSERVERIP" role="button" aria-label="Join server on Steam">
       <span class="shine" aria-hidden="true"></span>
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="6.5" cy="13.5" r="2.4" fill="#fff"/><circle cx="16.5" cy="7.5" r="2.4" fill="#fff"/></svg>
-      <span class="label">Join Server</span>
-      <span class="accent" aria-hidden="true" style="display:inline-block;padding:6px 10px;border-radius:8px;background:linear-gradient(180deg,var(--steam-red-1),var(--steam-red-2));color:#fff;font-weight:900;font-size:12px;margin-left:10px;box-shadow:0 6px 18px rgba(255,26,26,0.12)">Play</span>
+      <span class="label">JOIN SERVER</span>
+      <span class="accent" aria-hidden="true">Play</span>
     </a>
 
     <a id="discordBtn" class="btn discord" href="https://discord.gg/YOURDISCORD" role="button" aria-label="Join our Discord">
       <span class="shine" aria-hidden="true"></span>
       <svg class="icon" viewBox="0 0 71 55" aria-hidden="true" focusable="false"><path d="M20 20c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4zM51 20c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4z" fill="#fff"/></svg>
-      <span class="label">Join Community</span>
-      <span class="accent" aria-hidden="true" style="display:inline-block;padding:6px 10px;border-radius:8px;background:linear-gradient(180deg,var(--discord-blue-1),var(--discord-blue-2));color:#fff;font-weight:900;font-size:12px;margin-left:10px;box-shadow:0 6px 18px rgba(40,80,200,0.12)">Chat</span>
+      <span class="label">JOIN COMMUNITY</span>
+      <span class="accent" aria-hidden="true">Chat</span>
     </a>
   </div>
 
-  <!-- logo under smoke (unchanged structure) -->
+  <!-- logo under smoke (unchanged position, only visible boost during tint) -->
   <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro Logo"/></div>
 
-  <!-- smoke (above logo) -->
+  <!-- smoke (original) -->
   <div id="smoke-wrap">
     <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
       <source src="Smoke.mp4" type="video/mp4"/>
     </video>
   </div>
 
-  <!-- overlays -->
-  <div id="colorOverlay" aria-hidden="true"></div>
-  <div id="redOverlay" aria-hidden="true"></div>
-  <div class="vfx"><div id="vfxFlicker" class="flicker" aria-hidden="true"></div></div>
+  <!-- overlays (original) -->
+  <div id="colorOverlay"></div>
+  <div id="redOverlay"></div>
+  <div class="vfx"><div id="vfxFlicker" class="flicker"></div></div>
 
-  <!-- headline & blood -->
+  <!-- headline & blood (original) -->
   <div id="headline">
-    <div id="headlineText" class="fadeText" data-text="JOIN THE FIGHT">JOIN THE FIGHT</div>
+    <div id="headlineText" class="fadeText" data-text="JOIN THE FIGHT">
+      JOIN THE FIGHT
+    </div>
     <img id="bloodCircle" src="blood1.png" alt="Blood circle"/>
   </div>
 
@@ -208,56 +338,63 @@
       if(running) return;
       running = true;
 
-      // color tint + logo boost for same period
+      // 1) colorBlend tint
       colorOvl.style.opacity = '1';
       addTintActive(txtDur + 60);
       setTimeout(()=> colorOvl.style.opacity = '0', txtDur);
 
-      // red flash
+      // 2) red flash
       restart(redOvl,'redFlash',flash);
 
-      // headline fade + glitch
+      // 3) text fade + glitch
       restart(textEl,'textFade',txtDur);
       textEl.classList.remove('glitch');
       setTimeout(()=> textEl.classList.add('glitch'),200);
 
-      // blood circle
-      restart(circle,'circleAnim', +S.getPropertyValue('--circle-dur')||3000, +S.getPropertyValue('--circle-delay')||0);
+      // 4) blood fade
+      restart(circle,'circleAnim',
+              +S.getPropertyValue('--circle-dur') || 3000,
+              +S.getPropertyValue('--circle-delay') || 0);
 
-      // flicker
+      // 5) flicker
       flicker.style.opacity = '1';
-      setTimeout(()=> flicker.style.opacity = '0', flash);
+      setTimeout(()=> flicker.style.opacity = '0',flash);
 
       setTimeout(()=> running = false, cycle);
     }
 
-    // menu toggle
-    document.getElementById('anarchyBtn').addEventListener('click', e=>{
+    // menu toggle (original)
+    document.getElementById('anarchyBtn').addEventListener('click',e=>{
       e.stopPropagation();
       const menu = document.getElementById('anarchyMenu');
       const open = menu.classList.toggle('open');
-      e.currentTarget.setAttribute('aria-expanded', open);
+      e.currentTarget.setAttribute('aria-expanded',open);
     });
-    document.addEventListener('click', e=>{
-      if(!e.target.closest('.anarchyBtn') && !e.target.closest('.anarchyMenu')){
+    document.addEventListener('click',e=>{
+      if(!e.target.closest('.anarchyBtn') &&
+         !e.target.closest('.anarchyMenu')){
         document.getElementById('anarchyMenu').classList.remove('open');
-        document.getElementById('anarchyBtn').setAttribute('aria-expanded', false);
+        document.getElementById('anarchyBtn').setAttribute('aria-expanded',false);
       }
     });
 
-    // Steam fallback on mobile
+    // Steam fallback: attempt protocol; fallback for mobile
     const steamBtn = document.getElementById('steamBtn');
     if(steamBtn){
-      steamBtn.addEventListener('click', function(){
+      steamBtn.addEventListener('click', function(e){
         const fallback = 'https://store.steampowered.com/';
-        setTimeout(()=> { if(/Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent)) window.open(fallback, '_blank'); }, 700);
+        setTimeout(()=> {
+          if(/Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent)) {
+            window.open(fallback, '_blank');
+          }
+        }, 700);
       });
     }
 
-    window.addEventListener('DOMContentLoaded', ()=>{
-      if(smoke && smoke.paused) smoke.play().catch(()=>{/* autoplay blocked */});
+    window.addEventListener('DOMContentLoaded',()=>{
       run();
-      setInterval(run, cycle);
+      setInterval(run,cycle);
+      if(smoke && smoke.paused) smoke.play().catch(()=>{/* autoplay blocked */});
     });
   })();
   </script>
