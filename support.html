@@ -6,17 +6,10 @@
   <title>Aggro PvP — Support</title>
 
   <style>
-    /* match rules.html font loading from site root (try both names) */
+    /* single font-face (no duplicates) — file must be in site root */
     @font-face{
-      font-family:'28DaysLater';
-      src: url('28%20Days%20Later.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face{
-      font-family:'28DaysLater';
-      src: url('28DaysLater.ttf') format('truetype');
+      font-family: '28DaysLater';
+      src: url('/28%20Days%20Later.ttf') format('truetype'), url('/28DaysLater.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
       font-display: swap;
@@ -39,7 +32,7 @@
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Video background (same approach as rules.html) */
+    /* Video background (single element, root absolute paths) */
     #smoke-bg{
       position:fixed;
       inset:0;
@@ -57,10 +50,8 @@
       background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.75));
       pointer-events:none;
     }
-    /* fallback when video fails */
-    body.no-video{background-image:url('smoke.jpg');background-size:cover;background-position:center}
+    body.no-video{background-image:url('/smoke.jpg');background-size:cover;background-position:center}
 
-    /* layout matching your rules style */
     .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px}
     .card{width:100%;max-width:var(--card-w);background:var(--overlay);border-radius:12px;padding:32px;box-shadow:0 10px 40px rgba(0,0,0,0.7);border:1px solid rgba(255,60,60,0.06)}
     @media(max-width:880px){.card{padding:22px}}
@@ -76,7 +67,6 @@
     .item .text{font-size:16px;line-height:1.5}
     .item .text a{color:#fff;text-decoration:underline;font-weight:800}
 
-    /* nameplates simplified (only names) */
     .nameplates{display:flex;flex-direction:column;gap:12px;margin-top:8px}
     .nameplate{display:flex;gap:12px;align-items:center;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03)}
     .np-avatar{width:64px;height:64px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:24px;border:1px solid rgba(255,255,255,0.04);background-size:cover;background-position:center}
@@ -95,10 +85,10 @@
   </style>
 </head>
 <body>
-  <!-- Place video element immediately after body open, same way as rules.html -->
-  <video id="smoke-bg" autoplay muted loop playsinline preload="auto" poster="smoke.jpg">
-    <source src="smoke.webm" type="video/webm">
-    <source src="smoke.mp4" type="video/mp4">
+  <!-- single video element using absolute root paths so behavior matches rules.html -->
+  <video id="smoke-bg" autoplay muted loop playsinline preload="auto" poster="/smoke.jpg">
+    <source src="/smoke.webm" type="video/webm">
+    <source src="/smoke.mp4" type="video/mp4">
   </video>
   <div class="bg-tint" aria-hidden="true"></div>
 
@@ -159,42 +149,49 @@
 
   <script>
     (function(){
-      // replicate the same video fallback logic you used in rules.html
+      // Play/fallback logic (same approach used in rules.html)
       const vid = document.getElementById('smoke-bg');
       let played = false;
       vid.addEventListener('playing', ()=> played = true);
       vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
       setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 900);
 
-      // nameplate avatar best-effort (uses embed default if exact avatar hash not provided)
+      // Diagnostic log — shows status for root smoke files in console so you can confirm what's failing
+      (async function diag(){
+        const files = ['/smoke.mp4','/smoke.webm','/smoke.jpg'];
+        for (const f of files){
+          try{
+            const r = await fetch(f, { method:'HEAD', cache:'no-store' });
+            console.log(f, 'HEAD', r.status, 'content-type:', r.headers.get('content-type'));
+          }catch(e){
+            console.log(f, 'HEAD request failed', e && e.message);
+          }
+        }
+      })();
+
+      // nameplate avatar best-effort (no extra bottom text)
       function embedAvatarUrl(id){ return `https://cdn.discordapp.com/embed/avatars/${Number(id) % 5}.png`; }
       async function testHead(url){ try{ const res = await fetch(url, { method:'HEAD', cache:'no-store' }); return res.ok; } catch(e){ return false; } }
-
       async function setAvatarForPlate(plate){
         const id = plate.getAttribute('data-userid');
         const avatarEl = plate.querySelector('.np-avatar');
-        const candidates = [
-          `https://cdn.discordapp.com/avatars/${id}.png`,
-          `https://cdn.discordapp.com/avatars/${id}.webp`,
-          `https://cdn.discordapp.com/avatars/${id}.jpg`
-        ];
+        const candidates = [`https://cdn.discordapp.com/avatars/${id}.png`,`https://cdn.discordapp.com/avatars/${id}.webp`,`https://cdn.discordapp.com/avatars/${id}.jpg`];
         let found = null;
-        for (const c of candidates){
-          if (await testHead(c)){ found = c; break; }
-        }
+        for (const c of candidates){ if (await testHead(c)){ found = c; break; } }
         const url = found || embedAvatarUrl(id);
         avatarEl.style.backgroundImage = `url(${url})`;
         avatarEl.textContent = '';
         const link = plate.querySelector('.profile-link');
         if (link) link.href = `https://discord.com/users/${id}`;
       }
-
       document.querySelectorAll('.nameplate').forEach(p=>{ setAvatarForPlate(p).catch(()=>{/*ignore*/}); });
     })();
   </script>
 </body>
 </html>
-``````html
+```### Support page — fixed single font block, single video, root paths, and diagnostic logging
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -203,17 +200,10 @@
   <title>Aggro PvP — Support</title>
 
   <style>
-    /* match rules.html font loading from site root (try both names) */
+    /* single font-face (no duplicates) — file must be in site root */
     @font-face{
-      font-family:'28DaysLater';
-      src: url('28%20Days%20Later.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face{
-      font-family:'28DaysLater';
-      src: url('28DaysLater.ttf') format('truetype');
+      font-family: '28DaysLater';
+      src: url('/28%20Days%20Later.ttf') format('truetype'), url('/28DaysLater.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
       font-display: swap;
@@ -236,7 +226,7 @@
       -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Video background (same approach as rules.html) */
+    /* Video background (single element, root absolute paths) */
     #smoke-bg{
       position:fixed;
       inset:0;
@@ -254,10 +244,8 @@
       background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.75));
       pointer-events:none;
     }
-    /* fallback when video fails */
-    body.no-video{background-image:url('smoke.jpg');background-size:cover;background-position:center}
+    body.no-video{background-image:url('/smoke.jpg');background-size:cover;background-position:center}
 
-    /* layout matching your rules style */
     .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6vh 20px}
     .card{width:100%;max-width:var(--card-w);background:var(--overlay);border-radius:12px;padding:32px;box-shadow:0 10px 40px rgba(0,0,0,0.7);border:1px solid rgba(255,60,60,0.06)}
     @media(max-width:880px){.card{padding:22px}}
@@ -273,7 +261,6 @@
     .item .text{font-size:16px;line-height:1.5}
     .item .text a{color:#fff;text-decoration:underline;font-weight:800}
 
-    /* nameplates simplified (only names) */
     .nameplates{display:flex;flex-direction:column;gap:12px;margin-top:8px}
     .nameplate{display:flex;gap:12px;align-items:center;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03)}
     .np-avatar{width:64px;height:64px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:24px;border:1px solid rgba(255,255,255,0.04);background-size:cover;background-position:center}
@@ -292,10 +279,10 @@
   </style>
 </head>
 <body>
-  <!-- Place video element immediately after body open, same way as rules.html -->
-  <video id="smoke-bg" autoplay muted loop playsinline preload="auto" poster="smoke.jpg">
-    <source src="smoke.webm" type="video/webm">
-    <source src="smoke.mp4" type="video/mp4">
+  <!-- single video element using absolute root paths so behavior matches rules.html -->
+  <video id="smoke-bg" autoplay muted loop playsinline preload="auto" poster="/smoke.jpg">
+    <source src="/smoke.webm" type="video/webm">
+    <source src="/smoke.mp4" type="video/mp4">
   </video>
   <div class="bg-tint" aria-hidden="true"></div>
 
@@ -356,36 +343,41 @@
 
   <script>
     (function(){
-      // replicate the same video fallback logic you used in rules.html
+      // Play/fallback logic (same approach used in rules.html)
       const vid = document.getElementById('smoke-bg');
       let played = false;
       vid.addEventListener('playing', ()=> played = true);
       vid.addEventListener('error', ()=> document.body.classList.add('no-video'));
       setTimeout(()=>{ if (!played) vid.play().catch(()=> document.body.classList.add('no-video')); }, 900);
 
-      // nameplate avatar best-effort (uses embed default if exact avatar hash not provided)
+      // Diagnostic log — shows status for root smoke files in console so you can confirm what's failing
+      (async function diag(){
+        const files = ['/smoke.mp4','/smoke.webm','/smoke.jpg'];
+        for (const f of files){
+          try{
+            const r = await fetch(f, { method:'HEAD', cache:'no-store' });
+            console.log(f, 'HEAD', r.status, 'content-type:', r.headers.get('content-type'));
+          }catch(e){
+            console.log(f, 'HEAD request failed', e && e.message);
+          }
+        }
+      })();
+
+      // nameplate avatar best-effort (no extra bottom text)
       function embedAvatarUrl(id){ return `https://cdn.discordapp.com/embed/avatars/${Number(id) % 5}.png`; }
       async function testHead(url){ try{ const res = await fetch(url, { method:'HEAD', cache:'no-store' }); return res.ok; } catch(e){ return false; } }
-
       async function setAvatarForPlate(plate){
         const id = plate.getAttribute('data-userid');
         const avatarEl = plate.querySelector('.np-avatar');
-        const candidates = [
-          `https://cdn.discordapp.com/avatars/${id}.png`,
-          `https://cdn.discordapp.com/avatars/${id}.webp`,
-          `https://cdn.discordapp.com/avatars/${id}.jpg`
-        ];
+        const candidates = [`https://cdn.discordapp.com/avatars/${id}.png`,`https://cdn.discordapp.com/avatars/${id}.webp`,`https://cdn.discordapp.com/avatars/${id}.jpg`];
         let found = null;
-        for (const c of candidates){
-          if (await testHead(c)){ found = c; break; }
-        }
+        for (const c of candidates){ if (await testHead(c)){ found = c; break; } }
         const url = found || embedAvatarUrl(id);
         avatarEl.style.backgroundImage = `url(${url})`;
         avatarEl.textContent = '';
         const link = plate.querySelector('.profile-link');
         if (link) link.href = `https://discord.com/users/${id}`;
       }
-
       document.querySelectorAll('.nameplate').forEach(p=>{ setAvatarForPlate(p).catch(()=>{/*ignore*/}); });
     })();
   </script>
