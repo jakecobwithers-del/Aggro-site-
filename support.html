@@ -1,93 +1,316 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aggro PvP Support</title>
-  <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Aggro PvP — JOIN THE FIGHT</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Staatliches', sans-serif;
-      background: url('assets/smoke-bg.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: #fff;
+    :root {
+      --bg: #050505;
+      --red: #ff1a1a;
+
+      /* timing */
+      --cycle: 4000;
+      --text-dur: 3000;
+      --flash-dur: 600;
+      --circle-dur: 3000;
+      --circle-delay: 0;
+
+      /* z-layers */
+      --z-menu: 6000;      /* menu on top */
+      --z-vfx: 4500;       /* flash/flicker */
+      --z-blood: 3500;
+      --z-head: 3000;
+      --z-color: 2500;     /* red-tint overlay */
+      --z-smoke: 2000;
+      --z-cta: 1000;
+      --z-logo: 1000;
     }
 
-    .overlay {
-      background-color: rgba(0, 0, 0, 0.75);
-      padding: 2rem;
-      max-width: 800px;
-      margin: 5vh auto;
-      border-radius: 8px;
-      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+    *,*::before,*::after { box-sizing: border-box }
+    html,body {
+      margin:0; padding:0;
+      width:100%; height:100%;
+      background:var(--bg);
+      overflow:hidden;
+      font-family:"28Days",sans-serif;
+      color:#fff;
+    }
+    @font-face {
+      font-family:"28Days";
+      src:url("28%20Days%20Later.ttf") format("truetype");
+      font-display:swap;
+    }
+    button,a { background:none; border:none; cursor:pointer }
+
+    /* MENU (always on top) */
+    .anarchyBtn {
+      position:fixed; top:14px; right:14px;
+      z-index:var(--z-menu);
+      pointer-events:auto;
+    }
+    .anarchyBtn img {
+      width:64px; height:64px;
+      display:block;
+    }
+    .anarchyMenu {
+      position:fixed; top:90px; right:14px;
+      display:none; flex-direction:column;
+      padding:12px; background:rgba(10,10,10,0.95);
+      border-radius:12px;
+      z-index:var(--z-menu);
+      pointer-events:auto;
+    }
+    .anarchyMenu.open { display:flex }
+    .anarchyMenu a {
+      color:#ffdede; font-size:16px; font-weight:800;
+      padding:10px 14px; text-decoration:none;
+      background:transparent;
     }
 
-    h1 {
-      font-size: 3rem;
-      text-align: center;
-      color: #ff3c3c;
-      text-shadow: 0 0 10px #000;
-      margin-bottom: 1rem;
+    /* CTA & LOGO (under smoke) */
+    .cta {
+      position:fixed; bottom:8vh; left:50%;
+      transform:translateX(-50%);
+      display:flex; gap:20px;
+      z-index:var(--z-cta);
+      pointer-events:auto;
+    }
+    .cta a {
+      font-size:22px; padding:10px 26px;
+      border-radius:12px;
+      background:linear-gradient(180deg,#151515,#070707);
+      color:#fff; text-decoration:none;
+      transition:transform .2s;
+    }
+    .cta a:hover { transform:translateY(-3px) }
+
+    #logo {
+      position:fixed; top:6vh; left:50%;
+      transform:translateX(-50%);
+      z-index:var(--z-logo);
+      pointer-events:auto;
+    }
+    #logo img { max-width:30vw; height:auto }
+
+    /* SMOKE VIDEO */
+    #smoke-wrap {
+      position:fixed; inset:0;
+      pointer-events:none;
+      z-index:var(--z-smoke);
+    }
+    #smokeVideo {
+      width:100%; height:100%;
+      object-fit:cover; opacity:.6;
     }
 
-    p, li {
-      font-size: 1.1rem;
-      line-height: 1.6;
+    /* LIGHT RED TINT OVERLAY */
+    #colorOverlay {
+      position:fixed; inset:0;
+      background:var(--red);
+      mix-blend-mode:color;
+      opacity:0;
+      transition:opacity var(--text-dur)ms ease-in-out;
+      z-index:var(--z-color);
+      pointer-events:none;
     }
 
-    .discord-links {
-      margin-top: 2rem;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.05);
-      border-left: 4px solid #ff3c3c;
+    /* RED FLASH */
+    #redOverlay {
+      position:fixed; inset:0;
+      background:var(--red);
+      mix-blend-mode:screen;
+      opacity:0;
+      z-index:var(--z-vfx);
+      pointer-events:none;
+      animation-fill-mode:both;
+    }
+    @keyframes redFlash {
+      0%   { opacity:0 }
+      10%  { opacity:.4 }
+      30%  { opacity:0 }
+      100% { opacity:0 }
     }
 
-    .discord-links h2 {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-      color: #ff3c3c;
+    /* FLICKER */
+    .vfx {
+      position:fixed; inset:0;
+      pointer-events:none;
+      z-index:var(--z-vfx);
+    }
+    .vfx .flicker {
+      position:absolute; inset:0;
+      mix-blend-mode:screen;
+      opacity:0;
     }
 
-    .discord-links a {
-      color: #fff;
-      text-decoration: underline;
+    /* HEADLINE */
+    #headline {
+      position:fixed; top:42vh; left:50%;
+      transform:translateX(-50%);
+      text-align:center;
+      z-index:var(--z-head);
+      pointer-events:none;
     }
+    #headlineText {
+      font-size:clamp(48px,14vw,136px);
+      line-height:.9; letter-spacing:.12em;
+      opacity:0; will-change:opacity;
+    }
+    @keyframes textFade {
+      0%,10%   { opacity:0 }
+      20%,80%  { opacity:1 }
+      100%     { opacity:0 }
+    }
+    .fadeText {
+      animation:textFade var(--text-dur)ms both;
+    }
+    @keyframes glitch {
+      0%,100% { clip:rect(0,9999px,0,0) }
+      20%     { clip:rect(20px,9999px,40px,0) }
+      40%     { clip:rect(50px,9999px,70px,0) }
+      60%     { clip:rect(10px,9999px,30px,0) }
+      80%     { clip:rect(60px,9999px,80px,0) }
+    }
+    .glitch, .glitch::before, .glitch::after {
+      animation:glitch .6s steps(2) both;
+    }
+    .glitch::before, .glitch::after {
+      content:attr(data-text);
+      position:absolute; inset:0;
+      mix-blend-mode:screen; opacity:.6;
+    }
+    .glitch::before { color:#ff4b4b; left:2px }
+    .glitch::after  { color:#7fb7ff; left:-2px }
 
-    footer {
-      margin-top: 3rem;
-      text-align: center;
-      font-size: 0.9rem;
-      color: #aaa;
+    /* BLOOD CIRCLE (fade with text) */
+    #bloodCircle {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%) scale(1);
+      opacity:0;
+      width:clamp(200px,40vw,400px);
+      pointer-events:none;
+      z-index:var(--z-blood);
+      animation-fill-mode:both;
+    }
+    @keyframes circleAnim {
+      0%,20%   { opacity:0 }
+      25%,75% { opacity:.6 }
+      100%    { opacity:0 }
     }
   </style>
 </head>
 <body>
-  <div class="overlay">
-    <h1>SUPPORT & SURVIVAL</h1>
-    <p>If you're still breathing, we've got your back. All support for Aggro PvP is handled through our Discord channels:</p>
 
-    <ul>
-      <li><strong>#ticket</strong> — For direct help and admin support</li>
-      <li><strong>#bug-report</strong> — Found a glitch, exploit, or issue?</li>
-      <li><strong>#suggestions</strong> — Got ideas to improve the server?</li>
-    </ul>
+  <!-- menu -->
+  <button id="anarchyBtn" class="anarchyBtn"
+          aria-controls="anarchyMenu" aria-expanded="false">
+    <img src="anarchy.png" alt="Toggle menu"/>
+  </button>
+  <nav id="anarchyMenu" class="anarchyMenu" role="menu">
+    <a href="rules.html">Rules</a>
+    <a href="support.html">Support</a>
+    <a href="donate.html">Donate</a>
+    <a href="killfeed.html">Kill Feed</a>
+    <a href="leaderboard.html">Leaderboard</a>
+  </nav>
 
-    <p>We monitor these channels daily. Please be respectful and provide as much detail as possible when reporting issues.</p>
-
-    <div class="discord-links">
-      <h2>🎖 Homage to Day Z Legends</h2>
-      <p>Aggro PvP stands on the shoulders of giants. Huge respect to the creators and visionaries behind Day Z:</p>
-      <ul>
-        <li><strong>rbskizza</strong> — <a href="https://discord.com/users/rbskizza" target="_blank">View Discord Profile</a></li>
-        <li><strong>slomobob</strong> — <a href="https://discord.com/users/slomobob" target="_blank">View Discord Profile</a></li>
-      </ul>
-      <p>Without their work, none of this would exist. We salute you.</p>
-    </div>
-
-    <footer>
-      &copy; 2025 Aggro PvP. All rights reserved. Not affiliated with Bohemia Interactive.
-    </footer>
+  <!-- CTA & logo -->
+  <div class="cta">
+    <a href="steam://connect/YOURSERVERIP">JOIN SERVER</a>
+    <a href="https://discord.gg/YOURDISCORD">JOIN COMMUNITY</a>
   </div>
+  <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro Logo"/></div>
+
+  <!-- smoke -->
+  <div id="smoke-wrap">
+    <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
+      <source src="Smoke.mp4" type="video/mp4"/>
+    </video>
+  </div>
+
+  <!-- overlays -->
+  <div id="colorOverlay"></div>
+  <div id="redOverlay"></div>
+  <div class="vfx"><div id="vfxFlicker" class="flicker"></div></div>
+
+  <!-- headline & blood -->
+  <div id="headline">
+    <div id="headlineText" class="fadeText" data-text="JOIN THE FIGHT">
+      JOIN THE FIGHT
+    </div>
+    <img id="bloodCircle" src="blood1.png" alt="Blood circle"/>
+  </div>
+
+  <script>
+  (function(){
+    const S      = getComputedStyle(document.documentElement);
+    const cycle  = +S.getPropertyValue('--cycle');
+    const txtDur = +S.getPropertyValue('--text-dur');
+    const flash  = +S.getPropertyValue('--flash-dur');
+
+    const smoke      = document.getElementById('smokeVideo');
+    const colorOvl   = document.getElementById('colorOverlay');
+    const redOvl     = document.getElementById('redOverlay');
+    const textEl     = document.getElementById('headlineText');
+    const circle     = document.getElementById('bloodCircle');
+    const flicker    = document.getElementById('vfxFlicker');
+    let running      = false;
+
+    function restart(el,name,dur,delay=0){
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = `${name} ${dur}ms ${delay}ms both`;
+    }
+
+    function run(){
+      if(running) return;
+      running = true;
+
+      // 1) colorBlend tint
+      colorOvl.style.opacity = '1';
+      setTimeout(()=> colorOvl.style.opacity = '0', txtDur);
+
+      // 2) red flash
+      restart(redOvl,'redFlash',flash);
+
+      // 3) text fade + glitch
+      restart(textEl,'textFade',txtDur);
+      textEl.classList.remove('glitch');
+      setTimeout(()=> textEl.classList.add('glitch'),200);
+
+      // 4) blood fade
+      restart(circle,'circleAnim',
+              +S.getPropertyValue('--circle-dur'),
+              +S.getPropertyValue('--circle-delay'));
+
+      // 5) flicker
+      flicker.style.opacity = '1';
+      setTimeout(()=> flicker.style.opacity = '0',flash);
+
+      setTimeout(()=> running = false, cycle);
+    }
+
+    // menu toggle
+    document.getElementById('anarchyBtn').addEventListener('click',e=>{
+      e.stopPropagation();
+      const menu = document.getElementById('anarchyMenu');
+      const open = menu.classList.toggle('open');
+      e.currentTarget.setAttribute('aria-expanded',open);
+    });
+    document.addEventListener('click',e=>{
+      if(!e.target.closest('.anarchyBtn') &&
+         !e.target.closest('.anarchyMenu')){
+        document.getElementById('anarchyMenu').classList.remove('open');
+        document.getElementById('anarchyBtn').setAttribute('aria-expanded',false);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded',()=>{
+      run();
+      setInterval(run,cycle);
+    });
+  })();
+  </script>
 </body>
 </html>
