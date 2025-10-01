@@ -1,65 +1,179 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aggro PvP — Rules</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Template — Aggro PvP</title>
+
+  <style>
+    /* Match rules.html font */
+    @font-face{
+      font-family: 'DayZFont';
+      src: url('28 Days Later.ttf') format('truetype');
+      font-display: swap;
+    }
+
+    :root{
+      --bg:#000;
+      --accent:#ff3b3b;           /* red accent for headings/buttons */
+      --card-bg:linear-gradient(180deg,#070707,#0f0f0f);
+      --card-border:rgba(255,59,59,0.12);
+      --card-radius:12px;
+      --max-width:900px;
+      --pad:20px;
+      --smoke-opacity:0.66;
+    }
+
+    html,body{
+      height:100%;
+      margin:0;
+      background:var(--bg);
+      color:#fff;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Smoke background (fixed, blurred, oversized like rules.html) */
+    #smoke-bg{
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      overflow:hidden;
+      background:#000;
+    }
+
+    #smoke-bg video{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      width:160vw;
+      height:160vh;
+      object-fit:cover;
+      opacity:var(--smoke-opacity);
+      filter: blur(5px) saturate(1.04) contrast(1.02);
+    }
+
+    /* Page container that sits above smoke */
+    .page{
+      position:relative;
+      z-index:2;
+      min-height:100vh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:6vh 20px;
+      box-sizing:border-box;
+    }
+
+    .container{
+      width:100%;
+      max-width:var(--max-width);
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    /* Large white page title using DayZFont */
+    .site-title{
+      margin:0 0 6px 0;
+      font-family:'DayZFont', sans-serif;
+      font-size:clamp(28px,6vw,64px);
+      color:#fff;
+      text-transform:uppercase;
+      letter-spacing:1.6px;
+      text-shadow:
+        0 1px 0 rgba(0,0,0,0.85),
+        0 8px 28px rgba(0,0,0,0.6),
+        0 12px 40px rgba(255,59,59,0.04);
+    }
+
+    /* Black pad / card used as section header container */
+    .card{
+      border-radius:var(--card-radius);
+      background:var(--card-bg);
+      border:2px solid var(--card-border);
+      box-shadow:
+        inset 0 2px 6px rgba(255,255,255,0.02),
+        inset 0 -8px 18px rgba(0,0,0,0.75),
+        0 12px 30px rgba(0,0,0,0.9);
+      padding:var(--pad);
+    }
+
+    /* Red heading text on the black pad */
+    .card h2{
+      margin:0 0 8px 0;
+      font-family:'DayZFont', sans-serif;
+      color:var(--accent);
+      font-size:clamp(18px,3.6vw,28px);
+      letter-spacing:0.8px;
+      text-transform:uppercase;
+      text-shadow: 0 4px 18px rgba(0,0,0,0.6);
+    }
+
+    /* Body text inside card */
+    .card p{
+      margin:0;
+      color:rgba(255,255,255,0.92);
+      line-height:1.6;
+      font-size:15px;
+    }
+
+    /* Small utility: red outline button that matches site treatment */
+    .btn-outline{
+      display:inline-block;
+      margin-top:12px;
+      padding:10px 14px;
+      border:2px solid var(--accent);
+      color:var(--accent);
+      border-radius:8px;
+      text-decoration:none;
+      font-weight:800;
+      background:transparent;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.6), 0 0 18px rgba(255,59,59,0.04);
+    }
+
+    @media (max-width:520px){
+      .site-title{ font-size:clamp(22px,10vw,36px); }
+      .card{ padding:14px; }
+    }
+  </style>
 </head>
 <body>
+  <!-- Smoke background files should match the ones in your repo -->
+  <div id="smoke-bg" aria-hidden="true">
+    <video autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg">
+      <source src="Smoke.webm" type="video/webm">
+      <source src="Smoke.mp4" type="video/mp4">
+    </video>
+  </div>
 
-  <!-- Header -->
-  <header>
-    <h1>Aggro PvP</h1>
-    <nav>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="rules.html" class="active">Rules</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="join.html">Join</a></li>
-        <li><a href="updates.html">Updates</a></li>
-        <li><a href="clips.html">Clips</a></li>
-        <li><a href="donate.html">Donate</a></li>
-      </ul>
-    </nav>
-  </header>
+  <main class="page" role="main">
+    <div class="container">
+      <header>
+        <h1 class="site-title">Page Title</h1>
+      </header>
 
-  <!-- Hero / Banner -->
-  <section id="hero">
-    <h2>Server Rules</h2>
-    <p>Survive. Fight. Respect the rules of Aggro PvP.</p>
-  </section>
+      <!-- Black pad section with red heading -->
+      <section class="card" aria-labelledby="section-1-title">
+        <h2 id="section-1-title">Section Heading</h2>
+        <p>
+          This is a template card. Replace this paragraph with whatever content you need.
+          Use multiple cards stacked vertically to create the same layout as rules.html.
+        </p>
+        <a class="btn-outline" href="#">Primary Action</a>
+      </section>
 
-  <!-- Rules Section -->
-  <main>
-    <section id="rules">
-      <h3>General Rules</h3>
-      <ol>
-        <li>Rule 1 goes here</li>
-        <li>Rule 2 goes here</li>
-        <li>Rule 3 goes here</li>
-      </ol>
-
-      <h3>PvP Rules</h3>
-      <ol>
-        <li>Rule A goes here</li>
-        <li>Rule B goes here</li>
-        <li>Rule C goes here</li>
-      </ol>
-
-      <h3>Base Building Rules</h3>
-      <ol>
-        <li>Rule X goes here</li>
-        <li>Rule Y goes here</li>
-        <li>Rule Z goes here</li>
-      </ol>
-    </section>
+      <!-- Additional black pad -->
+      <section class="card" aria-labelledby="section-2-title">
+        <h2 id="section-2-title">Another Heading</h2>
+        <p>
+          Use these cards for collapsibles, Discord widget embeds, support instructions, or lists of rules.
+        </p>
+      </section>
+    </div>
   </main>
-
-  <!-- Footer -->
-  <footer>
-    <p>&copy; 2025 Aggro PvP — All Rights Reserved</p>
-  </footer>
-
 </body>
 </html>
