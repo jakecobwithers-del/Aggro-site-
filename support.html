@@ -37,7 +37,7 @@
 
     html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
 
-    /* Smoke background: match rules page sizing and motion */
+    /* Fixed smoke background that fully covers viewport and doesn't scroll */
     #smoke-bg{
       position:fixed;
       inset:0;
@@ -45,18 +45,19 @@
       pointer-events:none;
       overflow:hidden;
       background:#000;
-      mix-blend-mode:normal;
     }
     #smoke-bg video{
-      position:fixed;
+      position:absolute;
       left:50%;
       top:50%;
-      transform:translate(-50%,-50%) scale(1.4);
-      width:240vw;
-      height:240vh;
+      transform:translate(-50%,-50%) scale(1.6);
+      min-width:100vw;
+      min-height:100vh;
+      width:auto;
+      height:auto;
       object-fit:cover;
       opacity:var(--smoke-opacity);
-      filter: blur(4px) saturate(1.05) contrast(1.02);
+      filter:blur(6px) saturate(1.06) contrast(1.03);
       will-change:transform;
       pointer-events:none;
     }
@@ -72,7 +73,7 @@
     .subtitle .line-white{ color:#fff; display:block; font-weight:700; }
     .subtitle .line-red{ color:var(--accent); display:block; font-weight:900; font-family:'DayZFont',sans-serif; letter-spacing:0.6px; text-transform:lowercase; }
 
-    /* Controls: only tabs (no Owners control) */
+    /* Controls: tabs */
     .controls { display:flex;align-items:center;justify-content:center;gap:16px;margin-top:12px;flex-wrap:wrap; }
     .tabs { display:flex; gap:14px; align-items:center; justify-content:center; flex-wrap:wrap; }
     .tab { height:var(--tab-height); padding:14px 22px; border-radius:14px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border:1px solid rgba(255,255,255,0.02); color:var(--muted); font-weight:800; text-transform:uppercase; font-family:'DayZFont',sans-serif; letter-spacing:0.8px; cursor:pointer; display:inline-flex; align-items:center; gap:10px; transition:transform 140ms ease, box-shadow 140ms ease, background 140ms ease; }
@@ -86,7 +87,7 @@
     .card-footer { display:flex; justify-content:flex-start; gap:14px; align-items:center; margin-top:14px; flex-wrap:wrap; }
     .goto { display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:12px; background:linear-gradient(180deg,rgba(255,59,59,0.06),rgba(0,0,0,0.04)); border:1px solid rgba(255,59,59,0.12); color:var(--accent); font-weight:900; text-transform:uppercase; font-family:'DayZFont',sans-serif; width:110px; font-size:13px; text-decoration:none; }
 
-    /* Owners bubble: visible on page with linked names */
+    /* Owners bubble */
     .owners-bubble { margin-top:12px; border-radius:12px; background:linear-gradient(180deg, rgba(12,12,12,0.98), rgba(7,7,7,0.95)); border:2px solid rgba(255,59,59,0.08); padding:14px; display:flex; gap:18px; align-items:flex-start; }
     .owners-col { display:flex; flex-direction:column; gap:10px; }
     .owners-names { min-width:220px; }
@@ -96,7 +97,7 @@
 
     .owners-message { flex:1; color:var(--muted); font-size:15px; line-height:1.6; padding:6px 8px; border-left:1px solid rgba(255,255,255,0.02); }
 
-    /* Return button: Bain heading style, inset glow, centered like rules */
+    /* Return button: Bain style centered */
     .return-fixed{
       position:fixed;
       left:50%;
@@ -128,11 +129,11 @@
       font-family: 'DayZFont', 'Bain', system-ui;
     }
 
-    /* Fade class for smoother content swaps */
+    /* Fade class for smoother swaps */
     .fade { opacity:1; transition:opacity 180ms ease; }
     .fade.hidden { opacity:0; }
 
-    /* Responsive tweaks */
+    /* Responsive */
     @media(max-width:860px){ :root{ --bottom-safe:240px; } .tab{ padding:12px 16px; height:56px; } .card{ padding:18px; min-height:200px; } .owners-bubble{ flex-direction:column; } .owners-message{ border-left:none; border-top:1px solid rgba(255,255,255,0.02); padding-top:12px; } .return-fixed{ bottom:12px; padding:12px 16px; } }
     @media(max-width:520px){ :root{ --bottom-safe:300px; } .title h1{ font-size:clamp(32px,12vw,56px); } .tab{ padding:10px 12px; height:48px; } .card{ padding:14px; min-height:180px; } .return-fixed{ bottom:10px; padding:10px 14px; } }
   </style>
@@ -252,7 +253,6 @@
 
       function activateTab(tabEl){
         tabs.forEach(t=> t.setAttribute('aria-selected', t===tabEl ? 'true' : 'false'));
-        // dynamically set the primary class to the active tab
         tabs.forEach(t => t.classList.toggle('primary', t === tabEl));
         const key = tabEl.dataset.key;
         panel.setAttribute('aria-labelledby', tabEl.id);
@@ -281,4 +281,3 @@
   </script>
 </body>
 </html>
-
