@@ -220,21 +220,24 @@
   <div id="audio-debug" role="status" aria-live="polite"></div>
 
   <!--
-    Audio behaviour:
-    - Starts muted autoplay (allowed by browsers)
-    - On first trusted user gesture the script unmutes and fades to audible volume silently (no visible button)
-    - Plays only once at page start
+    Behaviour:
+    - Starts muted autoplay so the audio is loaded and begins playing silently.
+    - After a short configurable delay (DELAY_MS) the script will unmute and fade to audible volume over FADE_MS.
+    - If the browser blocks the unmute attempt the script falls back to starting audible playback on the first trusted user gesture.
+    - Adjust DELAY_MS and FADE_MS below.
   -->
   <script>
     (function(){
       const AUDIO_URL = 'https://jakecobwithers-del.github.io/Aggro-site-/Donate.mp3';
-      const TARGET_VOLUME = 0.9; // final audible volume
-      const FADE_MS = 900;
+      const TARGET_VOLUME = 0.9;   // final audible volume
+      const FADE_MS = 800;         // fade duration when unmuting
+      const DELAY_MS = 1200;       // delay before attempting to unmute (adjust this)
       const debug = document.getElementById('audio-debug');
-      let unlocked = false;
-      let ephemeralBlobUrl = null;
 
-      // Create audio element and start muted autoplay (browsers permit muted autoplay)
+      let unlocked = false;
+      let blobUrl = null;
+
+      // Create audio element and start muted autoplay
       const audio = new Audio();
       audio.src = AUDIO_URL;
       audio.preload = 'auto';
@@ -242,10 +245,11 @@
       audio.volume = 0;
       audio.muted = true;
       audio.playsInline = true;
-      // attempt to autoplay muted immediately
+      audio.autoplay = true;
+      // start playing silently to prime the buffer
       audio.play().catch(()=>{ /* ignore */ });
 
-      // Fade helper (linear)
+      // Linear fade helper
       function fadeTo(target, duration) {
         const start = audio.volume;
         const delta = target - start;
@@ -260,68 +264,76 @@
         }, stepMs);
       }
 
-      // Unmute and fade in on first trusted gesture
-      async function unlockAndUnmute(e) {
+      // Attempt to unmute after delay (will throw or be blocked on some browsers)
+      async function attemptDelayedUnmute() {
+        if (unlocked) return;
+        try {
+          // Wait the requested delay so the initial portion of the audio is heard first when unmuted
+          await new Promise(res => setTimeout(res, DELAY_MS));
+
+          // Try to unmute and fade in
+          audio.muted = false;
+          // Some browsers reject changing muted state without a gesture; attempt to resume if needed
+          try {
+            await audio.play();
+          } catch (_) {
+            // If resume fails, fetch blob with user gesture fallback later
+          }
+          fadeTo(TARGET_VOLUME, FADE_MS);
+          // If audio is playing and audible now, mark unlocked
+          setTimeout(() => {
+            try {
+              if (!audio.paused && !audio.muted && audio.volume > 0) {
+                unlocked = true;
+                removeGestureListeners();
+              }
+            } catch(_) {}
+          }, FADE_MS + 200);
+        } catch (err) {
+          // If unmute blocked, attach gesture fallback
+          attachGestureFallback();
+        }
+      }
+
+      // Fallback: on first trusted user gesture fetch and play audible (ensures audible start if delayed unmute blocked)
+      async function playOnGesture(e) {
         if (unlocked) return;
         if (e && e.isTrusted === false) return;
         unlocked = true;
-        removeListeners();
-
+        removeGestureListeners();
         try {
-          // Try to resume the existing element first
-          try {
-            audio.muted = true; // ensure still muted until we can set volume safely
-            await audio.play();
-          } catch (_) {
-            // If resume fails, fetch as blob with the user gesture and play from blob URL
-            try {
-              const res = await fetch(AUDIO_URL, { cache: 'no-cache' });
-              if (!res.ok) { showDebug('Audio fetch failed: ' + res.status + ' ' + res.statusText); return; }
-              const ct = res.headers.get('content-type') || '';
-              if (!/audio/i.test(ct)) { showDebug('Wrong Content-Type: ' + ct); return; }
-              const blob = await res.blob();
-              ephemeralBlobUrl = URL.createObjectURL(blob);
-              audio.src = ephemeralBlobUrl;
-              await audio.play();
-            } catch (fetchErr) {
-              showDebug('Play failed: ' + (fetchErr && fetchErr.message ? fetchErr.message : String(fetchErr)));
-              return;
-            }
-          }
+          // fetch as blob to bind play to gesture
+          const r = await fetch(AUDIO_URL, { cache: 'no-cache' });
+          if (!r.ok) { showDebug('Audio fetch failed: ' + r.status + ' ' + r.statusText); return; }
+          const ct = r.headers.get('content-type') || '';
+          if (!/audio/i.test(ct)) { showDebug('Wrong Content-Type: ' + ct); return; }
+          const b = await r.blob();
+          blobUrl = URL.createObjectURL(b);
+          audio.src = blobUrl;
+          audio.muted = false;
+          audio.volume = 0;
+          await audio.play();
+          fadeTo(TARGET_VOLUME, FADE_MS);
+          audio.addEventListener('ended', () => {
+            if (blobUrl) { try { URL.revokeObjectURL(blobUrl); } catch(_) {} blobUrl = null; }
+          }, { once: true });
         } catch (err) {
-          // If any unexpected error, show debug and exit
-          showDebug('Play error: ' + (err && err.message ? err.message : String(err)));
-          return;
+          showDebug('Play failed: ' + (err && err.message ? err.message : String(err)));
         }
-
-        // Now unmute and fade to target volume
-        try { audio.muted = false; } catch(_) {}
-        fadeTo(TARGET_VOLUME, FADE_MS);
-
-        // Clean up blob url when finished playing
-        audio.addEventListener('ended', () => {
-          if (ephemeralBlobUrl) {
-            try { URL.revokeObjectURL(ephemeralBlobUrl); } catch(_) {}
-            ephemeralBlobUrl = null;
-          }
-        }, { once: true });
       }
 
-      function attachListeners() {
-        window.addEventListener('pointerdown', unlockAndUnmute, { once: true, passive: true });
-        window.addEventListener('keydown', unlockAndUnmute, { once: true, passive: true });
-        window.addEventListener('focus', unlockAndUnmute, { once: true, passive: true });
-        window.addEventListener('visibilitychange', onVisibilityChange, { passive: true });
-      }
-      function removeListeners() {
-        window.removeEventListener('pointerdown', unlockAndUnmute);
-        window.removeEventListener('keydown', unlockAndUnmute);
-        window.removeEventListener('focus', unlockAndUnmute);
-        window.removeEventListener('visibilitychange', onVisibilityChange);
+      function attachGestureFallback() {
+        window.addEventListener('pointerdown', playOnGesture, { once: true, passive: true });
+        window.addEventListener('keydown', playOnGesture, { once: true, passive: true });
+        window.addEventListener('focus', playOnGesture, { once: true, passive: true });
+        // safety: remove after 20s so later gestures won't unexpectedly start audio
+        setTimeout(removeGestureListeners, 20000);
       }
 
-      function onVisibilityChange() {
-        if (!document.hidden) unlockAndUnmute({ isTrusted: true });
+      function removeGestureListeners() {
+        window.removeEventListener('pointerdown', playOnGesture);
+        window.removeEventListener('keydown', playOnGesture);
+        window.removeEventListener('focus', playOnGesture);
       }
 
       function showDebug(msg) {
@@ -330,23 +342,17 @@
         setTimeout(()=>{ debug.style.display = 'none'; }, 8000);
       }
 
-      // If browser allowed audible autoplay (rare), detect and unmute immediately
-      setTimeout(() => {
-        try {
-          if (!audio.paused && !audio.muted && audio.volume > 0) {
-            // already audible; nothing to do
-            unlocked = true;
-            removeListeners();
-          }
-        } catch(_) {}
-      }, 700);
-
-      // Ensure listeners are attached shortly after load in case autoplay blocked
+      // Kick off: try delayed unmute attempt shortly after load
       window.addEventListener('load', () => {
-        attachListeners();
-        // safety: remove listeners after 20s so later interactions don't accidentally start audio
-        setTimeout(() => { if (!unlocked) removeListeners(); }, 20000);
+        attemptDelayedUnmute().catch(()=>{ attachGestureFallback(); });
+        // ensure fallback listeners exist if unmute gets blocked
+        setTimeout(() => { if (!unlocked) attachGestureFallback(); }, 600);
       }, { once: true });
+
+      // Clean up blob URL if page unloads
+      window.addEventListener('pagehide', () => {
+        if (blobUrl) { try { URL.revokeObjectURL(blobUrl); } catch(_) {} blobUrl = null; }
+      });
     })();
   </script>
 </body>
