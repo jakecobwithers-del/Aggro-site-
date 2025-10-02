@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Aggro PvP — Donate</title>
+  <title>Aggro PvP — Support</title>
 
   <style>
-    @font-face {
+    @font-face{
       font-family: 'DayZFont';
       src: url('28 Days Later.ttf') format('truetype');
       font-display: swap;
@@ -15,191 +15,83 @@
     :root{
       --bg:#000;
       --accent:#ff3b3b;
-      --card-bg-start:#070707;
-      --card-bg-end:#0f0f0f;
+      --card-start:#070707;
+      --card-end:#0f0f0f;
       --card-border:rgba(255,59,59,0.12);
-      --card-radius:12px;
-      --max-width:900px;
-      --pad:20px;
-      --smoke-opacity:0.66;
+      --muted:rgba(255,255,255,0.86);
+      --maxw:1000px;
+      --pad:22px;
+      --smoke-opacity:0.78;
+      --gap:18px;
+      --tab-height:64px;
+      --bottom-safe:220px;
     }
 
-    html,body{
-      height:100%;
-      margin:0;
-      background:var(--bg);
-      color:#fff;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
+    html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
 
-    /* Smoke background (fixed, blurred, oversized like rules.html) */
-    #smoke-bg{
+    /* Oversized fixed smoke background (persists while scrolling) */
+    #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
+    #smoke-bg video{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(1.3);width:220vw;height:220vh;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(6px) saturate(1.06) contrast(1.03);will-change:transform;pointer-events:none;}
+
+    /* Layout */
+    .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px var(--bottom-safe);box-sizing:border-box;}
+    .wrap{width:100%;max-width:var(--maxw);display:flex;flex-direction:column;gap:var(--gap);padding-bottom:20px;}
+
+    .title{ text-align:center; padding:6px 6px 0; }
+    .title h1{margin:0;font-family:'DayZFont',sans-serif;font-size:clamp(40px,7.2vw,88px);letter-spacing:1.6px;text-transform:uppercase;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,0.85),0 8px 28px rgba(0,0,0,0.6);line-height:0.95;}
+    .subtitle{ margin-top:6px; font-size:15px; line-height:1.05; }
+    .subtitle .line-white{ color:#fff; display:block; font-weight:700; }
+    .subtitle .line-red{ color:var(--accent); display:block; font-weight:900; font-family:'DayZFont',sans-serif; letter-spacing:0.6px; text-transform:lowercase; }
+
+    /* Controls: only tabs (no Owners control) */
+    .controls { display:flex;align-items:center;justify-content:center;gap:16px;margin-top:12px;flex-wrap:wrap; }
+    .tabs { display:flex; gap:14px; align-items:center; justify-content:center; flex-wrap:wrap; }
+    .tab { height:var(--tab-height); padding:14px 22px; border-radius:14px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border:1px solid rgba(255,255,255,0.02); color:var(--muted); font-weight:800; text-transform:uppercase; font-family:'DayZFont',sans-serif; letter-spacing:0.8px; cursor:pointer; display:inline-flex; align-items:center; gap:10px; transition:transform 140ms ease, box-shadow 140ms ease, background 140ms ease; }
+    .tab.primary { background:linear-gradient(180deg, rgba(255,59,59,0.06), rgba(0,0,0,0.04)); color:var(--accent); border-color:var(--card-border); transform:translateY(-4px); box-shadow:0 18px 46px rgba(0,0,0,0.6); }
+    .tab[aria-selected="true"]:not(.primary), .tab:focus { transform:translateY(-4px); color:var(--accent); box-shadow:0 14px 36px rgba(0,0,0,0.5); border-color:var(--card-border); outline:none; }
+
+    /* Card */
+    .card { margin-top:10px; border-radius:14px; background:linear-gradient(180deg,var(--card-start),var(--card-end)); border:2px solid var(--card-border); box-shadow: inset 0 2px 8px rgba(255,255,255,0.02), inset 0 -10px 22px rgba(0,0,0,0.75), 0 16px 40px rgba(0,0,0,0.9); padding:var(--pad); display:block; min-height:220px; transition:transform 220ms cubic-bezier(.2,.9,.2,1), opacity 180ms linear; overflow:hidden; }
+    .card h2{ margin:0 0 8px 0; font-family:'DayZFont',sans-serif; color:var(--accent); font-size:clamp(20px,3.8vw,36px); text-transform:uppercase; text-shadow:0 6px 22px rgba(0,0,0,0.6); }
+    .card p{ margin:0 0 14px 0; color:var(--muted); line-height:1.6; font-size:16px; }
+    .card-footer { display:flex; justify-content:flex-start; gap:14px; align-items:center; margin-top:14px; flex-wrap:wrap; }
+    .goto { display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:12px; background:linear-gradient(180deg,rgba(255,59,59,0.06),rgba(0,0,0,0.04)); border:1px solid rgba(255,59,59,0.12); color:var(--accent); font-weight:900; text-transform:uppercase; font-family:'DayZFont',sans-serif; width:110px; font-size:13px; text-decoration:none; }
+
+    /* Owners bubble: visible on page with linked names */
+    .owners-bubble { margin-top:12px; border-radius:12px; background:linear-gradient(180deg, rgba(12,12,12,0.98), rgba(7,7,7,0.95)); border:2px solid rgba(255,59,59,0.08); padding:14px; display:flex; gap:18px; align-items:flex-start; }
+    .owners-col { display:flex; flex-direction:column; gap:10px; }
+    .owners-names { min-width:220px; }
+    .owner-link{ display:inline-flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); color:var(--muted); font-size:15px; text-decoration:none; border:1px solid rgba(255,255,255,0.02); transition:transform 120ms ease, box-shadow 120ms ease; }
+    .owner-link b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:15px; }
+    .owner-link:hover{ transform:translateX(6px); box-shadow:0 12px 30px rgba(0,0,0,0.6); }
+
+    .owners-message { flex:1; color:var(--muted); font-size:15px; line-height:1.6; padding:6px 8px; border-left:1px solid rgba(255,255,255,0.02); }
+
+    /* Centered Return button bottom-center (same as rules) */
+    .return-fixed{
       position:fixed;
-      inset:0;
-      z-index:0;
-      pointer-events:none;
-      overflow:hidden;
-      background:#000;
-    }
-
-    #smoke-bg video{
-      position:absolute;
       left:50%;
-      top:50%;
-      transform:translate(-50%,-50%);
-      width:160vw;
-      height:160vh;
-      object-fit:cover;
-      opacity:var(--smoke-opacity);
-      filter: blur(5px) saturate(1.04) contrast(1.02);
-    }
-
-    /* Page container sits above smoke */
-    .page{
-      position:relative;
-      z-index:2;
-      min-height:100vh;
-      display:flex;
-      align-items:flex-start;
-      justify-content:center;
-      padding:6vh 20px 80px;
-      box-sizing:border-box;
-    }
-
-    .container{
-      width:100%;
-      max-width:var(--max-width);
-      display:flex;
-      flex-direction:column;
-      gap:18px;
-    }
-
-    /* Large white page title using DayZFont, centered */
-    .site-title-wrap{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      gap:12px;
-    }
-
-    .site-title{
-      margin:0;
-      font-family:'DayZFont', sans-serif;
-      font-size:clamp(28px,6vw,64px);
-      color:#fff;
-      text-transform:uppercase;
-      letter-spacing:1.6px;
-      text-shadow:
-        0 1px 0 rgba(0,0,0,0.85),
-        0 8px 28px rgba(0,0,0,0.6),
-        0 12px 40px rgba(255,59,59,0.04);
-      text-align:center;
-    }
-
-    /* Black pad / card */
-    .card{
-      border-radius:var(--card-radius);
-      background:linear-gradient(180deg,var(--card-bg-start),var(--card-bg-end));
-      border:2px solid var(--card-border);
-      box-shadow:
-        inset 0 2px 6px rgba(255,255,255,0.02),
-        inset 0 -8px 18px rgba(0,0,0,0.75),
-        0 12px 30px rgba(0,0,0,0.9);
-      padding:var(--pad);
-    }
-
-    /* Red heading on black pad */
-    .card h2{
-      margin:0 0 8px 0;
-      font-family:'DayZFont', sans-serif;
-      color:var(--accent);
-      font-size:clamp(18px,3.6vw,28px);
-      letter-spacing:0.8px;
-      text-transform:uppercase;
-      text-shadow: 0 4px 18px rgba(0,0,0,0.6);
-    }
-
-    .card p{ margin:0 0 12px 0; color:rgba(255,255,255,0.92); line-height:1.6; font-size:15px; }
-
-    .card ul{ margin:0; padding-left:20px; list-style:disc; }
-    .card li{ margin:6px 0; font-size:15px; color:rgba(255,255,255,0.92); }
-
-    .donate-btn{
-      display:inline-block;
-      margin-top:12px;
-      padding:12px 24px;
-      font-weight:bold;
-      font-size:15px;
-      background:var(--accent);
-      color:#fff;
-      text-decoration:none;
-      border-radius:10px;
-      box-shadow:
-        inset 0 2px 6px rgba(255,255,255,0.02),
-        inset 0 -6px 12px rgba(0,0,0,0.6),
-        0 8px 20px rgba(0,0,0,0.8);
-      transition:transform 0.2s ease, background 0.2s ease;
-    }
-
-    .donate-btn:hover{ transform:scale(1.05); background:#ff5c5c; }
-
-    /* Audio control */
-    .audio-controls{
-      display:inline-flex;
-      gap:10px;
-      align-items:center;
-      margin-left:8px;
-    }
-
-    .audio-toggle{
-      background:transparent;
-      border:1px solid rgba(255,255,255,0.08);
-      color:#fff;
-      padding:8px 12px;
-      border-radius:8px;
-      cursor:pointer;
-      font-weight:700;
-      letter-spacing:0.6px;
-      backdrop-filter: blur(4px);
-    }
-
-    .back-row{
-      display:flex;
-      justify-content:center;
-      margin-top:6px;
-      gap:12px;
-    }
-
-    .back-link{
-      text-decoration:none;
-      font-weight:800;
+      transform:translateX(-50%);
+      bottom:18px;
+      z-index:90;
+      padding:12px 18px;
+      border-radius:14px;
       background:linear-gradient(180deg,#0b0b0b,#121212);
       border:2px solid rgba(255,59,59,0.14);
       color:var(--accent);
-      padding:12px 18px;
-      border-radius:12px;
-      box-shadow:
-        inset 0 2px 6px rgba(255,255,255,0.02),
-        inset 0 -8px 18px rgba(0,0,0,0.75),
-        0 10px 30px rgba(0,0,0,0.9);
+      font-weight:800;
+      text-decoration:none;
+      box-shadow: 0 20px 56px rgba(0,0,0,0.7), inset 0 2px 6px rgba(255,255,255,0.02);
       display:inline-flex;
       gap:10px;
       align-items:center;
     }
 
-    .back-link svg{ transform:translateX(-2px); }
-
-    @media (max-width:520px){
-      .site-title{ font-size:clamp(22px,10vw,36px); }
-      .card{ padding:14px; }
-      .site-title-wrap{ flex-direction:column; gap:8px; }
-    }
+    @media(max-width:860px){ :root{ --bottom-safe:240px; } .tab{ padding:12px 16px; height:56px; } .card{ padding:18px; min-height:200px; } .owners-bubble{ flex-direction:column; } .owners-message{ border-left:none; border-top:1px solid rgba(255,255,255,0.02); padding-top:12px; } .return-fixed{ bottom:12px; } }
+    @media(max-width:520px){ :root{ --bottom-safe:300px; } .title h1{ font-size:clamp(32px,12vw,56px); } .tab{ padding:10px 12px; height:48px; } .card{ padding:14px; min-height:180px; } .return-fixed{ bottom:10px; padding:10px 14px; } }
   </style>
 </head>
 <body>
-  <!-- Smoke background files should match rules.html, root paths used -->
   <div id="smoke-bg" aria-hidden="true">
     <video autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg">
       <source src="Smoke.webm" type="video/webm">
@@ -208,120 +100,136 @@
   </div>
 
   <main class="page" role="main">
-    <div class="container">
-      <header class="site-title-wrap" aria-hidden="false">
-        <h1 class="site-title">Donate</h1>
-
-        <!-- audio toggle sits beside title for quick control -->
-        <div class="audio-controls" aria-hidden="false">
-          <button id="audio-toggle" class="audio-toggle" aria-pressed="false" title="Mute or unmute background audio">Mute</button>
+    <div class="wrap">
+      <header class="title" role="banner" aria-label="Support header">
+        <h1>Support</h1>
+        <div class="subtitle" aria-hidden="false">
+          <span class="line-white">Still Breathing?</span>
+          <span class="line-red">we've got your six</span>
         </div>
       </header>
 
-      <section class="card" aria-labelledby="why-donate">
-        <h2 id="why-donate">Why Donate?</h2>
-        <p>Running Aggro PvP takes time, effort, and real-world costs. Donations help us keep the server online, pay for hosting, add new mods, and develop fresh content. Every contribution directly supports the growth of the community.</p>
-      </section>
+      <!-- Controls: only three tabs -->
+      <div class="controls" role="group" aria-label="Support controls">
+        <nav class="tabs" role="tablist" aria-label="Support sections">
+          <button class="tab primary" role="tab" aria-selected="true" aria-controls="panel" id="tab-bug" data-key="bug">Bug Reports</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-suggest" data-key="suggest">Suggestions</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-ticket" data-key="ticket">Ticket</button>
+        </nav>
+      </div>
 
-      <section class="card" aria-labelledby="how-it-helps">
-        <h2 id="how-it-helps">How It Helps</h2>
-        <ul>
-          <li>💻 Server hosting and performance upgrades</li>
-          <li>⚙️ Development of custom mods & events</li>
-          <li>🎨 Expanding visuals, UI, and branding</li>
-          <li>👥 Community prizes, events, and growth</li>
-        </ul>
-      </section>
-
-      <section class="card" aria-labelledby="how-to-donate">
-        <h2 id="how-to-donate">How to Donate</h2>
-        <p>If you’d like to support us, click the button below. Even the smallest amount makes a big difference and helps keep Aggro PvP alive and thriving.</p>
-
-        <div>
-          <a href="YOUR_DONATION_LINK_HERE" class="donate-btn" id="donate-btn">Donate Now</a>
+      <!-- Main card -->
+      <section class="card" id="panel" tabindex="0" aria-live="polite">
+        <div id="panel-content">
+          <h2>Bug Reports</h2>
+          <p>Seeing server lag, exploits, or visual bugs? Tell us what you noticed, which server and map, and the approximate server time so staff can investigate.</p>
+          <div class="card-footer">
+            <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+              <span>Go to</span>
+            </a>
+            <span style="color:var(--muted);font-size:13px;">Tip: server lag, exploits, visual bugs, server/map, server time</span>
+          </div>
         </div>
       </section>
 
-      <div class="back-row">
-        <a class="back-link" href="index.html" aria-label="Return to main menu">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
-            <path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path>
-          </svg>
-          Return to Main Menu
-        </a>
-      </div>
+      <!-- Owners bubble with clickable profiles -->
+      <aside class="owners-bubble" id="owners-bubble" aria-labelledby="owners-title">
+        <div class="owners-col owners-names" aria-hidden="false">
+          <h4 style="margin:0;font-family:DayZFont,system-ui;color:var(--accent);letter-spacing:0.6px;text-transform:uppercase;">Team</h4>
+          <a class="owner-link" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener" aria-label="Open RB Skizza Discord profile"><b>RB Skizza</b></a>
+          <a class="owner-link" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener" aria-label="Open Slomobob Discord profile"><b>Slomobob</b></a>
+          <a class="owner-link" href="https://discord.com/users/754181442204074025" target="_blank" rel="noopener" aria-label="Open Sloppywet Discord profile"><b>Sloppywet</b></a>
+        </div>
+
+        <div class="owners-col owners-message" aria-hidden="false">
+          <strong style="color:var(--accent);font-family:DayZFont,system-ui;text-transform:uppercase;letter-spacing:0.6px;">A message from the owners</strong>
+          <p style="margin:8px 0 0 0;">
+            Aggro PvP is run by a small team committed to fair play, stability, and a bold cinematic experience. We appreciate every player who reports issues or shares ideas.
+          </p>
+          <p style="margin:10px 0 0 0;">
+            If you value the server and want to support hosting, tools, and development, consider donating. For private concerns or appeals, open a ticket and staff will respond.
+          </p>
+          <p style="margin:10px 0 0 0;color:var(--muted);font-size:13px;">
+            Thank you for playing — see you on the map.
+          </p>
+        </div>
+      </aside>
+
     </div>
   </main>
 
-  <!-- Background audio (root file Donate.mp3) -->
-  <audio id="bg-audio" loop preload="auto">
-    <source src="Donate.mp3" type="audio/mpeg">
-  </audio>
+  <!-- Centered Return to Main Menu button -->
+  <a class="return-fixed" href="index.html" aria-label="Return to Main Menu">← Return to Main Menu</a>
 
   <script>
-    // Attempt to play audio on load; handle autoplay restrictions gracefully
-    const audio = document.getElementById('bg-audio');
-    const toggle = document.getElementById('audio-toggle');
+    (function(){
+      const tabs = Array.from(document.querySelectorAll('.tab'));
+      const panelContent = document.getElementById('panel-content');
+      const panel = document.getElementById('panel');
 
-    let isPlaying = false;
-    function setButtonState() {
-      toggle.textContent = isPlaying ? 'Mute' : 'Unmute';
-      toggle.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
-      toggle.title = isPlaying ? 'Mute background audio' : 'Unmute background audio';
-    }
+      const templates = {
+        bug: {
+          title: 'Bug Reports',
+          html: `<p>Seeing server lag, exploits, or visual bugs? Tell us what you noticed, which server and map, and the approximate server time so staff can investigate.</p>
+                 <div class="card-footer">
+                   <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <span>Go to</span>
+                   </a>
+                   <span style="color:var(--muted);font-size:13px;">Tip: server lag, exploits, visual bugs, server/map, server time</span>
+                 </div>`
+        },
+        suggest: {
+          title: 'Suggestions',
+          html: `<p>Got a loot change, mod idea, new feature, or gameplay tweak? Describe the change, why it improves play, and any balance notes or downsides; keep it short and actionable.</p>
+                 <div class="card-footer">
+                   <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <span>Go to</span>
+                   </a>
+                   <span style="color:var(--muted);font-size:13px;">Tip: loot changes, mod ideas, features, balance notes</span>
+                 </div>`
+        },
+        ticket: {
+          title: 'Ticket',
+          html: `<p>Tickets are for private support: bans and appeals, account issues, staff requests, payment/donation queries, and other sensitive matters.</p>
+                 <div class="card-footer">
+                   <a class="goto" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener" aria-label="Go to Ticket channel">
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <span>Go to</span>
+                   </a>
+                   <span style="color:var(--muted);font-size:13px;">Tip: appeals, account issues, staff requests, payment queries</span>
+                 </div>`
+        }
+      };
 
-    // Try to play; many browsers block autoplay until user interacts
-    function tryPlay() {
-      audio.volume = 0.9;
-      audio.play().then(() => {
-        isPlaying = true;
-        setButtonState();
-      }).catch(() => {
-        // autoplay blocked — start muted so user hears nothing until they unmute
-        isPlaying = false;
-        setButtonState();
-      });
-    }
+      function activateTab(tabEl){
+        tabs.forEach(t=> t.setAttribute('aria-selected', t===tabEl ? 'true' : 'false'));
+        tabs.forEach(t => t.classList.toggle('primary', t.dataset.key === 'bug'));
+        const key = tabEl.dataset.key;
+        panelContent.style.opacity = '0';
+        setTimeout(()=>{
+          panelContent.innerHTML = `<h2>${templates[key].title}</h2>` + templates[key].html;
+          panelContent.style.opacity = '1';
+          panel.focus();
+        }, 160);
+      }
 
-    // Set initial state and bind toggle
-    setButtonState();
-    // Try to play after a short delay so DOM finishes parsing
-    window.addEventListener('load', () => {
-      tryPlay();
-    }, { once: true });
-
-    // Toggle button: if not playing, unmute+play; if playing, pause
-    toggle.addEventListener('click', () => {
-      if (!isPlaying) {
-        audio.currentTime = 0;
-        audio.play().then(() => {
-          isPlaying = true;
-          setButtonState();
-        }).catch(() => {
-          // user gesture required; mark as still muted
-          isPlaying = false;
-          setButtonState();
+      tabs.forEach(t=>{
+        t.addEventListener('click', ()=> activateTab(t));
+        t.addEventListener('keydown', (ev)=>{
+          const idx = tabs.indexOf(t);
+          if(ev.key === 'ArrowRight') tabs[(idx+1)%tabs.length].focus();
+          if(ev.key === 'ArrowLeft') tabs[(idx-1+tabs.length)%tabs.length].focus();
+          if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); activateTab(t); }
         });
-      } else {
-        audio.pause();
-        isPlaying = false;
-        setButtonState();
-      }
-    });
+      });
 
-    // Optional: resume play after first user gesture anywhere
-    function resumeOnInteraction() {
-      if (!isPlaying) {
-        audio.play().then(() => {
-          isPlaying = true;
-          setButtonState();
-        }).catch(()=>{});
-      }
-      window.removeEventListener('pointerdown', resumeOnInteraction);
-      window.removeEventListener('keydown', resumeOnInteraction);
-    }
-    window.addEventListener('pointerdown', resumeOnInteraction);
-    window.addEventListener('keydown', resumeOnInteraction);
+      // initial state
+      const initialTab = document.querySelector('.tab[data-key="bug"]');
+      initialTab && initialTab.focus();
+    })();
   </script>
 </body>
 </html>
