@@ -6,6 +6,7 @@
   <title>Aggro PvP — Server Rules</title>
 
   <style>
+    /* Fonts */
     @font-face{
       font-family:'DayZFont';
       src: url('28%20Days%20Later.ttf') format('truetype');
@@ -15,11 +16,14 @@
     :root{
       --bg:#000;
       --accent:#ff3b3b;
+      --accent-glow: rgba(255,59,59,0.22);
       --card-dark:#070707;
       --card-dark-2:#0f0f0f;
-      --radius:12px;
+      --radius:14px;
       --smoke-opacity:0.66;
-      --max-width:900px;
+      --max-width:980px;
+      --focus-ring: 0 0 0 4px rgba(255,59,59,0.12);
+      --chip-bg: rgba(255,255,255,0.02);
     }
 
     html,body{
@@ -53,7 +57,7 @@
       filter: blur(5px) saturate(1.04) contrast(1.02);
     }
 
-    /* Content wrapper */
+    /* Page wrapper */
     .page{
       position:relative;
       z-index:2;
@@ -61,6 +65,7 @@
       padding:40px 20px;
       display:flex;
       justify-content:center;
+      align-items:flex-start;
     }
     .wrap{
       width:100%;
@@ -70,21 +75,76 @@
       gap:18px;
     }
 
+    /* Logo top corner */
+    .logo{
+      position:fixed;
+      top:18px;
+      right:18px;
+      z-index:3;
+      width:72px;
+      height:72px;
+      display:grid;
+      place-items:center;
+      pointer-events:auto;
+    }
+    .logo img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.8));
+      border-radius:10px;
+      background:linear-gradient(180deg,var(--card-dark),var(--card-dark-2));
+      border:2px solid rgba(255,59,59,0.12);
+      padding:6px;
+    }
+
     /* Heading */
-    header{text-align:center;}
+    header{ text-align:left; display:flex; gap:14px; align-items:flex-end; }
+    .title-row{ display:flex; flex-direction:column; gap:6px; }
     h1{
       margin:0;
       font-family:'DayZFont',sans-serif;
-      font-size:clamp(28px,6vw,60px);
+      font-size:clamp(28px,6vw,56px);
       color:#fff;
       text-transform:uppercase;
       letter-spacing:1.6px;
-      text-shadow:0 1px 0 rgba(0,0,0,0.85),
-                  0 8px 28px rgba(0,0,0,0.6),
-                  0 12px 40px rgba(255,59,59,0.05);
+      text-shadow:0 1px 0 rgba(0,0,0,0.85), 0 8px 28px rgba(0,0,0,0.6);
     }
+    .tagline{
+      color:rgba(255,255,255,0.85);
+      font-weight:700;
+      letter-spacing:1px;
+      font-size:14px;
+      margin-top:2px;
+    }
+    .tagline .mood { color:var(--accent); font-weight:900; }
 
-    /* Stacked collapsibles */
+    /* Chips / quick nav */
+    .chips{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:6px;
+    }
+    .chip{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 12px;
+      border-radius:999px;
+      background:var(--chip-bg);
+      border:1px solid rgba(255,255,255,0.04);
+      color:rgba(255,255,255,0.92);
+      font-weight:800;
+      cursor:pointer;
+      text-decoration:none;
+      transition:transform .14s ease, box-shadow .14s ease;
+    }
+    .chip:focus{ outline:none; box-shadow:var(--focus-ring); transform:translateY(-2px); }
+    .chip:hover{ transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,0.6); }
+    .chip svg{ width:16px; height:16px; opacity:0.95; }
+
+    /* Grid of cards */
     .grid{
       display:flex;
       flex-direction:column;
@@ -92,63 +152,141 @@
       margin-top:6px;
     }
 
-    details{
+    /* Card (details replacing default visuals) */
+    .card{
+      position:relative;
       border-radius:var(--radius);
       background:linear-gradient(180deg,var(--card-dark),var(--card-dark-2));
-      border:2px solid rgba(255,59,59,0.12);
-      box-shadow:inset 0 2px 6px rgba(255,255,255,0.02),
-                 inset 0 -8px 18px rgba(0,0,0,0.75),
-                 0 12px 30px rgba(0,0,0,0.9);
-      transition:transform .16s ease, box-shadow .16s ease;
+      border:1px solid rgba(255,59,59,0.06);
+      box-shadow:
+        inset 0 2px 6px rgba(255,255,255,0.02),
+        0 8px 30px rgba(0,0,0,0.75);
+      overflow:visible;
+      transition:box-shadow .18s ease, transform .14s ease;
     }
-    details[open]{transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,0.9);}
+    .card:focus-within{ box-shadow:0 18px 48px rgba(0,0,0,0.85), var(--focus-ring); transform:translateY(-4px); }
 
-    summary{
-      list-style:none;
+    /* Glowing accent stripe */
+    .card::before{
+      content:"";
+      position:absolute;
+      left:12px;
+      top:12px;
+      bottom:12px;
+      width:6px;
+      border-radius:6px;
+      background:linear-gradient(180deg,var(--accent),#ff7b7b);
+      box-shadow:0 0 24px 6px var(--accent-glow), 0 0 48px rgba(255,59,59,0.06);
+      opacity:0.98;
+    }
+
+    /* Summary button */
+    .summary-btn{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      padding:14px 16px;
+      gap:12px;
+      padding:16px 18px;
       cursor:pointer;
+      background:transparent;
+      border:0;
+      color:var(--accent);
       font-family:'DayZFont',sans-serif;
       font-weight:800;
+      width:100%;
+      text-align:left;
+      font-size:18px;
+      letter-spacing:0.6px;
+    }
+    .summary-btn .title{ display:flex; gap:12px; align-items:center; color:var(--accent); }
+    .summary-btn .meta{ display:flex; gap:12px; align-items:center; color:rgba(255,255,255,0.82); font-weight:700; font-size:14px; }
+
+    /* small icon container so icons look good */
+    .icon-wrap{
+      width:36px;
+      height:36px;
+      display:grid;
+      place-items:center;
+      border-radius:8px;
+      background:linear-gradient(180deg,rgba(255,59,59,0.06),rgba(255,59,59,0.02));
       color:var(--accent);
+      border:1px solid rgba(255,59,59,0.04);
+      flex-shrink:0;
     }
-    summary::-webkit-details-marker{display:none;}
-    .chev{transition:transform .2s;}
-    details[open] .chev{transform:rotate(90deg);}
 
+    /* Chevron */
+    .chev{
+      transition:transform .22s cubic-bezier(.2,.9,.2,1);
+      font-size:20px;
+      color:rgba(255,255,255,0.85);
+      transform-origin:center;
+    }
+
+    /* Panel animated container */
     .panel{
-      padding:14px 16px 18px;
+      padding:0 18px 18px;
       background:rgba(255,255,255,0.02);
-      border-top:1px solid rgba(255,255,255,0.05);
+      border-top:1px solid rgba(255,255,255,0.03);
+      max-height:0;
+      overflow:hidden;
+      transition: max-height .32s cubic-bezier(.2,.9,.25,1), opacity .22s ease;
+      opacity:0;
     }
+    .panel.open{ opacity:1; }
 
+    /* Rules */
     .rule{
       display:flex;
       gap:12px;
-      margin-bottom:10px;
-      background:rgba(255,255,255,0.02);
+      margin:14px 0;
+      background:rgba(255,255,255,0.01);
       padding:12px;
       border-radius:10px;
-      border-left:4px solid rgba(255,59,59,0.16);
+      border-left:6px solid rgba(255,59,59,0.12);
       font-size:15px;
       color:rgba(255,255,255,0.96);
+      align-items:flex-start;
     }
     .num{
-      min-width:40px;
-      height:40px;
+      min-width:44px;
+      height:44px;
       display:grid;
       place-items:center;
       background:linear-gradient(180deg,rgba(255,59,59,0.14),rgba(255,59,59,0.06));
       color:var(--accent);
-      font-weight:800;
-      border-radius:8px;
+      font-weight:900;
+      border-radius:10px;
       border:1px solid rgba(255,59,59,0.06);
+      font-size:14px;
     }
+    .rule p{ margin:0; line-height:1.36; }
+
+    /* Accent text for punishable actions or NO */
+    .punish{ color:var(--accent); font-weight:900; }
+    .kill{ color:var(--accent); font-weight:900; }
+    .normal{ color:#fff; font-weight:700; }
+
+    /* Back to top button */
+    .back-top{
+      position:fixed;
+      right:22px;
+      bottom:22px;
+      z-index:4;
+      background:linear-gradient(180deg,var(--card-dark),var(--card-dark-2));
+      border:2px solid rgba(255,59,59,0.14);
+      color:var(--accent);
+      padding:12px 14px;
+      border-radius:12px;
+      box-shadow:inset 0 2px 6px rgba(255,255,255,0.02), 0 12px 36px rgba(0,0,0,0.6);
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      transition:transform .14s ease, opacity .14s ease;
+    }
+    .back-top:focus{ outline:none; box-shadow:var(--focus-ring); transform:translateY(-3px); }
 
     /* Back link */
-    .back-row{display:flex;justify-content:center;margin-top:12px;}
+    .back-row{ display:flex; justify-content:center; margin-top:6px; }
     .back-link{
       text-decoration:none;
       font-weight:800;
@@ -157,15 +295,17 @@
       color:var(--accent);
       padding:12px 18px;
       border-radius:12px;
-      box-shadow:inset 0 2px 6px rgba(255,255,255,0.02),
-                 inset 0 -8px 18px rgba(0,0,0,0.75),
-                 0 10px 30px rgba(0,0,0,0.9);
+      box-shadow:inset 0 2px 6px rgba(255,255,255,0.02), 0 10px 30px rgba(0,0,0,0.9);
     }
 
+    /* Focus-visible improvements for keyboard users */
+    .summary-btn:focus{ outline:none; box-shadow:var(--focus-ring); border-radius:12px; }
+
     /* Mobile spacing */
-    @media (max-width:520px){
-      summary{ padding:12px 14px; }
-      .rule{ padding:10px; font-size:14px; }
+    @media (max-width:700px){
+      header{ align-items:flex-start; }
+      .logo{ width:56px; height:56px; top:12px; right:12px; }
+      .chip{ padding:8px 10px; font-size:13px; }
     }
   </style>
 </head>
@@ -179,89 +319,174 @@
     </video>
   </div>
 
+  <!-- Logo (replace src with your Aggro PvP logo file) -->
+  <a class="logo" href="index.html" aria-label="Aggro PvP home">
+    <img src="logo.png" alt="Aggro PvP logo">
+  </a>
+
   <main class="page" role="main">
     <div class="wrap">
 
       <header role="banner" aria-label="Aggro PvP">
-        <h1>Server Rules</h1>
+        <div class="title-row">
+          <h1>Server Rules</h1>
+          <div class="tagline"><span class="mood">Survive. Kill. Repeat.</span></div>
+          <nav class="chips" aria-label="Quick navigation to rules">
+            <a class="chip" href="#general" data-target="general">
+              <span class="icon-wrap" aria-hidden="true">
+                <!-- skull svg -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2c2 0 4 1 4 3v1h2a1 1 0 0 1 1 1v3a8 8 0 0 1-16 0V7a1 1 0 0 1 1-1h2V5c0-2 2-3 4-3z"></path>
+                  <path d="M9 17v2a3 3 0 0 0 6 0v-2"></path>
+                </svg>
+              </span>
+              General
+            </a>
+
+            <a class="chip" href="#safezone" data-target="safezone">
+              <span class="icon-wrap" aria-hidden="true">
+                <!-- lock svg -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </span>
+              Safezone
+            </a>
+
+            <a class="chip" href="#base-building" data-target="base-building">
+              <span class="icon-wrap" aria-hidden="true">
+                <!-- house svg -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 11.5L12 4l9 7.5"></path>
+                  <path d="M5 21h14a1 1 0 0 0 1-1V10"></path>
+                  <path d="M9 21V12h6v9"></path>
+                </svg>
+              </span>
+              Base
+            </a>
+
+            <a class="chip" href="#raiding" data-target="raiding">
+              <span class="icon-wrap" aria-hidden="true">
+                <!-- weapon svg -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 12l10-4 10 4-10 4z"></path>
+                  <path d="M12 8v8"></path>
+                </svg>
+              </span>
+              Raiding
+            </a>
+          </nav>
+        </div>
       </header>
 
       <section class="grid" role="list">
 
         <!-- General -->
-        <details id="general">
-          <summary>
-            <span>General</span>
-            <span class="chev" aria-hidden="true">›</span>
-          </summary>
-          <div class="panel" role="region" aria-labelledby="general">
-            <div class="rule"><div class="num">1</div><div>No external mods, hacks, duping, NVinspect, or glitch movement. Filters and external crosshairs are allowed.</div></div>
-            <div class="rule"><div class="num">2</div><div>No alt accounts or stream sniping.</div></div>
-            <div class="rule"><div class="num">3</div><div>No combat logging. Wait 10 minutes after PvP before logging or entering safezone unless the fight couldn’t realistically continue.</div></div>
-            <div class="rule"><div class="num">4</div><div>If you log into someone else's base or locked room unexpectedly, make a ticket and don’t touch anything—even if it’s your own base post-raid.</div></div>
-            <div class="rule"><div class="num">5</div><div>Report bugs. Abusing glitches (including de-rendering bases) will be punished.</div></div>
+        <div class="card" id="general" role="listitem" aria-labelledby="general-label">
+          <button class="summary-btn" aria-expanded="false" aria-controls="general-panel" id="general-label">
+            <span class="title"><span class="icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2c2 0 4 1 4 3v1h2a1 1 0 0 1 1 1v3a8 8 0 0 1-16 0V7a1 1 0 0 1 1-1h2V5c0-2 2-3 4-3z"></path>
+                <path d="M9 17v2a3 3 0 0 0 6 0v-2"></path>
+              </svg>
+            </span>General</span>
+            <span class="meta"><span class="chev" aria-hidden="true">›</span></span>
+          </button>
+
+          <div class="panel" id="general-panel" role="region" aria-labelledby="general-label">
+            <div class="rule"><div class="num">1</div><p><span class="punish">NO</span> external mods, hacks, duping, NVinspect, or glitch movement. Filters and external crosshairs are allowed.</p></div>
+            <div class="rule"><div class="num">2</div><p><span class="punish">NO</span> alt accounts or stream sniping.</p></div>
+            <div class="rule"><div class="num">3</div><p><span class="punish">NO</span> combat logging. Wait 10 minutes after PvP before logging or entering safezone unless the fight couldn’t realistically continue.</p></div>
+            <div class="rule"><div class="num">4</div><p>If you log into someone else's base or locked room unexpectedly, make a ticket and don’t touch anything—even if it’s your own base post-raid.</p></div>
+            <div class="rule"><div class="num">5</div><p>Report bugs. Abusing glitches (including de-rendering bases) will be punished.</p></div>
           </div>
-        </details>
+        </div>
 
         <!-- Safezone -->
-        <details id="safezone">
-          <summary>
-            <span>Safezone</span>
-            <span class="chev" aria-hidden="true">›</span>
-          </summary>
-          <div class="panel" role="region" aria-labelledby="safezone">
-            <div class="rule"><div class="num">1</div><div>Unattended dropped items are free game. Otherwise, don’t touch what’s not yours including vehicles.</div></div>
-            <div class="rule"><div class="num">2</div><div>No safezone camping, blocking, following, or abusing protection. If you kill in self-defense entering/leaving, leave their loot.</div></div>
-            <div class="rule"><div class="num">3</div><div>Unattended ungaraged vehicles may be deleted after 12 hours.</div></div>
+        <div class="card" id="safezone" role="listitem" aria-labelledby="safezone-label">
+          <button class="summary-btn" aria-expanded="false" aria-controls="safezone-panel" id="safezone-label">
+            <span class="title"><span class="icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </span>Safezone</span>
+            <span class="meta"><span class="chev" aria-hidden="true">›</span></span>
+          </button>
+
+          <div class="panel" id="safezone-panel" role="region" aria-labelledby="safezone-label">
+            <div class="rule"><div class="num">1</div><p>Unattended dropped items are free game. Otherwise, don’t touch what’s not yours including vehicles.</p></div>
+            <div class="rule"><div class="num">2</div><p>No safezone camping, blocking, following, or abusing protection. If you <span class="kill">kill</span> in self-defense entering/leaving, leave their loot.</p></div>
+            <div class="rule"><div class="num">3</div><p>Unattended ungaraged vehicles may be deleted after 12 hours.</p></div>
           </div>
-        </details>
+        </div>
 
         <!-- Base building -->
-        <details id="base-building">
-          <summary>
-            <span>Base Building</span>
-            <span class="chev" aria-hidden="true">›</span>
-          </summary>
-          <div class="panel" role="region" aria-labelledby="base-building">
-            <div class="rule"><div class="num">1</div><div>One main base + one stash base/FOB per player.</div></div>
-            <div class="rule"><div class="num">2</div><div>Max 25 code-locked doors/hatches/containers per base.</div></div>
-            <div class="rule"><div class="num">3</div><div>All areas of your base must be accessible on foot—no loot rooms via windows only.</div></div>
-            <div class="rule"><div class="num">4</div><div>Build realistically—no unsupported structures or more than two floor kits out from a structure.</div></div>
-            <div class="rule"><div class="num">5</div><div>BBP kits must not overlap in ways that block access or raid tools.</div></div>
-            <div class="rule"><div class="num">6</div><div>Mesh and fence kits must be fully constructed.</div></div>
-            <div class="rule"><div class="num">7</div><div>On municipal buildings, silos, or radio towers, max two floor kits out—don’t block player structures.</div></div>
-            <div class="rule"><div class="num">8</div><div>Secure your base. Don’t share codes with untrusted players—no compensation for your mistakes.</div></div>
-            <div class="rule"><div class="num">9</div><div><strong style="color:var(--accent)">Note</strong> No base size limit, but don’t abuse it. Staff will notify you if it gets excessive.</div></div>
+        <div class="card" id="base-building" role="listitem" aria-labelledby="base-building-label">
+          <button class="summary-btn" aria-expanded="false" aria-controls="base-building-panel" id="base-building-label">
+            <span class="title"><span class="icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 11.5L12 4l9 7.5"></path>
+                <path d="M5 21h14a1 1 0 0 0 1-1V10"></path>
+                <path d="M9 21V12h6v9"></path>
+              </svg>
+            </span>Base Building</span>
+            <span class="meta"><span class="chev" aria-hidden="true">›</span></span>
+          </button>
+
+          <div class="panel" id="base-building-panel" role="region" aria-labelledby="base-building-label">
+            <div class="rule"><div class="num">1</div><p>One main base + one stash base/FOB per player.</p></div>
+            <div class="rule"><div class="num">2</div><p>Max 25 code-locked doors/hatches/containers per base.</p></div>
+            <div class="rule"><div class="num">3</div><p>All areas of your base must be accessible on foot—no loot rooms via windows only.</p></div>
+            <div class="rule"><div class="num">4</div><p>Build realistically—no unsupported structures or more than two floor kits out from a structure.</p></div>
+            <div class="rule"><div class="num">5</div><p>NNBBP kits must not overlap in ways that block access or raid tools.</p></div>
+            <div class="rule"><div class="num">6</div><p>Mesh and fence kits must be fully constructed.</p></div>
+            <div class="rule"><div class="num">7</div><p>On municipal buildings, silos, or radio towers, max two floor kits out—don’t block player structures.</p></div>
+            <div class="rule"><div class="num">8</div><p>Secure your base. Don’t share codes with untrusted players—<span class="punish">NO</span> compensation for your mistakes.</p></div>
+            <div class="rule"><div class="num">9</div><p><span class="punish">Note</span> No base size limit, but don’t abuse it. Staff will notify you if it gets excessive.</p></div>
           </div>
-        </details>
+        </div>
 
         <!-- Storage -->
-        <details id="storage">
-          <summary>
-            <span>Base Storage Limit</span>
-            <span class="chev" aria-hidden="true">›</span>
-          </summary>
-          <div class="panel" role="region" aria-labelledby="storage">
-            <div class="rule"><div class="num">1</div><div>You’re limited to 20 storage kits per base, plus 5 extra per team member.</div></div>
+        <div class="card" id="storage" role="listitem" aria-labelledby="storage-label">
+          <button class="summary-btn" aria-expanded="false" aria-controls="storage-panel" id="storage-label">
+            <span class="title"><span class="icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                <path d="M3 7h18"></path>
+              </svg>
+            </span>Base Storage Limit</span>
+            <span class="meta"><span class="chev" aria-hidden="true">›</span></span>
+          </button>
+
+          <div class="panel" id="storage-panel" role="region" aria-labelledby="storage-label">
+            <div class="rule"><div class="num">1</div><p>You’re limited to 20 storage kits per base, plus 5 extra per team member.</p></div>
           </div>
-        </details>
+        </div>
 
         <!-- Raiding -->
-        <details id="raiding">
-          <summary>
-            <span>Raiding</span>
-            <span class="chev" aria-hidden="true">›</span>
-          </summary>
-          <div class="panel" role="region" aria-labelledby="raiding">
-            <div class="rule"><div class="num">1</div><div>Alliances are allowed.</div></div>
-            <div class="rule"><div class="num">2</div><div>No despawning, repairing, or modifying bases during active raids.</div></div>
-            <div class="rule"><div class="num">3</div><div>Loot can only be dropped if taking the storage kit—don’t despawn unwanted loot.</div></div>
-            <div class="rule"><div class="num">4</div><div>No combat logging during raids. If IRL forces you to log, say so—don’t log with combat tag.</div></div>
-            <div class="rule"><div class="num">5</div><div>Don’t abuse hologram/kit placement to raid (one ladder on the floor is allowed).</div></div>
-            <div class="rule"><div class="num">6</div><div>Glitch methods (fences, punching through windows, missing vehicles, floating entities) are not allowed.</div></div>
-            <div class="rule"><div class="num">7</div><div>A raid is considered active for 15 minutes after the last use of explosives or raid tools.</div></div>
+        <div class="card" id="raiding" role="listitem" aria-labelledby="raiding-label">
+          <button class="summary-btn" aria-expanded="false" aria-controls="raiding-panel" id="raiding-label">
+            <span class="title"><span class="icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12l10-4 10 4-10 4z"></path>
+                <path d="M12 8v8"></path>
+              </svg>
+            </span>Raiding</span>
+            <span class="meta"><span class="chev" aria-hidden="true">›</span></span>
+          </button>
+
+          <div class="panel" id="raiding-panel" role="region" aria-labelledby="raiding-label">
+            <div class="rule"><div class="num">1</div><p>Alliances are allowed.</p></div>
+            <div class="rule"><div class="num">2</div><p><span class="punish">NO</span> despawning, repairing, or modifying bases during active raids.</p></div>
+            <div class="rule"><div class="num">3</div><p>Loot can only be dropped if taking the storage kit—don’t despawn unwanted loot.</p></div>
+            <div class="rule"><div class="num">4</div><p><span class="punish">NO</span> combat logging during raids. If IRL forces you to log, say so—don’t log with combat tag.</p></div>
+            <div class="rule"><div class="num">5</div><p>Don’t abuse hologram/kit placement to raid (one ladder on the floor is allowed).</p></div>
+            <div class="rule"><div class="num">6</div><p>Glitch methods (fences, punching through windows, missing vehicles, floating entities) are not allowed.</p></div>
+            <div class="rule"><div class="num">7</div><p>A raid is considered active for 15 minutes after the last use of explosives or raid tools.</p></div>
           </div>
-        </details>
+        </div>
 
       </section>
 
@@ -271,5 +496,156 @@
 
     </div>
   </main>
+
+  <button class="back-top" id="backTop" title="Back to top" aria-label="Back to top">
+    ↑
+  </button>
+
+  <script>
+    // Smooth collapsible card behavior with accessible keyboard support.
+    (function(){
+      const cards = Array.from(document.querySelectorAll('.card'));
+      const backTop = document.getElementById('backTop');
+      const chips = Array.from(document.querySelectorAll('.chip'));
+
+      // Helper to set panel max-height for smooth animation
+      function openPanel(panel){
+        panel.classList.add('open');
+        // temporarily set max-height to scrollHeight to animate open
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+      }
+      function closePanel(panel){
+        panel.style.maxHeight = panel.scrollHeight + 'px'; // set current height to enable transition
+        // next frame collapse
+        requestAnimationFrame(() => {
+          panel.style.maxHeight = '0px';
+          panel.classList.remove('open');
+        });
+      }
+
+      // Initialize all summary buttons
+      cards.forEach(card => {
+        const btn = card.querySelector('.summary-btn');
+        const panel = card.querySelector('.panel');
+
+        // Restore collapsed state
+        panel.style.maxHeight = '0px';
+        panel.classList.remove('open');
+
+        // Toggle on click
+        btn.addEventListener('click', (e) => {
+          const expanded = btn.getAttribute('aria-expanded') === 'true';
+          if (expanded){
+            btn.setAttribute('aria-expanded','false');
+            closePanel(panel);
+            btn.querySelector('.chev').style.transform = '';
+          } else {
+            // close other cards for accordion behavior
+            document.querySelectorAll('.summary-btn[aria-expanded="true"]').forEach(openBtn => {
+              openBtn.setAttribute('aria-expanded','false');
+              const openPanel = document.getElementById(openBtn.getAttribute('aria-controls'));
+              if (openPanel) closePanel(openPanel);
+              const c = openBtn.querySelector('.chev');
+              if (c) c.style.transform = '';
+            });
+
+            btn.setAttribute('aria-expanded','true');
+            openPanel(panel);
+            btn.querySelector('.chev').style.transform = 'rotate(90deg)';
+            // focus first interactive element in panel if user opened via keyboard
+          }
+        });
+
+        // Keyboard accessibility: Enter/Space toggle
+        btn.addEventListener('keydown', (ev) => {
+          if (ev.key === 'Enter' || ev.key === ' '){
+            ev.preventDefault();
+            btn.click();
+          }
+          // arrow keys to navigate between summary buttons
+          if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp'){
+            ev.preventDefault();
+            const idx = cards.findIndex(c => c === card);
+            const dir = ev.key === 'ArrowDown' ? 1 : -1;
+            let next = (idx + dir + cards.length) % cards.length;
+            const nextBtn = cards[next].querySelector('.summary-btn');
+            nextBtn.focus();
+          }
+        });
+
+        // Support closing panel with Escape when it is open
+        panel.addEventListener('keydown', (ev) => {
+          if (ev.key === 'Escape'){
+            btn.click();
+            btn.focus();
+          }
+        });
+      });
+
+      // Chips nav: scroll to card and open it
+      chips.forEach(chip => {
+        chip.addEventListener('click', (e) => {
+          e.preventDefault();
+          const id = chip.getAttribute('data-target');
+          const card = document.getElementById(id);
+          if (!card) return;
+          const btn = card.querySelector('.summary-btn');
+          // open card if closed
+          if (btn.getAttribute('aria-expanded') !== 'true') btn.click();
+          // smooth scroll, offset to position header nicely
+          const topOffset = Math.max(18, window.innerWidth < 700 ? 12 : 24);
+          const rect = card.getBoundingClientRect();
+          const absoluteTop = rect.top + window.scrollY - topOffset;
+          window.scrollTo({ top: absoluteTop, behavior: 'smooth' });
+          // focus the summary for keyboard users
+          setTimeout(() => { btn.focus(); }, 380);
+        });
+      });
+
+      // Back to top
+      backTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // collapse all open panels
+        document.querySelectorAll('.summary-btn[aria-expanded="true"]').forEach(openBtn => {
+          openBtn.setAttribute('aria-expanded','false');
+          const openPanel = document.getElementById(openBtn.getAttribute('aria-controls'));
+          if (openPanel) closePanel(openPanel);
+          const c = openBtn.querySelector('.chev');
+          if (c) c.style.transform = '';
+        });
+      });
+
+      // Show/hide backTop button based on scroll position
+      function updateBackTop(){
+        if (window.scrollY > 360){
+          backTop.style.opacity = '1';
+          backTop.style.visibility = 'visible';
+          backTop.style.transform = 'translateY(0)';
+        } else {
+          backTop.style.opacity = '0';
+          backTop.style.visibility = 'hidden';
+          backTop.style.transform = 'translateY(8px)';
+        }
+      }
+      updateBackTop();
+      window.addEventListener('scroll', updateBackTop, { passive:true });
+
+      // Keyboard: quick nav with 1-5 keys (1=General,2=Safezone,3=Base,4=Storage,5=Raiding)
+      window.addEventListener('keydown', (ev) => {
+        if (ev.target && (ev.target.tagName === 'INPUT' || ev.target.tagName === 'TEXTAREA' || ev.target.isContentEditable)) return;
+        const map = { '1':'general','2':'safezone','3':'base-building','4':'storage','5':'raiding' };
+        if (map[ev.key]){
+          ev.preventDefault();
+          const chip = document.querySelector('.chip[data-target="'+map[ev.key]+'"]');
+          if (chip) chip.click();
+        }
+        // Press "t" to go top
+        if (ev.key.toLowerCase() === 't'){
+          ev.preventDefault();
+          backTop.click();
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
