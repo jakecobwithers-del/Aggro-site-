@@ -6,19 +6,9 @@
   <title>Aggro PvP — Support</title>
 
   <style>
-    /* Fonts: Bain for headings, DayZFont for accent display */
-    @font-face{
-      font-family: 'Bain';
-      src: url('Bain-Regular.woff2') format('woff2');
-      font-weight: 700;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face{
-      font-family: 'DayZFont';
-      src: url('28 Days Later.ttf') format('truetype');
-      font-display: swap;
-    }
+    /* Fonts */
+    @font-face{font-family:'Bain';src:url('Bain-Regular.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap;}
+    @font-face{font-family:'DayZFont';src:url('28 Days Later.ttf') format('truetype');font-display:swap;}
 
     :root{
       --bg:#000;
@@ -35,9 +25,17 @@
       --bottom-safe:220px;
     }
 
-    html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+    html,body{
+      height:100%;
+      margin:0;
+      background:var(--bg);
+      color:#fff;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
 
-    /* Fixed smoke background that fully covers viewport and doesn't scroll */
+    /* Fixed smoke: stays locked, fully covers viewport, never scrolls */
     #smoke-bg{
       position:fixed;
       inset:0;
@@ -62,18 +60,18 @@
       pointer-events:none;
     }
 
-    /* Layout */
+    /* Page layout */
     .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px var(--bottom-safe);box-sizing:border-box;}
     .wrap{width:100%;max-width:var(--maxw);display:flex;flex-direction:column;gap:var(--gap);padding-bottom:20px;}
 
-    /* Bain heading to match rules pages */
+    /* Heading */
     .title{ text-align:center; padding:6px 6px 0; }
     .title h1{margin:0;font-family:'Bain','DayZFont',sans-serif;font-weight:700;font-size:clamp(40px,7.2vw,88px);letter-spacing:1.6px;text-transform:uppercase;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,0.75),0 12px 42px rgba(0,0,0,0.55);line-height:0.95;}
     .subtitle{ margin-top:6px; font-size:15px; line-height:1.05; }
     .subtitle .line-white{ color:#fff; display:block; font-weight:700; }
     .subtitle .line-red{ color:var(--accent); display:block; font-weight:900; font-family:'DayZFont',sans-serif; letter-spacing:0.6px; text-transform:lowercase; }
 
-    /* Controls: tabs */
+    /* Tabs */
     .controls { display:flex;align-items:center;justify-content:center;gap:16px;margin-top:12px;flex-wrap:wrap; }
     .tabs { display:flex; gap:14px; align-items:center; justify-content:center; flex-wrap:wrap; }
     .tab { height:var(--tab-height); padding:14px 22px; border-radius:14px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border:1px solid rgba(255,255,255,0.02); color:var(--muted); font-weight:800; text-transform:uppercase; font-family:'DayZFont',sans-serif; letter-spacing:0.8px; cursor:pointer; display:inline-flex; align-items:center; gap:10px; transition:transform 140ms ease, box-shadow 140ms ease, background 140ms ease; }
@@ -94,48 +92,37 @@
     .owner-link{ display:inline-flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); color:var(--muted); font-size:15px; text-decoration:none; border:1px solid rgba(255,255,255,0.02); transition:transform 120ms ease, box-shadow 120ms ease; }
     .owner-link b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:15px; }
     .owner-link:hover{ transform:translateX(6px); box-shadow:0 12px 30px rgba(0,0,0,0.6); }
-
     .owners-message { flex:1; color:var(--muted); font-size:15px; line-height:1.6; padding:6px 8px; border-left:1px solid rgba(255,255,255,0.02); }
 
-    /* Return button: Bain style centered */
-    .return-fixed{
-      position:fixed;
-      left:50%;
-      transform:translateX(-50%);
-      bottom:18px;
-      z-index:90;
-      padding:14px 20px;
-      border-radius:14px;
+    /* Return button now placed in content flow under team bubble so it never covers while scrolling */
+    .return-inline{
+      display:inline-flex;
+      align-self:center;
+      margin:8px auto 0;
+      padding:12px 16px;
+      border-radius:12px;
       background:linear-gradient(180deg, rgba(12,12,12,0.98), rgba(6,6,6,0.95));
-      border:2px solid rgba(255,59,59,0.14);
+      border:2px solid rgba(255,59,59,0.12);
       color:var(--accent);
       font-weight:800;
       text-decoration:none;
-      box-shadow: 0 22px 64px rgba(0,0,0,0.72), inset 0 2px 8px rgba(255,59,59,0.03);
-      display:inline-flex;
+      box-shadow: 0 16px 44px rgba(0,0,0,0.6), inset 0 2px 6px rgba(255,59,59,0.02);
       gap:10px;
       align-items:center;
-      font-family: 'Bain', 'DayZFont', system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-      font-size:15px;
-      letter-spacing:0.6px;
+      font-family: 'Bain','DayZFont',system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+      font-size:14px;
+      letter-spacing:0.5px;
+      z-index:3;
     }
-    .return-fixed::before{
-      content: '←';
-      display:inline-block;
-      transform:translateY(-1px);
-      font-weight:900;
-      margin-right:6px;
-      color:var(--accent);
-      font-family: 'DayZFont', 'Bain', system-ui;
-    }
+    .return-inline::before{ content:'←'; margin-right:6px; color:var(--accent); font-family:'DayZFont','Bain'; font-weight:900; transform:translateY(-1px); }
 
-    /* Fade class for smoother swaps */
+    /* Fade helper */
     .fade { opacity:1; transition:opacity 180ms ease; }
     .fade.hidden { opacity:0; }
 
     /* Responsive */
-    @media(max-width:860px){ :root{ --bottom-safe:240px; } .tab{ padding:12px 16px; height:56px; } .card{ padding:18px; min-height:200px; } .owners-bubble{ flex-direction:column; } .owners-message{ border-left:none; border-top:1px solid rgba(255,255,255,0.02); padding-top:12px; } .return-fixed{ bottom:12px; padding:12px 16px; } }
-    @media(max-width:520px){ :root{ --bottom-safe:300px; } .title h1{ font-size:clamp(32px,12vw,56px); } .tab{ padding:10px 12px; height:48px; } .card{ padding:14px; min-height:180px; } .return-fixed{ bottom:10px; padding:10px 14px; } }
+    @media(max-width:860px){ :root{ --bottom-safe:240px; } .tab{ padding:12px 16px; height:56px; } .card{ padding:18px; min-height:200px; } .owners-bubble{ flex-direction:column; } .owners-message{ border-left:none; border-top:1px solid rgba(255,255,255,0.02); padding-top:12px; } .return-inline{ margin-top:12px; padding:12px 14px; } }
+    @media(max-width:520px){ :root{ --bottom-safe:300px; } .title h1{ font-size:clamp(32px,12vw,56px); } .tab{ padding:10px 12px; height:48px; } .card{ padding:14px; min-height:180px; } .return-inline{ padding:10px 12px; font-size:13px; } }
   </style>
 </head>
 <body>
@@ -156,7 +143,7 @@
         </div>
       </header>
 
-      <!-- Controls: only three tabs -->
+      <!-- Tabs -->
       <div class="controls" role="group" aria-label="Support controls">
         <nav class="tabs" role="tablist" aria-label="Support sections">
           <button class="tab primary" role="tab" aria-selected="true" aria-controls="panel" id="tab-bug" data-key="bug">Bug Reports</button>
@@ -165,7 +152,7 @@
         </nav>
       </div>
 
-      <!-- Main card -->
+      <!-- Card -->
       <section class="card" id="panel" tabindex="0" aria-live="polite" aria-labelledby="tab-bug">
         <div id="panel-content" class="fade">
           <h2>Bug Reports</h2>
@@ -180,7 +167,7 @@
         </div>
       </section>
 
-      <!-- Owners bubble with clickable profiles -->
+      <!-- Owners bubble -->
       <aside class="owners-bubble" id="owners-bubble" aria-labelledby="owners-title">
         <div class="owners-col owners-names" aria-hidden="false">
           <h4 id="owners-title" style="margin:0;font-family:DayZFont,system-ui;color:var(--accent);letter-spacing:0.6px;text-transform:uppercase;">Team</h4>
@@ -203,11 +190,11 @@
         </div>
       </aside>
 
+      <!-- Return button placed in flow below the owners bubble so it never covers it when scrolling -->
+      <a class="return-inline" href="index.html" aria-label="Return to Main Menu">Return to Main Menu</a>
+
     </div>
   </main>
-
-  <!-- Centered Return to Main Menu button -->
-  <a class="return-fixed" href="index.html" aria-label="Return to Main Menu">Return to Main Menu</a>
 
   <script>
     (function(){
@@ -268,13 +255,12 @@
         t.addEventListener('click', ()=> activateTab(t));
         t.addEventListener('keydown', (ev)=>{
           const idx = tabs.indexOf(t);
-          if(ev.key === 'ArrowRight') { ev.preventDefault(); tabs[(idx+1)%tabs.length].focus(); }
-          if(ev.key === 'ArrowLeft') { ev.preventDefault(); tabs[(idx-1+tabs.length)%tabs.length].focus(); }
-          if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); activateTab(t); }
+          if(ev.key === 'ArrowRight'){ ev.preventDefault(); tabs[(idx+1)%tabs.length].focus(); }
+          if(ev.key === 'ArrowLeft'){ ev.preventDefault(); tabs[(idx-1+tabs.length)%tabs.length].focus(); }
+          if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); activateTab(t); }
         });
       });
 
-      // initial state: activate bug tab to match rules page flow
       const initialTab = document.querySelector('.tab[data-key="bug"]');
       initialTab && activateTab(initialTab);
     })();
