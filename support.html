@@ -28,31 +28,11 @@
       --bottom-safe:220px;
     }
 
-    html,body{
-      height:100%;
-      margin:0;
-      background:var(--bg);
-      color:#fff;
-      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
+    html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
 
-    /* Oversized fixed smoke background (persists while scrolling) */
+    /* Oversized fixed smoke background that persists while scrolling */
     #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
-    #smoke-bg video{
-      position:fixed;
-      left:50%;
-      top:50%;
-      transform:translate(-50%,-50%) scale(1.3);
-      width:220vw;
-      height:220vh;
-      object-fit:cover;
-      opacity:var(--smoke-opacity);
-      filter:blur(6px) saturate(1.06) contrast(1.03);
-      will-change:transform;
-      pointer-events:none;
-    }
+    #smoke-bg video{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(1.3);width:220vw;height:220vh;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(6px) saturate(1.06) contrast(1.03);will-change:transform;pointer-events:none;}
 
     /* Page layout */
     .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px var(--bottom-safe);box-sizing:border-box;}
@@ -60,160 +40,30 @@
 
     /* Title */
     .title{ text-align:center; padding:6px 6px 0; }
-    .title h1{
-      margin:0;
-      font-family:'DayZFont',sans-serif;
-      font-size:clamp(40px,7.2vw,88px);
-      letter-spacing:1.6px;
-      text-transform:uppercase;
-      color:#fff;
-      text-shadow:0 1px 0 rgba(0,0,0,0.85),0 8px 28px rgba(0,0,0,0.6);
-      line-height:0.95;
-    }
+    .title h1{margin:0;font-family:'DayZFont',sans-serif;font-size:clamp(40px,7.2vw,88px);letter-spacing:1.6px;text-transform:uppercase;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,0.85),0 8px 28px rgba(0,0,0,0.6);line-height:0.95;}
     .subtitle{ margin-top:6px; font-size:15px; line-height:1.05; }
     .subtitle .line-white{ color:#fff; display:block; font-weight:700; }
     .subtitle .line-red{ color:var(--accent); display:block; font-weight:900; font-family:'DayZFont',sans-serif; letter-spacing:0.6px; text-transform:lowercase; }
 
-    /* Controls: tablist contains only Bug, Suggestions, Ticket.
-       Owners button is separate and NOT inside the tablist. */
+    /* Controls: only tabs */
     .controls { display:flex;align-items:center;justify-content:center;gap:16px;margin-top:12px;flex-wrap:wrap; }
     .tabs { display:flex; gap:14px; align-items:center; justify-content:center; flex-wrap:wrap; }
-
-    .tab {
-      height:var(--tab-height);
-      padding:14px 22px;
-      border-radius:14px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
-      border:1px solid rgba(255,255,255,0.02);
-      color:var(--muted);
-      font-weight:800;
-      text-transform:uppercase;
-      font-family:'DayZFont',sans-serif;
-      letter-spacing:0.8px;
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      transition:transform 140ms ease, box-shadow 140ms ease, background 140ms ease;
-    }
-
-    /* Make Bug Reports tab visually larger and primary */
-    .tab.primary {
-      background:linear-gradient(180deg, rgba(255,59,59,0.06), rgba(0,0,0,0.04));
-      color:var(--accent);
-      border-color:var(--card-border);
-      transform:translateY(-4px);
-      box-shadow:0 18px 46px rgba(0,0,0,0.6);
-    }
-
+    .tab { height:var(--tab-height); padding:14px 22px; border-radius:14px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border:1px solid rgba(255,255,255,0.02); color:var(--muted); font-weight:800; text-transform:uppercase; font-family:'DayZFont',sans-serif; letter-spacing:0.8px; cursor:pointer; display:inline-flex; align-items:center; gap:10px; transition:transform 140ms ease, box-shadow 140ms ease, background 140ms ease; }
+    .tab.primary { background:linear-gradient(180deg, rgba(255,59,59,0.06), rgba(0,0,0,0.04)); color:var(--accent); border-color:var(--card-border); transform:translateY(-4px); box-shadow:0 18px 46px rgba(0,0,0,0.6); }
     .tab[aria-selected="true"]:not(.primary), .tab:focus { transform:translateY(-4px); color:var(--accent); box-shadow:0 14px 36px rgba(0,0,0,0.5); border-color:var(--card-border); outline:none; }
 
-    /* Owners button - separate control, not a tab */
-    .owners-button {
-      height:var(--tab-height);
-      padding:12px 16px;
-      border-radius:12px;
-      background:linear-gradient(180deg, rgba(255,59,59,0.02), rgba(0,0,0,0.02));
-      border:1px solid rgba(255,59,59,0.08);
-      color:var(--accent);
-      font-weight:800;
-      text-transform:uppercase;
-      font-family:'DayZFont',sans-serif;
-      letter-spacing:0.6px;
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      transition:transform 120ms ease, box-shadow 120ms ease;
-    }
-    .owners-button[aria-pressed="true"]{ transform:translateY(-4px); box-shadow:0 14px 36px rgba(0,0,0,0.6); }
-
-    /* Single main card where content swaps */
-    .card {
-      margin-top:10px;
-      border-radius:14px;
-      background:linear-gradient(180deg,var(--card-start),var(--card-end));
-      border:2px solid var(--card-border);
-      box-shadow: inset 0 2px 8px rgba(255,255,255,0.02), inset 0 -10px 22px rgba(0,0,0,0.75), 0 16px 40px rgba(0,0,0,0.9);
-      padding:var(--pad);
-      display:block;
-      min-height:220px;
-      transition:transform 220ms cubic-bezier(.2,.9,.2,1), opacity 180ms linear;
-      overflow:hidden;
-    }
+    /* Card */
+    .card { margin-top:10px; border-radius:14px; background:linear-gradient(180deg,var(--card-start),var(--card-end)); border:2px solid var(--card-border); box-shadow: inset 0 2px 8px rgba(255,255,255,0.02), inset 0 -10px 22px rgba(0,0,0,0.75), 0 16px 40px rgba(0,0,0,0.9); padding:var(--pad); display:block; min-height:220px; transition:transform 220ms cubic-bezier(.2,.9,.2,1), opacity 180ms linear; overflow:hidden; }
     .card h2{ margin:0 0 8px 0; font-family:'DayZFont',sans-serif; color:var(--accent); font-size:clamp(20px,3.8vw,36px); text-transform:uppercase; text-shadow:0 6px 22px rgba(0,0,0,0.6); }
     .card p{ margin:0 0 14px 0; color:var(--muted); line-height:1.6; font-size:16px; }
-
     .card-footer { display:flex; justify-content:flex-start; gap:14px; align-items:center; margin-top:14px; flex-wrap:wrap; }
     .goto { display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:12px; background:linear-gradient(180deg,rgba(255,59,59,0.06),rgba(0,0,0,0.04)); border:1px solid rgba(255,59,59,0.12); color:var(--accent); font-weight:900; text-transform:uppercase; font-family:'DayZFont',sans-serif; width:110px; font-size:13px; text-decoration:none; }
 
-    /* Owners bubble (separate element toggled by owners button) */
-    .owners-bubble {
-      margin-top:12px;
-      border-radius:12px;
-      background:linear-gradient(180deg, rgba(12,12,12,0.98), rgba(7,7,7,0.95));
-      border:2px solid rgba(255,59,59,0.08);
-      padding:14px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-    .owners-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
-    .owners-list{ display:flex; flex-direction:column; gap:10px; margin-top:6px; }
-    .owner-link{
-      display:inline-flex;
-      align-items:center;
-      gap:12px;
-      padding:10px 14px;
-      border-radius:10px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
-      border:1px solid rgba(255,255,255,0.02);
-      color:var(--muted);
-      font-size:15px;
-      text-decoration:none;
-      transition:transform 120ms ease, box-shadow 120ms ease;
-    }
-    .owner-link b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:15px; }
-    .owner-link:hover{ transform:translateX(6px); box-shadow:0 12px 30px rgba(0,0,0,0.6); }
+    /* Return button */
+    .return-fixed{ position:fixed; right:22px; bottom:22px; z-index:80; padding:12px 18px; border-radius:12px; background:linear-gradient(180deg,#0b0b0b,#121212); border:2px solid rgba(255,59,59,0.14); color:var(--accent); font-weight:800; text-decoration:none; box-shadow: 0 20px 56px rgba(0,0,0,0.7), inset 0 2px 6px rgba(255,255,255,0.02); display:inline-flex; gap:10px; align-items:center; pointer-events:auto; }
 
-    /* Fixed Return button bottom-right and safe spacing so it doesn't overlap content */
-    .return-fixed{
-      position:fixed;
-      right:22px;
-      bottom:22px;
-      z-index:80;
-      padding:12px 18px;
-      border-radius:12px;
-      background:linear-gradient(180deg,#0b0b0b,#121212);
-      border:2px solid rgba(255,59,59,0.14);
-      color:var(--accent);
-      font-weight:800;
-      text-decoration:none;
-      box-shadow: 0 20px 56px rgba(0,0,0,0.7), inset 0 2px 6px rgba(255,255,255,0.02);
-      display:inline-flex;
-      gap:10px;
-      align-items:center;
-      pointer-events:auto;
-    }
-
-    /* Responsive */
-    @media(max-width:860px){
-      :root{ --bottom-safe:240px; }
-      .tab{ padding:12px 16px; height:56px; }
-      .tab.primary{ padding:14px 20px; }
-      .owners-button{ padding:10px 12px; height:54px; }
-      .card{ padding:18px; min-height:200px; }
-      .return-fixed{ right:14px; bottom:14px; padding:10px 14px; }
-    }
-    @media(max-width:520px){
-      :root{ --bottom-safe:300px; }
-      .wrap{padding-bottom:30px;}
-      .title h1{ font-size:clamp(32px,12vw,56px); }
-      .tab{ padding:10px 12px; height:48px; font-size:13px; }
-      .tab.primary{ font-size:15px; }
-      .card{ padding:14px; min-height:180px; }
-      .return-fixed{ right:10px; bottom:10px; padding:10px 12px; }
-    }
+    @media(max-width:860px){ :root{ --bottom-safe:240px; } .tab{ padding:12px 16px; height:56px; } .card{ padding:18px; min-height:200px; } }
+    @media(max-width:520px){ :root{ --bottom-safe:300px; } .title h1{ font-size:clamp(32px,12vw,56px); } .tab{ padding:10px 12px; height:48px; } .card{ padding:14px; min-height:180px; } .return-fixed{ right:10px; bottom:10px; padding:10px 12px; } }
   </style>
 </head>
 <body>
@@ -234,19 +84,16 @@
         </div>
       </header>
 
-      <!-- Controls: tablist contains only Bug, Suggestions, Ticket -->
+      <!-- Controls: only three tabs -->
       <div class="controls" role="group" aria-label="Support controls">
         <nav class="tabs" role="tablist" aria-label="Support sections">
           <button class="tab primary" role="tab" aria-selected="true" aria-controls="panel" id="tab-bug" data-key="bug">Bug Reports</button>
           <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-suggest" data-key="suggest">Suggestions</button>
           <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-ticket" data-key="ticket">Ticket</button>
         </nav>
-
-        <!-- Owners button is NOT in the tablist and therefore not a tab -->
-        <button class="owners-button" id="owners-btn" aria-pressed="false" aria-controls="owners-bubble" aria-label="Toggle owners list">Owners</button>
       </div>
 
-      <!-- Main card where content swaps -->
+      <!-- Main card -->
       <section class="card" id="panel" tabindex="0" aria-live="polite">
         <div id="panel-content">
           <h2>Bug Reports</h2>
@@ -261,31 +108,16 @@
         </div>
       </section>
 
-      <!-- Owners bubble (separate, toggled by Owners button) -->
-      <aside class="owners-bubble" id="owners-bubble" aria-labelledby="owners-title" hidden>
-        <div class="owners-header">
-          <h3 id="owners-title" style="margin:0;font-family:DayZFont,system-ui;color:var(--accent);letter-spacing:0.8px;text-transform:uppercase;">Owners</h3>
-          <small style="color:var(--muted);">Click a name to open their Discord profile</small>
-        </div>
-        <div class="owners-list">
-          <a class="owner-link" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener" aria-label="Open RB Skizza Discord profile"><b>RB Skizza</b></a>
-          <a class="owner-link" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener" aria-label="Open Slomobob Discord profile"><b>Slomobob</b></a>
-          <a class="owner-link" href="https://discord.com/users/754181442204074025" target="_blank" rel="noopener" aria-label="Open Sloppywet Discord profile"><b>Sloppywet</b></a>
-        </div>
-      </aside>
-
     </div>
   </main>
 
-  <!-- Fixed Return to Main Menu button placed bottom-right (won't overlap content thanks to bottom-safe padding) -->
+  <!-- Fixed Return to Main Menu button -->
   <a class="return-fixed" href="index.html" aria-label="Return to Main Menu">← Return to Main Menu</a>
 
   <script>
     (function(){
       const tabs = Array.from(document.querySelectorAll('.tab'));
       const panelContent = document.getElementById('panel-content');
-      const ownersBtn = document.getElementById('owners-btn');
-      const ownersBubble = document.getElementById('owners-bubble');
       const panel = document.getElementById('panel');
 
       const templates = {
@@ -302,7 +134,7 @@
         },
         suggest: {
           title: 'Suggestions',
-          html: `<p>Got a loot change, mod idea, new feature or gameplay tweak? Describe the change, why it improves play, and any balance notes or downsides; keep it short and actionable.</p>
+          html: `<p>Got a loot change, mod idea, new feature, or gameplay tweak? Describe the change, why it improves play, and any balance notes or downsides; keep it short and actionable.</p>
                  <div class="card-footer">
                    <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
@@ -326,11 +158,8 @@
 
       function activateTab(tabEl){
         tabs.forEach(t=> t.setAttribute('aria-selected', t===tabEl ? 'true' : 'false'));
-        // keep the primary styling on Bug Reports tab visually
         tabs.forEach(t => t.classList.toggle('primary', t.dataset.key === 'bug'));
         const key = tabEl.dataset.key;
-        ownersBubble.hidden = true;
-        ownersBtn.setAttribute('aria-pressed','false');
         panelContent.style.opacity = '0';
         setTimeout(()=>{
           panelContent.innerHTML = `<h2>${templates[key].title}</h2>` + templates[key].html;
@@ -349,21 +178,9 @@
         });
       });
 
-      // Owners button toggles owners bubble visibility; not part of the tablist
-      ownersBtn.addEventListener('click', ()=>{
-        const isShown = ownersBtn.getAttribute('aria-pressed') === 'true';
-        ownersBtn.setAttribute('aria-pressed', String(!isShown));
-        ownersBubble.hidden = isShown;
-        panel.style.opacity = ownersBubble.hidden ? '1' : '0.94';
-        if(!ownersBubble.hidden) ownersBubble.scrollIntoView({behavior:'smooth', block:'center'});
-      });
-
-      // initial state: Bug Reports active, owners hidden
+      // initial state
       const initialTab = document.querySelector('.tab[data-key="bug"]');
       initialTab && initialTab.focus();
-      ownersBubble.hidden = true;
-      // ensure primary class initially
-      tabs.forEach(t => t.classList.toggle('primary', t.dataset.key === 'bug'));
     })();
   </script>
 </body>
