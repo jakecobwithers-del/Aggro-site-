@@ -154,4 +154,65 @@
       const templates = {
         bug: {
           title: 'Bug Reports',
-          html: `<p>Seeing server lag, exploits, or visual bugs? Tell us what you noticed
+          html: `<p>Seeing server lag, exploits, or visual bugs? Tell us what you noticed, which server and map, and the approximate server time so staff can investigate.</p>
+                 <div class="card-footer">
+                   <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <span>Go to</span>
+                   </a>
+                   <span style="color:var(--muted);font-size:13px;">Tip: server lag, exploits, visual bugs, server/map, server time</span>
+                 </div>`
+        },
+        suggest: {
+          title: 'Suggestions',
+          html: `<p>Got a loot change, mod idea, new feature, or gameplay tweak? Describe the change, why it improves play, and any balance notes or downsides; keep it short and actionable.</p>
+                 <div class="card-footer">
+                   <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <span>Go to</span>
+                   </a>
+                   <span style="color:var(--muted);font-size:13px;">Tip: loot changes, mod ideas, features, balance notes</span>
+                 </div>`
+        },
+        ticket: {
+          title: 'Ticket',
+          html: `<p>Tickets are for private support: bans and appeals, account issues, staff requests, payment/donation queries, and other sensitive matters.</p>
+                 <div class="card-footer">
+                   <a class="goto" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener" aria-label="Go to Ticket channel">
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <span>Go to</span>
+                   </a>
+                   <span style="color:var(--muted);font-size:13px;">Tip: appeals, account issues, staff requests, payment queries</span>
+                 </div>`
+        }
+      };
+
+      function activateTab(tabEl){
+        tabs.forEach(t=> t.setAttribute('aria-selected', t===tabEl ? 'true' : 'false'));
+        tabs.forEach(t => t.classList.toggle('primary', t.dataset.key === 'bug'));
+        const key = tabEl.dataset.key;
+        panelContent.style.opacity = '0';
+        setTimeout(()=>{
+          panelContent.innerHTML = `<h2>${templates[key].title}</h2>` + templates[key].html;
+          panelContent.style.opacity = '1';
+          panel.focus();
+        }, 160);
+      }
+
+      tabs.forEach(t=>{
+        t.addEventListener('click', ()=> activateTab(t));
+        t.addEventListener('keydown', (ev)=>{
+          const idx = tabs.indexOf(t);
+          if(ev.key === 'ArrowRight') tabs[(idx+1)%tabs.length].focus();
+          if(ev.key === 'ArrowLeft') tabs[(idx-1+tabs.length)%tabs.length].focus();
+          if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); activateTab(t); }
+        });
+      });
+
+      // initial state
+      const initialTab = document.querySelector('.tab[data-key="bug"]');
+      initialTab && initialTab.focus();
+    })();
+  </script>
+</body>
+</html>
