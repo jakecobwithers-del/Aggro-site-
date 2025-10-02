@@ -6,6 +6,14 @@
   <title>Aggro PvP — Support</title>
 
   <style>
+    /* Fonts: Bain for headings, DayZFont for accent display */
+    @font-face{
+      font-family: 'Bain';
+      src: url('Bain-Regular.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
     @font-face{
       font-family: 'DayZFont';
       src: url('28 Days Later.ttf') format('truetype');
@@ -29,16 +37,37 @@
 
     html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
 
-    /* Oversized fixed smoke background (persists while scrolling) */
-    #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
-    #smoke-bg video{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(1.3);width:220vw;height:220vh;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(6px) saturate(1.06) contrast(1.03);will-change:transform;pointer-events:none;}
+    /* Smoke background: match rules page sizing and motion */
+    #smoke-bg{
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      overflow:hidden;
+      background:#000;
+      mix-blend-mode:normal;
+    }
+    #smoke-bg video{
+      position:fixed;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%) scale(1.4);
+      width:240vw;
+      height:240vh;
+      object-fit:cover;
+      opacity:var(--smoke-opacity);
+      filter: blur(4px) saturate(1.05) contrast(1.02);
+      will-change:transform;
+      pointer-events:none;
+    }
 
     /* Layout */
     .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px var(--bottom-safe);box-sizing:border-box;}
     .wrap{width:100%;max-width:var(--maxw);display:flex;flex-direction:column;gap:var(--gap);padding-bottom:20px;}
 
+    /* Bain heading to match rules pages */
     .title{ text-align:center; padding:6px 6px 0; }
-    .title h1{margin:0;font-family:'DayZFont',sans-serif;font-size:clamp(40px,7.2vw,88px);letter-spacing:1.6px;text-transform:uppercase;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,0.85),0 8px 28px rgba(0,0,0,0.6);line-height:0.95;}
+    .title h1{margin:0;font-family:'Bain','DayZFont',sans-serif;font-weight:700;font-size:clamp(40px,7.2vw,88px);letter-spacing:1.6px;text-transform:uppercase;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,0.75),0 12px 42px rgba(0,0,0,0.55);line-height:0.95;}
     .subtitle{ margin-top:6px; font-size:15px; line-height:1.05; }
     .subtitle .line-white{ color:#fff; display:block; font-weight:700; }
     .subtitle .line-red{ color:var(--accent); display:block; font-weight:900; font-family:'DayZFont',sans-serif; letter-spacing:0.6px; text-transform:lowercase; }
@@ -67,27 +96,44 @@
 
     .owners-message { flex:1; color:var(--muted); font-size:15px; line-height:1.6; padding:6px 8px; border-left:1px solid rgba(255,255,255,0.02); }
 
-    /* Centered Return button bottom-center (same as rules) */
+    /* Return button: Bain heading style, inset glow, centered like rules */
     .return-fixed{
       position:fixed;
       left:50%;
       transform:translateX(-50%);
       bottom:18px;
       z-index:90;
-      padding:12px 18px;
+      padding:14px 20px;
       border-radius:14px;
-      background:linear-gradient(180deg,#0b0b0b,#121212);
+      background:linear-gradient(180deg, rgba(12,12,12,0.98), rgba(6,6,6,0.95));
       border:2px solid rgba(255,59,59,0.14);
       color:var(--accent);
       font-weight:800;
       text-decoration:none;
-      box-shadow: 0 20px 56px rgba(0,0,0,0.7), inset 0 2px 6px rgba(255,255,255,0.02);
+      box-shadow: 0 22px 64px rgba(0,0,0,0.72), inset 0 2px 8px rgba(255,59,59,0.03);
       display:inline-flex;
       gap:10px;
       align-items:center;
+      font-family: 'Bain', 'DayZFont', system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      font-size:15px;
+      letter-spacing:0.6px;
+    }
+    .return-fixed::before{
+      content: '←';
+      display:inline-block;
+      transform:translateY(-1px);
+      font-weight:900;
+      margin-right:6px;
+      color:var(--accent);
+      font-family: 'DayZFont', 'Bain', system-ui;
     }
 
-    @media(max-width:860px){ :root{ --bottom-safe:240px; } .tab{ padding:12px 16px; height:56px; } .card{ padding:18px; min-height:200px; } .owners-bubble{ flex-direction:column; } .owners-message{ border-left:none; border-top:1px solid rgba(255,255,255,0.02); padding-top:12px; } .return-fixed{ bottom:12px; } }
+    /* Fade class for smoother content swaps */
+    .fade { opacity:1; transition:opacity 180ms ease; }
+    .fade.hidden { opacity:0; }
+
+    /* Responsive tweaks */
+    @media(max-width:860px){ :root{ --bottom-safe:240px; } .tab{ padding:12px 16px; height:56px; } .card{ padding:18px; min-height:200px; } .owners-bubble{ flex-direction:column; } .owners-message{ border-left:none; border-top:1px solid rgba(255,255,255,0.02); padding-top:12px; } .return-fixed{ bottom:12px; padding:12px 16px; } }
     @media(max-width:520px){ :root{ --bottom-safe:300px; } .title h1{ font-size:clamp(32px,12vw,56px); } .tab{ padding:10px 12px; height:48px; } .card{ padding:14px; min-height:180px; } .return-fixed{ bottom:10px; padding:10px 14px; } }
   </style>
 </head>
@@ -102,7 +148,7 @@
   <main class="page" role="main">
     <div class="wrap">
       <header class="title" role="banner" aria-label="Support header">
-        <h1>Support</h1>
+        <h1 class="page-heading">Support</h1>
         <div class="subtitle" aria-hidden="false">
           <span class="line-white">Still Breathing?</span>
           <span class="line-red">we've got your six</span>
@@ -119,13 +165,13 @@
       </div>
 
       <!-- Main card -->
-      <section class="card" id="panel" tabindex="0" aria-live="polite">
-        <div id="panel-content">
+      <section class="card" id="panel" tabindex="0" aria-live="polite" aria-labelledby="tab-bug">
+        <div id="panel-content" class="fade">
           <h2>Bug Reports</h2>
           <p>Seeing server lag, exploits, or visual bugs? Tell us what you noticed, which server and map, and the approximate server time so staff can investigate.</p>
           <div class="card-footer">
             <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
               <span>Go to</span>
             </a>
             <span style="color:var(--muted);font-size:13px;">Tip: server lag, exploits, visual bugs, server/map, server time</span>
@@ -136,7 +182,7 @@
       <!-- Owners bubble with clickable profiles -->
       <aside class="owners-bubble" id="owners-bubble" aria-labelledby="owners-title">
         <div class="owners-col owners-names" aria-hidden="false">
-          <h4 style="margin:0;font-family:DayZFont,system-ui;color:var(--accent);letter-spacing:0.6px;text-transform:uppercase;">Team</h4>
+          <h4 id="owners-title" style="margin:0;font-family:DayZFont,system-ui;color:var(--accent);letter-spacing:0.6px;text-transform:uppercase;">Team</h4>
           <a class="owner-link" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener" aria-label="Open RB Skizza Discord profile"><b>RB Skizza</b></a>
           <a class="owner-link" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener" aria-label="Open Slomobob Discord profile"><b>Slomobob</b></a>
           <a class="owner-link" href="https://discord.com/users/754181442204074025" target="_blank" rel="noopener" aria-label="Open Sloppywet Discord profile"><b>Sloppywet</b></a>
@@ -160,7 +206,7 @@
   </main>
 
   <!-- Centered Return to Main Menu button -->
-  <a class="return-fixed" href="index.html" aria-label="Return to Main Menu">← Return to Main Menu</a>
+  <a class="return-fixed" href="index.html" aria-label="Return to Main Menu">Return to Main Menu</a>
 
   <script>
     (function(){
@@ -174,7 +220,7 @@
           html: `<p>Seeing server lag, exploits, or visual bugs? Tell us what you noticed, which server and map, and the approximate server time so staff can investigate.</p>
                  <div class="card-footer">
                    <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
-                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
                      <span>Go to</span>
                    </a>
                    <span style="color:var(--muted);font-size:13px;">Tip: server lag, exploits, visual bugs, server/map, server time</span>
@@ -185,7 +231,7 @@
           html: `<p>Got a loot change, mod idea, new feature, or gameplay tweak? Describe the change, why it improves play, and any balance notes or downsides; keep it short and actionable.</p>
                  <div class="card-footer">
                    <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
-                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
                      <span>Go to</span>
                    </a>
                    <span style="color:var(--muted);font-size:13px;">Tip: loot changes, mod ideas, features, balance notes</span>
@@ -196,7 +242,7 @@
           html: `<p>Tickets are for private support: bans and appeals, account issues, staff requests, payment/donation queries, and other sensitive matters.</p>
                  <div class="card-footer">
                    <a class="goto" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener" aria-label="Go to Ticket channel">
-                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
                      <span>Go to</span>
                    </a>
                    <span style="color:var(--muted);font-size:13px;">Tip: appeals, account issues, staff requests, payment queries</span>
@@ -206,12 +252,14 @@
 
       function activateTab(tabEl){
         tabs.forEach(t=> t.setAttribute('aria-selected', t===tabEl ? 'true' : 'false'));
-        tabs.forEach(t => t.classList.toggle('primary', t.dataset.key === 'bug'));
+        // dynamically set the primary class to the active tab
+        tabs.forEach(t => t.classList.toggle('primary', t === tabEl));
         const key = tabEl.dataset.key;
-        panelContent.style.opacity = '0';
+        panel.setAttribute('aria-labelledby', tabEl.id);
+        panelContent.classList.add('hidden');
         setTimeout(()=>{
           panelContent.innerHTML = `<h2>${templates[key].title}</h2>` + templates[key].html;
-          panelContent.style.opacity = '1';
+          panelContent.classList.remove('hidden');
           panel.focus();
         }, 160);
       }
@@ -220,16 +268,17 @@
         t.addEventListener('click', ()=> activateTab(t));
         t.addEventListener('keydown', (ev)=>{
           const idx = tabs.indexOf(t);
-          if(ev.key === 'ArrowRight') tabs[(idx+1)%tabs.length].focus();
-          if(ev.key === 'ArrowLeft') tabs[(idx-1+tabs.length)%tabs.length].focus();
+          if(ev.key === 'ArrowRight') { ev.preventDefault(); tabs[(idx+1)%tabs.length].focus(); }
+          if(ev.key === 'ArrowLeft') { ev.preventDefault(); tabs[(idx-1+tabs.length)%tabs.length].focus(); }
           if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); activateTab(t); }
         });
       });
 
-      // initial state
+      // initial state: activate bug tab to match rules page flow
       const initialTab = document.querySelector('.tab[data-key="bug"]');
-      initialTab && initialTab.focus();
+      initialTab && activateTab(initialTab);
     })();
   </script>
 </body>
 </html>
+
