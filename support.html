@@ -24,71 +24,51 @@
       --smoke-opacity:0.78;
       --gap:18px;
       --tab-height:64px;
-      --bottom-safe:220px;
+      --bottom-safe:120px;
     }
 
     html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
 
-    /* Oversized fixed smoke background (persists while scrolling) */
+    /* Oversized fixed smoke background */
     #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
     #smoke-bg video{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(1.3);width:220vw;height:220vh;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(6px) saturate(1.06) contrast(1.03);will-change:transform;pointer-events:none;}
 
-    /* Layout */
     .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px var(--bottom-safe);box-sizing:border-box;}
     .wrap{width:100%;max-width:var(--maxw);display:flex;flex-direction:column;gap:var(--gap);padding-bottom:20px;}
 
-    .title{ text-align:center; padding:6px 6px 0; }
+    .title{text-align:center;padding:6px 6px 0;}
     .title h1{margin:0;font-family:'DayZFont',sans-serif;font-size:clamp(40px,7.2vw,88px);letter-spacing:1.6px;text-transform:uppercase;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,0.85),0 8px 28px rgba(0,0,0,0.6);line-height:0.95;}
-    .subtitle{ margin-top:6px; font-size:15px; line-height:1.05; }
-    .subtitle .line-white{ color:#fff; display:block; font-weight:700; }
-    .subtitle .line-red{ color:var(--accent); display:block; font-weight:900; font-family:'DayZFont',sans-serif; letter-spacing:0.6px; text-transform:lowercase; }
+    .subtitle{margin-top:6px;font-size:15px;line-height:1.05;}
+    .subtitle .line-white{color:#fff;display:block;font-weight:700;}
+    .subtitle .line-red{color:var(--accent);display:block;font-weight:900;font-family:'DayZFont',sans-serif;letter-spacing:0.6px;text-transform:lowercase;}
 
-    /* Controls: only tabs (no Owners control) */
-    .controls { display:flex;align-items:center;justify-content:center;gap:16px;margin-top:12px;flex-wrap:wrap; }
-    .tabs { display:flex; gap:14px; align-items:center; justify-content:center; flex-wrap:wrap; }
-    .tab { height:var(--tab-height); padding:14px 22px; border-radius:14px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border:1px solid rgba(255,255,255,0.02); color:var(--muted); font-weight:800; text-transform:uppercase; font-family:'DayZFont',sans-serif; letter-spacing:0.8px; cursor:pointer; display:inline-flex; align-items:center; gap:10px; transition:transform 140ms ease, box-shadow 140ms ease, background 140ms ease; }
-    .tab.primary { background:linear-gradient(180deg, rgba(255,59,59,0.06), rgba(0,0,0,0.04)); color:var(--accent); border-color:var(--card-border); transform:translateY(-4px); box-shadow:0 18px 46px rgba(0,0,0,0.6); }
-    .tab[aria-selected="true"]:not(.primary), .tab:focus { transform:translateY(-4px); color:var(--accent); box-shadow:0 14px 36px rgba(0,0,0,0.5); border-color:var(--card-border); outline:none; }
+    .controls{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:12px;flex-wrap:wrap;}
+    .tabs{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;}
+    .tab{height:var(--tab-height);padding:14px 22px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));border:1px solid rgba(255,255,255,0.02);color:var(--muted);font-weight:800;text-transform:uppercase;font-family:'DayZFont',sans-serif;letter-spacing:0.8px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:transform 140ms ease, box-shadow 140ms ease, background 140ms ease;}
+    .tab.primary{background:linear-gradient(180deg, rgba(255,59,59,0.06), rgba(0,0,0,0.04));color:var(--accent);border-color:var(--card-border);transform:translateY(-4px);box-shadow:0 18px 46px rgba(0,0,0,0.6);}
+    .tab[aria-selected="true"]:not(.primary), .tab:focus{transform:translateY(-4px);color:var(--accent);box-shadow:0 14px 36px rgba(0,0,0,0.5);border-color:var(--card-border);outline:none;}
 
-    /* Card */
-    .card { margin-top:10px; border-radius:14px; background:linear-gradient(180deg,var(--card-start),var(--card-end)); border:2px solid var(--card-border); box-shadow: inset 0 2px 8px rgba(255,255,255,0.02), inset 0 -10px 22px rgba(0,0,0,0.75), 0 16px 40px rgba(0,0,0,0.9); padding:var(--pad); display:block; min-height:220px; transition:transform 220ms cubic-bezier(.2,.9,.2,1), opacity 180ms linear; overflow:hidden; }
-    .card h2{ margin:0 0 8px 0; font-family:'DayZFont',sans-serif; color:var(--accent); font-size:clamp(20px,3.8vw,36px); text-transform:uppercase; text-shadow:0 6px 22px rgba(0,0,0,0.6); }
-    .card p{ margin:0 0 14px 0; color:var(--muted); line-height:1.6; font-size:16px; }
-    .card-footer { display:flex; justify-content:flex-start; gap:14px; align-items:center; margin-top:14px; flex-wrap:wrap; }
-    .goto { display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:12px; background:linear-gradient(180deg,rgba(255,59,59,0.06),rgba(0,0,0,0.04)); border:1px solid rgba(255,59,59,0.12); color:var(--accent); font-weight:900; text-transform:uppercase; font-family:'DayZFont',sans-serif; width:110px; font-size:13px; text-decoration:none; }
+    .card{margin-top:10px;border-radius:14px;background:linear-gradient(180deg,var(--card-start),var(--card-end));border:2px solid var(--card-border);box-shadow: inset 0 2px 8px rgba(255,255,255,0.02), inset 0 -10px 22px rgba(0,0,0,0.75), 0 16px 40px rgba(0,0,0,0.9);padding:var(--pad);display:block;min-height:220px;transition:transform 220ms cubic-bezier(.2,.9,.2,1),opacity 180ms linear;overflow:hidden;}
+    .card h2{margin:0 0 8px 0;font-family:'DayZFont',sans-serif;color:var(--accent);font-size:clamp(20px,3.8vw,36px);text-transform:uppercase;text-shadow:0 6px 22px rgba(0,0,0,0.6);}
+    .card p{margin:0 0 14px 0;color:var(--muted);line-height:1.6;font-size:16px;}
+    .card-footer{display:flex;justify-content:flex-start;gap:14px;align-items:center;margin-top:14px;flex-wrap:wrap;}
+    .goto{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:linear-gradient(180deg,rgba(255,59,59,0.06),rgba(0,0,0,0.04));border:1px solid rgba(255,59,59,0.12);color:var(--accent);font-weight:900;text-transform:uppercase;font-family:'DayZFont',sans-serif;width:110px;font-size:13px;text-decoration:none;}
 
-    /* Owners bubble: visible on page with linked names */
-    .owners-bubble { margin-top:12px; border-radius:12px; background:linear-gradient(180deg, rgba(12,12,12,0.98), rgba(7,7,7,0.95)); border:2px solid rgba(255,59,59,0.08); padding:14px; display:flex; gap:18px; align-items:flex-start; }
-    .owners-col { display:flex; flex-direction:column; gap:10px; }
-    .owners-names { min-width:220px; }
-    .owner-link{ display:inline-flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); color:var(--muted); font-size:15px; text-decoration:none; border:1px solid rgba(255,255,255,0.02); transition:transform 120ms ease, box-shadow 120ms ease; }
-    .owner-link b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:15px; }
-    .owner-link:hover{ transform:translateX(6px); box-shadow:0 12px 30px rgba(0,0,0,0.6); }
+    /* Owners bubble: names left (linked), merged message right */
+    .owners-bubble{margin-top:12px;border-radius:12px;background:linear-gradient(180deg, rgba(12,12,12,0.98), rgba(7,7,7,0.95));border:2px solid rgba(255,59,59,0.08);padding:14px;display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;}
+    .owners-col{display:flex;flex-direction:column;gap:10px;}
+    .owners-names{min-width:220px;}
+    .owner-link{display:inline-flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));color:var(--muted);font-size:15px;text-decoration:none;border:1px solid rgba(255,255,255,0.02);transition:transform 120ms ease,box-shadow 120ms ease;}
+    .owner-link b{color:var(--accent);font-family:'DayZFont',sans-serif;text-transform:uppercase;font-size:15px;}
+    .owner-link:hover{transform:translateX(6px);box-shadow:0 12px 30px rgba(0,0,0,0.6);}
 
-    .owners-message { flex:1; color:var(--muted); font-size:15px; line-height:1.6; padding:6px 8px; border-left:1px solid rgba(255,255,255,0.02); }
+    .owners-message{flex:1;color:var(--muted);font-size:15px;line-height:1.6;padding:6px 8px;border-left:1px solid rgba(255,255,255,0.02);min-width:300px;}
 
-    /* Centered Return button bottom-center (same as rules) */
-    .return-fixed{
-      position:fixed;
-      left:50%;
-      transform:translateX(-50%);
-      bottom:18px;
-      z-index:90;
-      padding:12px 18px;
-      border-radius:14px;
-      background:linear-gradient(180deg,#0b0b0b,#121212);
-      border:2px solid rgba(255,59,59,0.14);
-      color:var(--accent);
-      font-weight:800;
-      text-decoration:none;
-      box-shadow: 0 20px 56px rgba(0,0,0,0.7), inset 0 2px 6px rgba(255,255,255,0.02);
-      display:inline-flex;
-      gap:10px;
-      align-items:center;
-    }
+    /* Centered return button placed under owners bubble */
+    .return-centered { display:block; margin:22px auto 0; padding:12px 18px; border-radius:14px; background:linear-gradient(180deg,#0b0b0b,#121212); border:2px solid rgba(255,59,59,0.14); color:var(--accent); font-weight:800; text-decoration:none; width:max-content; box-shadow: 0 20px 56px rgba(0,0,0,0.7), inset 0 2px 6px rgba(255,255,255,0.02); }
 
-    @media(max-width:860px){ :root{ --bottom-safe:240px; } .tab{ padding:12px 16px; height:56px; } .card{ padding:18px; min-height:200px; } .owners-bubble{ flex-direction:column; } .owners-message{ border-left:none; border-top:1px solid rgba(255,255,255,0.02); padding-top:12px; } .return-fixed{ bottom:12px; } }
-    @media(max-width:520px){ :root{ --bottom-safe:300px; } .title h1{ font-size:clamp(32px,12vw,56px); } .tab{ padding:10px 12px; height:48px; } .card{ padding:14px; min-height:180px; } .return-fixed{ bottom:10px; padding:10px 14px; } }
+    @media(max-width:860px){ :root{ --bottom-safe:160px; } .tab{padding:12px 16px;height:56px;} .card{padding:18px;min-height:200px;} .owners-bubble{flex-direction:column;} .owners-message{border-left:none;border-top:1px solid rgba(255,255,255,0.02);padding-top:12px;min-width:auto;} .return-centered{margin-top:16px;} }
+    @media(max-width:520px){ :root{ --bottom-safe:220px; } .title h1{font-size:clamp(32px,12vw,56px);} .tab{padding:10px 12px;height:48px;} .card{padding:14px;min-height:180px;} .return-centered{padding:10px 14px;} }
   </style>
 </head>
 <body>
@@ -103,13 +83,12 @@
     <div class="wrap">
       <header class="title" role="banner" aria-label="Support header">
         <h1>Support</h1>
-        <div class="subtitle" aria-hidden="false">
+        <div class="subtitle">
           <span class="line-white">Still Breathing?</span>
           <span class="line-red">we've got your six</span>
         </div>
       </header>
 
-      <!-- Controls: only three tabs -->
       <div class="controls" role="group" aria-label="Support controls">
         <nav class="tabs" role="tablist" aria-label="Support sections">
           <button class="tab primary" role="tab" aria-selected="true" aria-controls="panel" id="tab-bug" data-key="bug">Bug Reports</button>
@@ -118,7 +97,6 @@
         </nav>
       </div>
 
-      <!-- Main card -->
       <section class="card" id="panel" tabindex="0" aria-live="polite">
         <div id="panel-content">
           <h2>Bug Reports</h2>
@@ -133,22 +111,21 @@
         </div>
       </section>
 
-      <!-- Owners bubble with clickable profiles -->
       <aside class="owners-bubble" id="owners-bubble" aria-labelledby="owners-title">
-        <div class="owners-col owners-names" aria-hidden="false">
+        <div class="owners-col owners-names">
           <h4 style="margin:0;font-family:DayZFont,system-ui;color:var(--accent);letter-spacing:0.6px;text-transform:uppercase;">Team</h4>
           <a class="owner-link" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener" aria-label="Open RB Skizza Discord profile"><b>RB Skizza</b></a>
           <a class="owner-link" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener" aria-label="Open Slomobob Discord profile"><b>Slomobob</b></a>
           <a class="owner-link" href="https://discord.com/users/754181442204074025" target="_blank" rel="noopener" aria-label="Open Sloppywet Discord profile"><b>Sloppywet</b></a>
         </div>
 
-        <div class="owners-col owners-message" aria-hidden="false">
+        <div class="owners-col owners-message" id="owners-message">
           <strong style="color:var(--accent);font-family:DayZFont,system-ui;text-transform:uppercase;letter-spacing:0.6px;">A message from the owners</strong>
           <p style="margin:8px 0 0 0;">
-            Aggro PvP is run by a small team committed to fair play, stability, and a bold cinematic experience. We appreciate every player who reports issues or shares ideas.
+            These are the owners who made Aggro PvP possible. Aggro PvP is run with care — fair play and respect are the backbone of this community. We’re a small team committed to stability, fairness, and a bold cinematic experience.
           </p>
           <p style="margin:10px 0 0 0;">
-            If you value the server and want to support hosting, tools, and development, consider donating. For private concerns or appeals, open a ticket and staff will respond.
+            If the server helped you, thank the owners, send feedback to help us improve, or consider donating to help keep hosting, tools, and development running. For private concerns or appeals, open a ticket and our staff will respond.
           </p>
           <p style="margin:10px 0 0 0;color:var(--muted);font-size:13px;">
             Thank you for playing — see you on the map.
@@ -156,11 +133,11 @@
         </div>
       </aside>
 
+      <!-- Centered Return to Main Menu button under the owners bubble -->
+      <a class="return-centered" href="index.html" aria-label="Return to Main Menu">← Return to Main Menu</a>
+
     </div>
   </main>
-
-  <!-- Centered Return to Main Menu button -->
-  <a class="return-fixed" href="index.html" aria-label="Return to Main Menu">← Return to Main Menu</a>
 
   <script>
     (function(){
