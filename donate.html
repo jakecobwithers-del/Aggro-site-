@@ -1,70 +1,112 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aggro PvP — Donate</title>
-<style>
-  body {
-    margin: 0;
-    font-family: "28Days", sans-serif;
-    background: #050505;
-    color: #fff;
-    line-height: 1.6;
-  }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aggro PvP — Donate</title>
 
-  header {
-    text-align: center;
-    padding: 2rem 1rem;
-    background: #111;
-    border-bottom: 3px solid #900;
-  }
+  <!-- Load custom font -->
+  <style>
+    @font-face {
+      font-family: '28Days';
+      src: url('fonts/28DaysLater.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
 
-  header h1 {
-    margin: 0;
-    font-size: 2.5rem;
-    color: #e00;
-  }
+    body {
+      margin: 0;
+      font-family: '28Days', sans-serif;
+      background: #050505;
+      color: #fff;
+      line-height: 1.6;
+      position: relative;
+      overflow-x: hidden;
+    }
 
-  section {
-    max-width: 800px;
-    margin: auto;
-    padding: 2rem;
-  }
+    /* Fullscreen smoke video background */
+    #bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0.25;
+      pointer-events: none;
+    }
 
-  h2 {
-    color: #e00;
-    margin-top: 2rem;
-    text-transform: uppercase;
-    border-bottom: 2px solid #e00;
-    padding-bottom: 0.5rem;
-  }
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: rgba(0, 0, 0, 0.7);
+      border-bottom: 3px solid #900;
+    }
 
-  p {
-    margin: 1rem 0;
-  }
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #e00;
+      text-shadow: 0 0 10px #900;
+    }
 
-  .donate-btn {
-    display: block;
-    margin: 2rem auto;
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    background: #900;
-    color: #fff;
-    text-decoration: none;
-    text-align: center;
-    border-radius: 6px;
-    transition: 0.3s;
-    width: fit-content;
-  }
+    section {
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 8px;
+    }
 
-  .donate-btn:hover {
-    background: #c00;
-    transform: scale(1.05);
-  }
-</style>
+    h2 {
+      color: #e00;
+      margin-top: 2rem;
+      text-transform: uppercase;
+      border-bottom: 2px solid #e00;
+      padding-bottom: 0.5rem;
+    }
+
+    p {
+      margin: 1rem 0;
+    }
+
+    ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin: 0.5rem 0;
+    }
+
+    .donate-btn {
+      display: block;
+      margin: 2rem auto;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      background: #900;
+      color: #fff;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 6px;
+      transition: 0.3s;
+      width: fit-content;
+      box-shadow: 0 0 10px #900;
+    }
+
+    .donate-btn:hover {
+      background: #c00;
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
+
+<!-- Smoke video background -->
+<video autoplay muted loop id="bg-video">
+  <source src="assets/Smoke.mp4" type="video/mp4" />
+</video>
 
 <header>
   <h1>Support Aggro PvP</h1>
@@ -79,15 +121,12 @@
   </p>
 
   <h2>How It Helps</h2>
-  <p>
-    Your donations go straight into:
-    <ul>
-      <li>💻 Server hosting and performance upgrades</li>
-      <li>⚙️ Development of custom mods & events</li>
-      <li>🎨 Expanding visuals, UI, and branding</li>
-      <li>👥 Community prizes, events, and growth</li>
-    </ul>
-  </p>
+  <ul>
+    <li>💻 Server hosting and performance upgrades</li>
+    <li>⚙️ Development of custom mods & events</li>
+    <li>🎨 Expanding visuals, UI, and branding</li>
+    <li>👥 Community prizes, events, and growth</li>
+  </ul>
 
   <h2>How to Donate</h2>
   <p>
