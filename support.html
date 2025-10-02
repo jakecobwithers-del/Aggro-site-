@@ -6,7 +6,6 @@
   <title>Aggro PvP — Support</title>
 
   <style>
-    /* DayZFont (same as rules.html) */
     @font-face{
       font-family: 'DayZFont';
       src: url('28 Days Later.ttf') format('truetype');
@@ -54,11 +53,10 @@
       pointer-events:none;
     }
 
-    /* Page layout */
+    /* Layout */
     .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px var(--bottom-safe);box-sizing:border-box;}
     .wrap{width:100%;max-width:var(--maxw);display:flex;flex-direction:column;gap:var(--gap);padding-bottom:20px;}
 
-    /* Title */
     .title{ text-align:center; padding:6px 6px 0; }
     .title h1{
       margin:0;
@@ -73,7 +71,7 @@
     .subtitle .line-white{ color:#fff; display:block; font-weight:700; }
     .subtitle .line-red{ color:var(--accent); display:block; font-weight:900; font-family:'DayZFont',sans-serif; letter-spacing:0.6px; text-transform:lowercase; }
 
-    /* Controls: only three tabs (Owners removed from top) + separate Owners button */
+    /* Controls: nav contains only the three tabs; owners-button is NOT inside the tablist */
     .controls { display:flex;align-items:center;justify-content:center;gap:14px;margin-top:6px;flex-wrap:wrap; }
     .tabs { display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap; }
     .tab {
@@ -94,6 +92,7 @@
     }
     .tab[aria-selected="true"], .tab:focus { transform:translateY(-4px); color:var(--accent); box-shadow:0 14px 36px rgba(0,0,0,0.6); border-color:var(--card-border); outline:none; }
 
+    /* Owners button is a normal button outside the tablist and visually distinct */
     .owners-button {
       height:var(--tab-height);
       padding:10px 14px;
@@ -113,7 +112,7 @@
     }
     .owners-button[aria-pressed="true"]{ transform:translateY(-4px); box-shadow:0 14px 36px rgba(0,0,0,0.6); }
 
-    /* Single main card where content swaps */
+    /* Main swap card */
     .card {
       margin-top:6px;
       border-radius:12px;
@@ -132,7 +131,6 @@
     .card-footer { display:flex; justify-content:flex-start; gap:12px; align-items:center; margin-top:12px; flex-wrap:wrap; }
     .goto { display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; background:linear-gradient(180deg,rgba(255,59,59,0.04),rgba(0,0,0,0.04)); border:1px solid rgba(255,59,59,0.12); color:var(--accent); font-weight:800; text-transform:uppercase; font-family:'DayZFont',sans-serif; width:92px; font-size:12px; text-decoration:none; }
 
-    /* Owners bubble (separate element toggled by owners button) */
     .owners-bubble {
       margin-top:6px;
       border-radius:12px;
@@ -161,7 +159,7 @@
     .owner-link b{ color:var(--accent); font-family:'DayZFont',sans-serif; text-transform:uppercase; font-size:15px; }
     .owner-link:hover{ transform:translateX(6px); box-shadow:0 12px 30px rgba(0,0,0,0.6); }
 
-    /* Fixed Return button bottom-right and safe spacing for content */
+    /* Fixed Return button bottom-right */
     .return-fixed{
       position:fixed;
       right:18px;
@@ -181,7 +179,6 @@
       pointer-events:auto;
     }
 
-    /* Responsive adjustments */
     @media(max-width:720px){
       :root{ --bottom-safe:190px; }
       .tab{ padding:8px 12px; height:48px; }
@@ -216,7 +213,7 @@
         </div>
       </header>
 
-      <!-- Controls: tabs (no owners) + separate Owners button -->
+      <!-- Controls: tablist contains only Bug, Suggestions, Ticket -->
       <div class="controls" role="group" aria-label="Support controls">
         <nav class="tabs" role="tablist" aria-label="Support sections">
           <button class="tab" role="tab" aria-selected="true" aria-controls="panel" id="tab-bug" data-key="bug">Bug Reports</button>
@@ -224,10 +221,11 @@
           <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-ticket" data-key="ticket">Ticket</button>
         </nav>
 
-        <button class="owners-button" id="owners-btn" aria-pressed="false" aria-controls="owners-bubble">Owners</button>
+        <!-- Owners button is NOT in the tablist and therefore not a tab -->
+        <button class="owners-button" id="owners-btn" aria-pressed="false" aria-controls="owners-bubble" aria-label="Toggle owners list">Owners</button>
       </div>
 
-      <!-- Single card where content swaps -->
+      <!-- Main card -->
       <section class="card" id="panel" tabindex="0" aria-live="polite">
         <div id="panel-content">
           <h2>Bug Reports</h2>
@@ -242,7 +240,7 @@
         </div>
       </section>
 
-      <!-- Owners bubble (separate element, toggled by Owners button) -->
+      <!-- Owners bubble (toggled separately) -->
       <aside class="owners-bubble" id="owners-bubble" aria-labelledby="owners-title" hidden>
         <div class="owners-header">
           <h3 id="owners-title" style="margin:0;font-family:DayZFont,system-ui;color:var(--accent);letter-spacing:0.8px;text-transform:uppercase;">Owners</h3>
@@ -254,11 +252,9 @@
           <a class="owner-link" href="https://discord.com/users/754181442204074025" target="_blank" rel="noopener" aria-label="Open Sloppywet Discord profile"><b>Sloppywet</b></a>
         </div>
       </aside>
-
     </div>
   </main>
 
-  <!-- Fixed Return to Main Menu button placed bottom-right to avoid overlap -->
   <a class="return-fixed" href="index.html" aria-label="Return to Main Menu">← Return to Main Menu</a>
 
   <script>
@@ -328,7 +324,6 @@
         });
       });
 
-      // Owners button toggles owners bubble visibility; keep panel slightly dim when owners shown
       ownersBtn.addEventListener('click', ()=>{
         const isShown = ownersBtn.getAttribute('aria-pressed') === 'true';
         ownersBtn.setAttribute('aria-pressed', String(!isShown));
