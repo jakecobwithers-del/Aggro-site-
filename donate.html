@@ -171,10 +171,30 @@
 
     .back-link svg{ transform:translateX(-2px); }
 
+    /* Centered large play fallback button */
+    #play-intro {
+      position:fixed;
+      left:50%;
+      top:22vh;
+      transform:translateX(-50%);
+      z-index:9999;
+      background:rgba(0,0,0,0.8);
+      color:#fff;
+      border:2px solid rgba(255,59,59,0.18);
+      padding:14px 22px;
+      border-radius:12px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 12px 40px rgba(0,0,0,0.85);
+      display:none;
+      letter-spacing:1px;
+    }
+
     @media (max-width:520px){
       .site-title{ font-size:clamp(22px,10vw,36px); }
       .card{ padding:14px; }
       .site-title-wrap{ flex-direction:column; gap:8px; }
+      #play-intro{ top:14vh; padding:12px 18px; }
     }
   </style>
 </head>
@@ -227,47 +247,79 @@
     </div>
   </main>
 
-  <!-- Background audio placed in root: Donate.mp3 — plays once only -->
-  <audio id="bg-audio" preload="auto">
-    <source src="Donate.mp3" type="audio/mpeg">
+  <!-- single-play audio (root Donate.mp3) -->
+  <audio id="bg-audio" preload="auto" playsinline>
+    <source src="/Donate.mp3" type="audio/mpeg">
   </audio>
+
+  <button id="play-intro" aria-hidden="true">Play Intro</button>
 
   <script>
     (function(){
       const audio = document.getElementById('bg-audio');
+      const btn = document.getElementById('play-intro');
       let playedOnce = false;
 
-      function playOnce() {
-        if (playedOnce) return;
-        playedOnce = true;
-        audio.currentTime = 0;
-        // set a sensible volume
-        audio.volume = 0.9;
-        const p = audio.play();
-        if (p && typeof p.then === 'function') {
-          p.catch(()=>{}); // ignore autoplay rejection
-        }
-        // remove interaction listeners after attempt so it won't try again
-        window.removeEventListener('pointerdown', onFirstInteraction);
-        window.removeEventListener('keydown', onFirstInteraction);
-      }
-
-      // If autoplay allowed, try on load
-      window.addEventListener('load', () => {
-        playOnce();
-      }, { once: true });
-
-      // If autoplay blocked, play on first user gesture and only once
-      function onFirstInteraction() {
-        playOnce();
-      }
-      window.addEventListener('pointerdown', onFirstInteraction, { once: true });
-      window.addEventListener('keydown', onFirstInteraction, { once: true });
-
-      // Ensure audio doesn't loop
+      // Ensure no loop and sensible volume
       audio.loop = false;
+      audio.volume = 0.9;
 
-      // Optional: stop audio if user navigates away or page hidden
+      function showButton(show) {
+        btn.style.display = show ? 'block' : 'none';
+        btn.setAttribute('aria-hidden', show ? 'false' : 'true');
+      }
+
+      function attemptPlay() {
+        if (playedOnce) return;
+        audio.currentTime = 0;
+        const p = audio.play();
+        if (!p) {
+          // older browsers may not return a promise
+          setTimeout(()=> {
+            if (audio.paused) showButton(true);
+          }, 300);
+          return;
+        }
+        p.then(() => {
+          playedOnce = true;
+          showButton(false);
+        }).catch(() => {
+          // Autoplay blocked — show user-facing Play button once
+          showButton(true);
+        });
+      }
+
+      // Try autoplay on load
+      window.addEventListener('load', () => attemptPlay(), { once: true });
+
+      // If autoplay blocked, allow first user gesture anywhere to trigger once
+      function onFirstGesture() {
+        if (playedOnce) return;
+        audio.currentTime = 0;
+        audio.play().then(() => {
+          playedOnce = true;
+          showButton(false);
+        }).catch(()=> {
+          // If still blocked, show explicit button
+          showButton(true);
+        });
+        window.removeEventListener('pointerdown', onFirstGesture);
+        window.removeEventListener('keydown', onFirstGesture);
+      }
+      window.addEventListener('pointerdown', onFirstGesture);
+      window.addEventListener('keydown', onFirstGesture);
+
+      // Play button handler (explicit user gesture) — plays once then hides
+      btn.addEventListener('click', () => {
+        if (playedOnce) return;
+        audio.currentTime = 0;
+        audio.play().then(() => {
+          playedOnce = true;
+          showButton(false);
+        }).catch(()=> {});
+      });
+
+      // Pause audio if page hidden to avoid unexpected background sound
       document.addEventListener('visibilitychange', () => {
         if (document.hidden && !audio.paused) {
           audio.pause();
