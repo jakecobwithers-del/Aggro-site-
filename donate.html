@@ -4,29 +4,60 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Aggro PvP — Donate</title>
+
   <style>
-    @font-face{ font-family:'DayZFont'; src:url('28 Days Later.ttf') format('truetype'); font-display:swap; }
-    :root{ --bg:#000; --accent:#ff3b3b; --card-bg-start:#070707; --card-bg-end:#0f0f0f; --card-border:rgba(255,59,59,0.12); --card-radius:12px; --max-width:900px; --pad:20px; --smoke-opacity:0.66; }
-    html,body{ height:100%; margin:0; background:var(--bg); color:#fff; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
-    #smoke-bg{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; background:#000; }
-    #smoke-bg video{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:160vw; height:160vh; object-fit:cover; opacity:var(--smoke-opacity); filter: blur(5px) saturate(1.04) contrast(1.02); }
-    .page{ position:relative; z-index:2; min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:6vh 20px 80px; box-sizing:border-box; }
-    .container{ width:100%; max-width:var(--max-width); display:flex; flex-direction:column; gap:18px; }
-    .site-title-wrap{ display:flex; justify-content:center; align-items:center; gap:12px; }
-    .site-title{ margin:0; font-family:'DayZFont', sans-serif; font-size:clamp(28px,6vw,64px); color:#fff; text-transform:uppercase; letter-spacing:1.6px; text-shadow:0 1px 0 rgba(0,0,0,0.85), 0 8px 28px rgba(0,0,0,0.6), 0 12px 40px rgba(255,59,59,0.04); text-align:center; }
-    .card{ border-radius:var(--card-radius); background:linear-gradient(180deg,var(--card-bg-start),var(--card-bg-end)); border:2px solid var(--card-border); box-shadow: inset 0 2px 6px rgba(255,255,255,0.02), inset 0 -8px 18px rgba(0,0,0,0.75), 0 12px 30px rgba(0,0,0,0.9); padding:var(--pad); }
-    .card h2{ margin:0 0 8px 0; font-family:'DayZFont', sans-serif; color:var(--accent); font-size:clamp(18px,3.6vw,28px); letter-spacing:0.8px; text-transform:uppercase; text-shadow: 0 4px 18px rgba(0,0,0,0.6); }
-    .card p{ margin:0 0 12px 0; color:rgba(255,255,255,0.92); line-height:1.6; font-size:15px; }
-    .donate-btn{ display:inline-block; margin-top:12px; padding:12px 24px; font-weight:bold; font-size:15px; background:var(--accent); color:#fff; text-decoration:none; border-radius:10px; box-shadow: inset 0 2px 6px rgba(255,255,255,0.02), inset 0 -6px 12px rgba(0,0,0,0.6), 0 8px 20px rgba(0,0,0,0.8); transition:transform 0.2s ease, background 0.2s ease; }
-    .donate-btn:hover{ transform:scale(1.05); background:#ff5c5c; }
-    .back-row{ display:flex; justify-content:center; margin-top:6px; gap:12px; }
-    .back-link{ text-decoration:none; font-weight:800; background:linear-gradient(180deg,#0b0b0b,#121212); border:2px solid rgba(255,59,59,0.14); color:var(--accent); padding:12px 18px; border-radius:12px; box-shadow: inset 0 2px 6px rgba(255,255,255,0.02), inset 0 -8px 18px rgba(0,0,0,0.75), 0 10px 30px rgba(0,0,0,0.9); display:inline-flex; gap:10px; align-items:center; }
-    .back-link svg{ transform:translateX(-2px); }
-    #audio-debug{ display:none; position:fixed; left:50%; transform:translateX(-50%); top:18vh; background:#660000; color:#fff; padding:10px 14px; border-radius:10px; z-index:9999; font-weight:700; border:2px solid #330000; }
-    @media (max-width:520px){ .site-title{ font-size:clamp(22px,10vw,36px); } .card{ padding:14px; } .site-title-wrap{ flex-direction:column; gap:8px; } }
+    @font-face{ font-family:'DayZFont'; src: url('28 Days Later.ttf') format('truetype'); font-display:swap; }
+
+    :root{
+      --bg:#000;
+      --accent:#ff3b3b;
+      --card-start:#070707;
+      --card-end:#0f0f0f;
+      --card-border:rgba(255,59,59,0.12);
+      --radius:12px;
+      --max-w:1000px;
+      --pad:22px;
+      --smoke-opacity:0.66;
+    }
+
+    html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+
+    /* Smoke / cinematic background */
+    #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
+    #smoke-bg video{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:160vw;height:160vh;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(5px) saturate(1.04) contrast(1.02);}
+
+    /* Page container */
+    .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px 80px;box-sizing:border-box;}
+    .container{width:100%;max-width:var(--max-w);display:flex;flex-direction:column;gap:18px;}
+
+    /* Centered title */
+    .site-header{display:flex;flex-direction:column;align-items:center;gap:10px;}
+    .site-title{margin:0;font-family:'DayZFont',sans-serif;font-size:clamp(30px,6vw,68px);text-transform:uppercase;letter-spacing:1.6px;color:#fff;text-align:center;text-shadow:0 1px 0 rgba(0,0,0,0.85),0 8px 28px rgba(0,0,0,0.6),0 12px 40px rgba(255,59,59,0.04);}
+
+    /* Card style */
+    .card{background:linear-gradient(180deg,var(--card-start),var(--card-end));border-radius:var(--radius);border:2px solid var(--card-border);padding:var(--pad);box-shadow:inset 0 2px 6px rgba(255,255,255,0.02),inset 0 -8px 18px rgba(0,0,0,0.75),0 12px 30px rgba(0,0,0,0.9);}
+    .card h2{margin:0 0 8px 0;font-family:'DayZFont',sans-serif;color:var(--accent);font-size:clamp(18px,3.6vw,28px);letter-spacing:.8px;text-transform:uppercase;text-shadow:0 4px 18px rgba(0,0,0,0.6);}
+    .card p{margin:0 0 12px 0;color:rgba(255,255,255,0.94);line-height:1.6;font-size:15px;}
+    .card ul{margin:0;padding-left:20px;}
+    .card li{margin:6px 0;color:rgba(255,255,255,0.92);}
+
+    .donate-btn{display:inline-block;margin-top:12px;padding:12px 24px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;text-decoration:none;box-shadow:inset 0 2px 6px rgba(255,255,255,0.02),inset 0 -6px 12px rgba(0,0,0,0.6),0 8px 20px rgba(0,0,0,0.8);}
+    .donate-btn:hover{transform:scale(1.03);background:#ff5c5c;}
+
+    .back-row{display:flex;justify-content:center;margin-top:6px;}
+    .back-link{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:12px;background:linear-gradient(180deg,#0b0b0b,#121212);border:2px solid rgba(255,59,59,0.14);color:var(--accent);text-decoration:none;font-weight:800;}
+
+    @media(max-width:520px){
+      .site-title{font-size:clamp(22px,10vw,40px);}
+      .card{padding:14px;}
+    }
+
+    /* Small hidden debug area shown only on network/mime errors */
+    #audio-debug{display:none;position:fixed;left:50%;transform:translateX(-50%);top:18vh;background:#7a0b0b;color:#fff;padding:10px 14px;border-radius:10px;border:2px solid #3b0000;z-index:9999;font-weight:700;}
   </style>
 </head>
 <body>
+  <!-- cinematic smoke background (root paths) -->
   <div id="smoke-bg" aria-hidden="true">
     <video autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg">
       <source src="Smoke.webm" type="video/webm">
@@ -36,38 +67,36 @@
 
   <main class="page" role="main">
     <div class="container">
-      <header class="site-title-wrap">
+      <header class="site-header" role="banner">
         <h1 class="site-title">Donate</h1>
       </header>
 
       <section class="card" aria-labelledby="why-donate">
         <h2 id="why-donate">Why Donate?</h2>
-        <p>Running Aggro PvP takes time, effort, and real-world costs. Donations keep the server online and fund content.</p>
+        <p>Running Aggro PvP costs hosting, development time, and assets. Your donations keep servers online, fund events, and help us expand visuals and mods.</p>
       </section>
 
       <section class="card" aria-labelledby="how-it-helps">
         <h2 id="how-it-helps">How It Helps</h2>
-        <ul style="margin:0;padding-left:20px;">
-          <li>Server hosting and performance upgrades</li>
-          <li>Custom mods and events</li>
-          <li>Visuals, UI, and branding</li>
+        <ul>
+          <li>Server hosting and uptime</li>
+          <li>Development of custom mods & events</li>
+          <li>UI, branding and community prizes</li>
         </ul>
       </section>
 
       <section class="card" aria-labelledby="how-to-donate">
         <h2 id="how-to-donate">How to Donate</h2>
-        <p>Click the button below to support the server.</p>
-        <a class="donate-btn" href="YOUR_DONATION_LINK_HERE">Donate Now</a>
+        <p>Support the server by clicking below. Even small amounts keep Aggro PvP alive and growing.</p>
+        <div><a class="donate-btn" href="YOUR_DONATION_LINK_HERE" id="donate-btn">Donate Now</a></div>
       </section>
 
-      <div class="back-row">
-        <a class="back-link" href="index.html" aria-label="Return to main menu">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
-            <path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path>
-          </svg>
-          Return to Main Menu
-        </a>
-      </div>
+      <div class="back-row"><a class="back-link" href="index.html" aria-label="Return to main menu">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
+          <path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path>
+        </svg>
+        Return to Main Menu
+      </a></div>
     </div>
   </main>
 
@@ -75,83 +104,94 @@
 
   <script>
     (function(){
-      // Use your GitHub Pages absolute URL to avoid path issues
-      const AUDIO_URL = 'https://bwithers-del.github.io/Aggro-site-/Donate.mp3';
+      // Use root file path or absolute GitHub Pages URL if you prefer
+      const AUDIO_SRC = '/Donate.mp3'; // change to 'https://bwithers-del.github.io/Aggro-site-/Donate.mp3' if needed
       const debug = document.getElementById('audio-debug');
-      let playedOnce = false;
-      // Try immediate autoplay via new Audio()
-      function tryImmediateAutoplay() {
+      let started = false;
+
+      // Try a direct autoplay attempt on load. If browser allows it, audio will play once and stop.
+      async function tryAutoplay() {
+        if (started) return;
         try {
-          const audio = new Audio(AUDIO_URL);
-          audio.preload = 'auto';
-          audio.loop = false;
-          audio.volume = 0.9;
-          const p = audio.play();
+          const aud = new Audio(AUDIO_SRC);
+          aud.preload = 'auto';
+          aud.loop = false;
+          aud.volume = 0.9;
+          const p = aud.play();
           if (p && typeof p.then === 'function') {
-            p.then(()=> { playedOnce = true; /* audio playing once */ })
-             .catch(()=> { /* blocked; wait for first user gesture */ attachFirstGesture(); });
-          } else {
-            setTimeout(()=> { if (audio.paused && !playedOnce) attachFirstGesture(); }, 300);
+            await p;
+            started = true;
+            // let the audio play through once, nothing more to do
+            return;
           }
-        } catch (e) {
-          attachFirstGesture();
+          // older browsers: if play didn't throw and not paused, treat as started
+          setTimeout(()=>{ if (!aud.paused) started = true; }, 200);
+        } catch (err) {
+          // autoplay blocked or other error — fall back to first user gesture handler
+          attachGestureFallback();
         }
       }
 
-      // On first real user gesture, fetch and play once (no visible UI)
-      async function onFirstGesture(e) {
-        if (playedOnce) return;
-        // Only respond to trusted gestures
+      // If autoplay blocked, use the first trusted user gesture anywhere on page to start audio once,
+      // with no visible UI. This satisfies browser autoplay policies without showing a Play button.
+      async function playOnFirstGesture(e) {
+        if (started) return;
         if (e && e.isTrusted === false) return;
-        playedOnce = true;
-        removeGestureListeners();
+        started = true;
+        removeGestureHandlers();
         try {
-          const res = await fetch(AUDIO_URL, { cache: 'no-cache' });
+          const res = await fetch(AUDIO_SRC, { cache: 'no-cache' });
           if (!res.ok) {
-            debug.style.display = 'block';
-            debug.textContent = 'Audio fetch failed: ' + res.status + ' ' + res.statusText;
+            showDebug('Audio fetch failed: ' + res.status + ' ' + res.statusText);
             return;
           }
-          const ct = res.headers.get('content-type') || '';
-          if (!/audio/i.test(ct)) {
-            debug.style.display = 'block';
-            debug.textContent = 'Wrong Content-Type: ' + ct;
+          const ctype = res.headers.get('content-type') || '';
+          if (!/audio/i.test(ctype)) {
+            showDebug('Wrong Content-Type: ' + ctype);
             return;
           }
           const blob = await res.blob();
-          const blobUrl = URL.createObjectURL(blob);
-          const audio = new Audio(blobUrl);
-          audio.loop = false;
-          audio.volume = 0.9;
-          await audio.play();
-          audio.addEventListener('ended', () => URL.revokeObjectURL(blobUrl), { once: true });
+          const url = URL.createObjectURL(blob);
+          const a = new Audio(url);
+          a.loop = false;
+          a.volume = 0.9;
+          await a.play();
+          a.addEventListener('ended', () => URL.revokeObjectURL(url), { once: true });
         } catch (err) {
-          debug.style.display = 'block';
-          debug.textContent = 'Play failed: ' + (err && err.message ? err.message : String(err));
+          showDebug('Play failed: ' + (err && err.message ? err.message : String(err)));
         }
       }
 
-      function attachFirstGesture() {
-        window.addEventListener('pointerdown', onFirstGesture, { once: true });
-        window.addEventListener('keydown', onFirstGesture, { once: true });
-        window.addEventListener('focus', onFirstGesture, { once: true });
+      function attachGestureFallback() {
+        window.addEventListener('pointerdown', playOnFirstGesture, { once:true });
+        window.addEventListener('keydown', playOnFirstGesture, { once:true });
+        window.addEventListener('focus', playOnFirstGesture, { once:true });
       }
 
-      function removeGestureListeners() {
-        window.removeEventListener('pointerdown', onFirstGesture);
-        window.removeEventListener('keydown', onFirstGesture);
-        window.removeEventListener('focus', onFirstGesture);
+      function removeGestureHandlers() {
+        window.removeEventListener('pointerdown', playOnFirstGesture);
+        window.removeEventListener('keydown', playOnFirstGesture);
+        window.removeEventListener('focus', playOnFirstGesture);
       }
 
-      // kickoff
+      function showDebug(msg) {
+        debug.textContent = msg;
+        debug.style.display = 'block';
+      }
+
+      // Kick off: try autoplay; if blocked, gesture fallback will start audio silently on first real user interaction
       window.addEventListener('load', () => {
-        tryImmediateAutoplay();
-        // fallback: ensure gesture handlers exist after 800ms if autoplay didn't resolve
-        setTimeout(() => { if (!playedOnce) attachFirstGesture(); }, 800);
+        tryAutoplay().catch(()=>{ attachGestureFallback(); });
+        // ensure fallback handlers exist after a short window if autoplay didn't resolve
+        setTimeout(()=>{ if (!started) attachGestureFallback(); }, 800);
       }, { once:true });
 
-      // If you want to see a quick test message, enable this line:
-      // debug.style.display = 'block';
+      // Optional: pause any playing audio when page hidden
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          // Nothing to clean up here because created Audio instances are ephemeral.
+        }
+      });
     })();
   </script>
 </body>
