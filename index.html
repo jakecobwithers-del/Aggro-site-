@@ -1,316 +1,212 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Aggro PvP — JOIN THE FIGHT</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aggro PvP — Support</title>
+
   <style>
-    :root {
-      --bg: #050505;
-      --red: #ff1a1a;
-
-      /* timing */
-      --cycle: 4000;
-      --text-dur: 3000;
-      --flash-dur: 600;
-      --circle-dur: 3000;
-      --circle-delay: 0;
-
-      /* z-layers */
-      --z-menu: 6000;      /* menu on top */
-      --z-vfx: 4500;       /* flash/flicker */
-      --z-blood: 3500;
-      --z-head: 3000;
-      --z-color: 2500;     /* red-tint overlay */
-      --z-smoke: 2000;
-      --z-cta: 1000;
-      --z-logo: 1000;
+    @font-face{
+      font-family: 'DayZFont';
+      src: url('28 Days Later.ttf') format('truetype');
+      font-display: swap;
     }
 
-    *,*::before,*::after { box-sizing: border-box }
-    html,body {
-      margin:0; padding:0;
-      width:100%; height:100%;
-      background:var(--bg);
-      overflow:hidden;
-      font-family:"28Days",sans-serif;
-      color:#fff;
-    }
-    @font-face {
-      font-family:"28Days";
-      src:url("28%20Days%20Later.ttf") format("truetype");
-      font-display:swap;
-    }
-    button,a { background:none; border:none; cursor:pointer }
-
-    /* MENU (always on top) */
-    .anarchyBtn {
-      position:fixed; top:14px; right:14px;
-      z-index:var(--z-menu);
-      pointer-events:auto;
-    }
-    .anarchyBtn img {
-      width:64px; height:64px;
-      display:block;
-    }
-    .anarchyMenu {
-      position:fixed; top:90px; right:14px;
-      display:none; flex-direction:column;
-      padding:12px; background:rgba(10,10,10,0.95);
-      border-radius:12px;
-      z-index:var(--z-menu);
-      pointer-events:auto;
-    }
-    .anarchyMenu.open { display:flex }
-    .anarchyMenu a {
-      color:#ffdede; font-size:16px; font-weight:800;
-      padding:10px 14px; text-decoration:none;
-      background:transparent;
+    :root{
+      --bg:#000;
+      --accent:#ff3b3b;
+      --card-start:#070707;
+      --card-end:#0f0f0f;
+      --card-border:rgba(255,59,59,0.12);
+      --muted:rgba(255,255,255,0.86);
+      --maxw:1000px;
+      --pad:22px;
+      --smoke-opacity:0.78;
+      --gap:18px;
+      --tab-height:64px;
+      --bottom-safe:120px;
     }
 
-    /* CTA & LOGO (under smoke) */
-    .cta {
-      position:fixed; bottom:8vh; left:50%;
-      transform:translateX(-50%);
-      display:flex; gap:20px;
-      z-index:var(--z-cta);
-      pointer-events:auto;
-    }
-    .cta a {
-      font-size:22px; padding:10px 26px;
-      border-radius:12px;
-      background:linear-gradient(180deg,#151515,#070707);
-      color:#fff; text-decoration:none;
-      transition:transform .2s;
-    }
-    .cta a:hover { transform:translateY(-3px) }
+    html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
 
-    #logo {
-      position:fixed; top:6vh; left:50%;
-      transform:translateX(-50%);
-      z-index:var(--z-logo);
-      pointer-events:auto;
-    }
-    #logo img { max-width:30vw; height:auto }
+    /* Oversized fixed smoke background */
+    #smoke-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000;}
+    #smoke-bg video{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(1.3);width:220vw;height:220vh;object-fit:cover;opacity:var(--smoke-opacity);filter:blur(6px) saturate(1.06) contrast(1.03);will-change:transform;pointer-events:none;}
 
-    /* SMOKE VIDEO */
-    #smoke-wrap {
-      position:fixed; inset:0;
-      pointer-events:none;
-      z-index:var(--z-smoke);
-    }
-    #smokeVideo {
-      width:100%; height:100%;
-      object-fit:cover; opacity:.6;
-    }
+    .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px var(--bottom-safe);box-sizing:border-box;}
+    .wrap{width:100%;max-width:var(--maxw);display:flex;flex-direction:column;gap:var(--gap);padding-bottom:20px;}
 
-    /* LIGHT RED TINT OVERLAY */
-    #colorOverlay {
-      position:fixed; inset:0;
-      background:var(--red);
-      mix-blend-mode:color;
-      opacity:0;
-      transition:opacity var(--text-dur)ms ease-in-out;
-      z-index:var(--z-color);
-      pointer-events:none;
-    }
+    .title{text-align:center;padding:6px 6px 0;}
+    .title h1{margin:0;font-family:'DayZFont',sans-serif;font-size:clamp(40px,7.2vw,88px);letter-spacing:1.6px;text-transform:uppercase;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,0.85),0 8px 28px rgba(0,0,0,0.6);line-height:0.95;}
+    .subtitle{margin-top:6px;font-size:15px;line-height:1.05;}
+    .subtitle .line-white{color:#fff;display:block;font-weight:700;}
+    .subtitle .line-red{color:var(--accent);display:block;font-weight:900;font-family:'DayZFont',sans-serif;letter-spacing:0.6px;text-transform:lowercase;}
 
-    /* RED FLASH */
-    #redOverlay {
-      position:fixed; inset:0;
-      background:var(--red);
-      mix-blend-mode:screen;
-      opacity:0;
-      z-index:var(--z-vfx);
-      pointer-events:none;
-      animation-fill-mode:both;
-    }
-    @keyframes redFlash {
-      0%   { opacity:0 }
-      10%  { opacity:.4 }
-      30%  { opacity:0 }
-      100% { opacity:0 }
-    }
+    .controls{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:12px;flex-wrap:wrap;}
+    .tabs{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;}
+    .tab{height:var(--tab-height);padding:14px 22px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));border:1px solid rgba(255,255,255,0.02);color:var(--muted);font-weight:800;text-transform:uppercase;font-family:'DayZFont',sans-serif;letter-spacing:0.8px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:transform 140ms ease, box-shadow 140ms ease, background 140ms ease;}
+    .tab.primary{background:linear-gradient(180deg, rgba(255,59,59,0.06), rgba(0,0,0,0.04));color:var(--accent);border-color:var(--card-border);transform:translateY(-4px);box-shadow:0 18px 46px rgba(0,0,0,0.6);}
+    .tab[aria-selected="true"]:not(.primary), .tab:focus{transform:translateY(-4px);color:var(--accent);box-shadow:0 14px 36px rgba(0,0,0,0.5);border-color:var(--card-border);outline:none;}
 
-    /* FLICKER */
-    .vfx {
-      position:fixed; inset:0;
-      pointer-events:none;
-      z-index:var(--z-vfx);
-    }
-    .vfx .flicker {
-      position:absolute; inset:0;
-      mix-blend-mode:screen;
-      opacity:0;
-    }
+    .card{margin-top:10px;border-radius:14px;background:linear-gradient(180deg,var(--card-start),var(--card-end));border:2px solid var(--card-border);box-shadow: inset 0 2px 8px rgba(255,255,255,0.02), inset 0 -10px 22px rgba(0,0,0,0.75), 0 16px 40px rgba(0,0,0,0.9);padding:var(--pad);display:block;min-height:220px;transition:transform 220ms cubic-bezier(.2,.9,.2,1),opacity 180ms linear;overflow:hidden;}
+    .card h2{margin:0 0 8px 0;font-family:'DayZFont',sans-serif;color:var(--accent);font-size:clamp(20px,3.8vw,36px);text-transform:uppercase;text-shadow:0 6px 22px rgba(0,0,0,0.6);}
+    .card p{margin:0 0 14px 0;color:var(--muted);line-height:1.6;font-size:16px;}
+    .card-footer{display:flex;justify-content:flex-start;gap:14px;align-items:center;margin-top:14px;flex-wrap:wrap;}
+    .goto{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:linear-gradient(180deg,rgba(255,59,59,0.06),rgba(0,0,0,0.04));border:1px solid rgba(255,59,59,0.12);color:var(--accent);font-weight:900;text-transform:uppercase;font-family:'DayZFont',sans-serif;width:110px;font-size:13px;text-decoration:none;}
 
-    /* HEADLINE */
-    #headline {
-      position:fixed; top:42vh; left:50%;
-      transform:translateX(-50%);
-      text-align:center;
-      z-index:var(--z-head);
-      pointer-events:none;
-    }
-    #headlineText {
-      font-size:clamp(48px,14vw,136px);
-      line-height:.9; letter-spacing:.12em;
-      opacity:0; will-change:opacity;
-    }
-    @keyframes textFade {
-      0%,10%   { opacity:0 }
-      20%,80%  { opacity:1 }
-      100%     { opacity:0 }
-    }
-    .fadeText {
-      animation:textFade var(--text-dur)ms both;
-    }
-    @keyframes glitch {
-      0%,100% { clip:rect(0,9999px,0,0) }
-      20%     { clip:rect(20px,9999px,40px,0) }
-      40%     { clip:rect(50px,9999px,70px,0) }
-      60%     { clip:rect(10px,9999px,30px,0) }
-      80%     { clip:rect(60px,9999px,80px,0) }
-    }
-    .glitch, .glitch::before, .glitch::after {
-      animation:glitch .6s steps(2) both;
-    }
-    .glitch::before, .glitch::after {
-      content:attr(data-text);
-      position:absolute; inset:0;
-      mix-blend-mode:screen; opacity:.6;
-    }
-    .glitch::before { color:#ff4b4b; left:2px }
-    .glitch::after  { color:#7fb7ff; left:-2px }
+    /* Owners bubble: names left (linked), merged message right */
+    .owners-bubble{margin-top:12px;border-radius:12px;background:linear-gradient(180deg, rgba(12,12,12,0.98), rgba(7,7,7,0.95));border:2px solid rgba(255,59,59,0.08);padding:14px;display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;}
+    .owners-col{display:flex;flex-direction:column;gap:10px;}
+    .owners-names{min-width:220px;}
+    .owner-link{display:inline-flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));color:var(--muted);font-size:15px;text-decoration:none;border:1px solid rgba(255,255,255,0.02);transition:transform 120ms ease,box-shadow 120ms ease;}
+    .owner-link b{color:var(--accent);font-family:'DayZFont',sans-serif;text-transform:uppercase;font-size:15px;}
+    .owner-link:hover{transform:translateX(6px);box-shadow:0 12px 30px rgba(0,0,0,0.6);}
 
-    /* BLOOD CIRCLE (fade with text) */
-    #bloodCircle {
-      position:absolute; top:50%; left:50%;
-      transform:translate(-50%,-50%) scale(1);
-      opacity:0;
-      width:clamp(200px,40vw,400px);
-      pointer-events:none;
-      z-index:var(--z-blood);
-      animation-fill-mode:both;
-    }
-    @keyframes circleAnim {
-      0%,20%   { opacity:0 }
-      25%,75% { opacity:.6 }
-      100%    { opacity:0 }
-    }
+    .owners-message{flex:1;color:var(--muted);font-size:15px;line-height:1.6;padding:6px 8px;border-left:1px solid rgba(255,255,255,0.02);min-width:300px;}
+
+    /* Centered return button placed under owners bubble */
+    .return-centered { display:block; margin:22px auto 0; padding:12px 18px; border-radius:14px; background:linear-gradient(180deg,#0b0b0b,#121212); border:2px solid rgba(255,59,59,0.14); color:var(--accent); font-weight:800; text-decoration:none; width:max-content; box-shadow: 0 20px 56px rgba(0,0,0,0.7), inset 0 2px 6px rgba(255,255,255,0.02); }
+
+    @media(max-width:860px){ :root{ --bottom-safe:160px; } .tab{padding:12px 16px;height:56px;} .card{padding:18px;min-height:200px;} .owners-bubble{flex-direction:column;} .owners-message{border-left:none;border-top:1px solid rgba(255,255,255,0.02);padding-top:12px;min-width:auto;} .return-centered{margin-top:16px;} }
+    @media(max-width:520px){ :root{ --bottom-safe:220px; } .title h1{font-size:clamp(32px,12vw,56px);} .tab{padding:10px 12px;height:48px;} .card{padding:14px;min-height:180px;} .return-centered{padding:10px 14px;} }
   </style>
 </head>
 <body>
-
-  <!-- menu -->
-  <button id="anarchyBtn" class="anarchyBtn"
-          aria-controls="anarchyMenu" aria-expanded="false">
-    <img src="anarchy.png" alt="Toggle menu"/>
-  </button>
-  <nav id="anarchyMenu" class="anarchyMenu" role="menu">
-    <a href="rules.html">Rules</a>
-    <a href="support.html">Support</a>
-    <a href="donate.html">Donate</a>
-    <a href="killfeed.html">Kill Feed</a>
-    <a href="leaderboard.html">Leaderboard</a>
-  </nav>
-
-  <!-- CTA & logo -->
-  <div class="cta">
-    <a href="steam://connect/YOURSERVERIP">JOIN SERVER</a>
-    <a href="https://discord.gg/YOURDISCORD">JOIN COMMUNITY</a>
-  </div>
-  <div id="logo"><img src="Aggro-logo.PNG" alt="Aggro Logo"/></div>
-
-  <!-- smoke -->
-  <div id="smoke-wrap">
-    <video id="smokeVideo" muted autoplay loop playsinline preload="auto">
-      <source src="Smoke.mp4" type="video/mp4"/>
+  <div id="smoke-bg" aria-hidden="true">
+    <video autoplay loop muted playsinline preload="auto" poster="smoke-poster.jpg">
+      <source src="Smoke.webm" type="video/webm">
+      <source src="Smoke.mp4" type="video/mp4">
     </video>
   </div>
 
-  <!-- overlays -->
-  <div id="colorOverlay"></div>
-  <div id="redOverlay"></div>
-  <div class="vfx"><div id="vfxFlicker" class="flicker"></div></div>
+  <main class="page" role="main">
+    <div class="wrap">
+      <header class="title" role="banner" aria-label="Support header">
+        <h1>Support</h1>
+        <div class="subtitle">
+          <span class="line-white">Still Breathing?</span>
+          <span class="line-red">we've got your six</span>
+        </div>
+      </header>
 
-  <!-- headline & blood -->
-  <div id="headline">
-    <div id="headlineText" class="fadeText" data-text="JOIN THE FIGHT">
-      JOIN THE FIGHT
+      <div class="controls" role="group" aria-label="Support controls">
+        <nav class="tabs" role="tablist" aria-label="Support sections">
+          <button class="tab primary" role="tab" aria-selected="true" aria-controls="panel" id="tab-bug" data-key="bug">Bug Reports</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-suggest" data-key="suggest">Suggestions</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel" id="tab-ticket" data-key="ticket">Ticket</button>
+        </nav>
+      </div>
+
+      <section class="card" id="panel" tabindex="0" aria-live="polite">
+        <div id="panel-content">
+          <h2>Bug Reports</h2>
+          <p>Seeing server lag, exploits, or visual bugs? Tell us what you noticed, which server and map, and the approximate server time so staff can investigate.</p>
+          <div class="card-footer">
+            <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+              <span>Go to</span>
+            </a>
+            <span style="color:var(--muted);font-size:13px;">Tip: server lag, exploits, visual bugs, server/map, server time</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="owners-bubble" id="owners-bubble" aria-labelledby="owners-title">
+        <div class="owners-col owners-names">
+          <h4 style="margin:0;font-family:DayZFont,system-ui;color:var(--accent);letter-spacing:0.6px;text-transform:uppercase;">Team</h4>
+          <a class="owner-link" href="https://discord.com/users/572334717731602462" target="_blank" rel="noopener" aria-label="Open RB Skizza Discord profile"><b>RB Skizza</b></a>
+          <a class="owner-link" href="https://discord.com/users/842365557486518302" target="_blank" rel="noopener" aria-label="Open Slomobob Discord profile"><b>Slomobob</b></a>
+          <a class="owner-link" href="https://discord.com/users/754181442204074025" target="_blank" rel="noopener" aria-label="Open Sloppywet Discord profile"><b>Sloppywet</b></a>
+        </div>
+
+        <div class="owners-col owners-message" id="owners-message">
+          <strong style="color:var(--accent);font-family:DayZFont,system-ui;text-transform:uppercase;letter-spacing:0.6px;">A message from the owners</strong>
+          <p style="margin:8px 0 0 0;">
+            These are the owners who made Aggro PvP possible. Aggro PvP is run with care — fair play and respect are the backbone of this community. We’re a small team committed to stability, fairness, and a bold cinematic experience.
+          </p>
+          <p style="margin:10px 0 0 0;">
+            If the server helped you, thank the owners, send feedback to help us improve, or consider donating to help keep hosting, tools, and development running. For private concerns or appeals, open a ticket and our staff will respond.
+          </p>
+          <p style="margin:10px 0 0 0;color:var(--muted);font-size:13px;">
+            Thank you for playing — see you on the map.
+          </p>
+        </div>
+      </aside>
+
+      <!-- Centered Return to Main Menu button under the owners bubble -->
+      <a class="return-centered" href="index.html" aria-label="Return to Main Menu">← Return to Main Menu</a>
+
     </div>
-    <img id="bloodCircle" src="blood1.png" alt="Blood circle"/>
-  </div>
+  </main>
 
   <script>
-  (function(){
-    const S      = getComputedStyle(document.documentElement);
-    const cycle  = +S.getPropertyValue('--cycle');
-    const txtDur = +S.getPropertyValue('--text-dur');
-    const flash  = +S.getPropertyValue('--flash-dur');
+    (function(){
+      const tabs = Array.from(document.querySelectorAll('.tab'));
+      const panelContent = document.getElementById('panel-content');
+      const panel = document.getElementById('panel');
 
-    const smoke      = document.getElementById('smokeVideo');
-    const colorOvl   = document.getElementById('colorOverlay');
-    const redOvl     = document.getElementById('redOverlay');
-    const textEl     = document.getElementById('headlineText');
-    const circle     = document.getElementById('bloodCircle');
-    const flicker    = document.getElementById('vfxFlicker');
-    let running      = false;
+      const templates = {
+        bug: {
+          title: 'Bug Reports',
+          html: `<p>Seeing server lag, exploits, or visual bugs? Tell us what you noticed, which server and map, and the approximate server time so staff can investigate.</p>
+                 <div class="card-footer">
+                   <a class="goto" href="https://discord.com/channels/1375728051194957874/1385078265236160563" target="_blank" rel="noopener" aria-label="Go to Bug Reports channel">
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <span>Go to</span>
+                   </a>
+                   <span style="color:var(--muted);font-size:13px;">Tip: server lag, exploits, visual bugs, server/map, server time</span>
+                 </div>`
+        },
+        suggest: {
+          title: 'Suggestions',
+          html: `<p>Got a loot change, mod idea, new feature, or gameplay tweak? Describe the change, why it improves play, and any balance notes or downsides; keep it short and actionable.</p>
+                 <div class="card-footer">
+                   <a class="goto" href="https://discord.com/channels/1375728051194957874/1385079306350493766" target="_blank" rel="noopener" aria-label="Go to Suggestions channel">
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <span>Go to</span>
+                   </a>
+                   <span style="color:var(--muted);font-size:13px;">Tip: loot changes, mod ideas, features, balance notes</span>
+                 </div>`
+        },
+        ticket: {
+          title: 'Ticket',
+          html: `<p>Tickets are for private support: bans and appeals, account issues, staff requests, payment/donation queries, and other sensitive matters.</p>
+                 <div class="card-footer">
+                   <a class="goto" href="https://discord.com/channels/1375728051194957874/1385461796437233695" target="_blank" rel="noopener" aria-label="Go to Ticket channel">
+                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                     <span>Go to</span>
+                   </a>
+                   <span style="color:var(--muted);font-size:13px;">Tip: appeals, account issues, staff requests, payment queries</span>
+                 </div>`
+        }
+      };
 
-    function restart(el,name,dur,delay=0){
-      el.style.animation = 'none';
-      void el.offsetWidth;
-      el.style.animation = `${name} ${dur}ms ${delay}ms both`;
-    }
-
-    function run(){
-      if(running) return;
-      running = true;
-
-      // 1) colorBlend tint
-      colorOvl.style.opacity = '1';
-      setTimeout(()=> colorOvl.style.opacity = '0', txtDur);
-
-      // 2) red flash
-      restart(redOvl,'redFlash',flash);
-
-      // 3) text fade + glitch
-      restart(textEl,'textFade',txtDur);
-      textEl.classList.remove('glitch');
-      setTimeout(()=> textEl.classList.add('glitch'),200);
-
-      // 4) blood fade
-      restart(circle,'circleAnim',
-              +S.getPropertyValue('--circle-dur'),
-              +S.getPropertyValue('--circle-delay'));
-
-      // 5) flicker
-      flicker.style.opacity = '1';
-      setTimeout(()=> flicker.style.opacity = '0',flash);
-
-      setTimeout(()=> running = false, cycle);
-    }
-
-    // menu toggle
-    document.getElementById('anarchyBtn').addEventListener('click',e=>{
-      e.stopPropagation();
-      const menu = document.getElementById('anarchyMenu');
-      const open = menu.classList.toggle('open');
-      e.currentTarget.setAttribute('aria-expanded',open);
-    });
-    document.addEventListener('click',e=>{
-      if(!e.target.closest('.anarchyBtn') &&
-         !e.target.closest('.anarchyMenu')){
-        document.getElementById('anarchyMenu').classList.remove('open');
-        document.getElementById('anarchyBtn').setAttribute('aria-expanded',false);
+      function activateTab(tabEl){
+        tabs.forEach(t=> t.setAttribute('aria-selected', t===tabEl ? 'true' : 'false'));
+        tabs.forEach(t => t.classList.toggle('primary', t.dataset.key === 'bug'));
+        const key = tabEl.dataset.key;
+        panelContent.style.opacity = '0';
+        setTimeout(()=>{
+          panelContent.innerHTML = `<h2>${templates[key].title}</h2>` + templates[key].html;
+          panelContent.style.opacity = '1';
+          panel.focus();
+        }, 160);
       }
-    });
 
-    window.addEventListener('DOMContentLoaded',()=>{
-      run();
-      setInterval(run,cycle);
-    });
-  })();
+      tabs.forEach(t=>{
+        t.addEventListener('click', ()=> activateTab(t));
+        t.addEventListener('keydown', (ev)=>{
+          const idx = tabs.indexOf(t);
+          if(ev.key === 'ArrowRight') tabs[(idx+1)%tabs.length].focus();
+          if(ev.key === 'ArrowLeft') tabs[(idx-1+tabs.length)%tabs.length].focus();
+          if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); activateTab(t); }
+        });
+      });
+
+      // initial state
+      const initialTab = document.querySelector('.tab[data-key="bug"]');
+      initialTab && initialTab.focus();
+    })();
   </script>
 </body>
 </html>
